@@ -8,7 +8,7 @@
     ],
     "nodes": {
       "intro": {
-        "text": "Bem-vindo à Intergalaxy, colaborador! Aqui não temos funcionários, temos ALMAS ALINHADAS. Preciso que você leve este baú até o elevador privativo. Depois, passe no culto para renovar suas energias. E, por favor, não faça perguntas.",
+        "text": "Bem-vindo à Intergalatic, colaborador! Aqui não temos funcionários, temos ALMAS ALINHADAS. Preciso que você leve este baú até o elevador privativo. Depois, passe no culto para renovar suas energias. E, por favor, não faça perguntas.",
         "choices": [
           { "text": "Claro, Patriarca. Sem perguntas.", "effects": { "startQuest": "bau", "advance": [{ "quest": "bau", "objective": "talk_founder" }], "stats": { "fe": 5 } }, "next": "entrega" },
           { "text": "O que tem dentro do baú?", "effects": { "stats": { "fe": -5 } }, "next": "pergunta" },

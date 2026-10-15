@@ -59,7 +59,7 @@ export class OfficeScene extends Phaser.Scene {
 
   preload() {
     const logo = (this.game.registry.get("logoUrl") as string) ?? "";
-    if (logo) this.load.image("logo", logo);
+    if (logo) this.load.svg("logo", logo);
   }
 
   create() {
@@ -208,9 +208,9 @@ export class OfficeScene extends Phaser.Scene {
     const t1 = iso(10.5, 0);
     this.add.text(t1.x, t1.y - 88, "I\nN\nT\nE\nR", { fontFamily: "'Press Start 2P'", fontSize: "8px", color: "#f3e9ff", align: "center", lineSpacing: 2 }).setOrigin(0.5).setDepth(-89000);
     const t2 = iso(13.5, 0);
-    this.add.text(t2.x, t2.y - 88, "G\nA\nL\nA\nX", { fontFamily: "'Press Start 2P'", fontSize: "8px", color: "#f3e9ff", align: "center", lineSpacing: 2 }).setOrigin(0.5).setDepth(-89000);
+    this.add.text(t2.x, t2.y - 88, "G\nA\nL\nA\nT", { fontFamily: "'Press Start 2P'", fontSize: "8px", color: "#f3e9ff", align: "center", lineSpacing: 2 }).setOrigin(0.5).setDepth(-89000);
     const s = iso(18.55, 0);
-    this.add.text(s.x, s.y - 84, "CONNECT\nBEYOND THE\nFUTURE", { fontFamily: "'Press Start 2P'", fontSize: "7px", color: "#ffffff", align: "center", lineSpacing: 3 }).setOrigin(0.5).setDepth(-89000);
+    this.add.text(s.x, s.y - 84, "INTERGALATIC\nALÉM DO\nEXPEDIENTE", { fontFamily: "'Press Start 2P'", fontSize: "7px", color: "#ffffff", align: "center", lineSpacing: 3 }).setOrigin(0.5).setDepth(-89000);
     const q = iso(5.2, 0);
     this.add.text(q.x, q.y - 124, "A PROSPERIDADE É UM KPI", { fontFamily: "'Press Start 2P'", fontSize: "6px", color: "#cbb8ff" }).setOrigin(0.5).setDepth(-89000);
     if (this.textures.exists("logo")) {

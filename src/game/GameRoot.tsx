@@ -315,8 +315,8 @@ function Title({ onStart }: { onStart: () => void }) {
   return (
     <div className="title-screen" style={{ backgroundImage: `url(${TITLE_BG})` }}>
       <div className="title-inner">
-        <img src={LOGO_URL} alt="Logo Intergalaxy" className="title-logo" width={96} height={96} />
-        <h1 className="title-h1">INTERGALAXY</h1>
+        <img src={LOGO_URL} alt="Logo Intergalatic" className="title-logo" width={96} height={96} />
+        <h1 className="title-h1">INTERGALATIC</h1>
         <p className="title-sub">ALÉM DO EXPEDIENTE</p>
         <div className="flex flex-col gap-3 mt-8 w-64">
           {hasSave && (

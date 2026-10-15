@@ -1,4 +1,4 @@
-# INTERGALAXY — Além do Expediente
+# INTERGALATIC — Além do Expediente
 
 RPG satírico 2D isométrico em pixel art. O jogador sobrevive a uma corporação fictícia, sobe na hierarquia de uma pirâmide caricatural, acumula bitcoins **sem valor real** e decide quando sacar antes da falência ou da fiscalização igualmente fictícia.
 
@@ -41,3 +41,11 @@ npm run dev
 - [CI e testes](https://github.com/rogeriobeatz/itx-the-game/actions)
 
 Atualize o status da planilha depois de cada entrega e registre bugs antes de marcá-los como resolvidos.
+
+## Identidade renovada — 15/10/2026
+
+O nome de apresentação do jogo agora é **INTERGALATIC — Além do Expediente**. O título anterior foi retirado das interfaces ativas, dos diálogos e dos metadados. O símbolo visual anterior foi substituído por um ícone SVG original do jogo.
+
+A mudança não é uma conclusão jurídica de disponibilidade de marca. Fazer pesquisa formal no INPI e avaliar similaridade de marcas para jogos antes de registrar/dominar/comercializar; preservar também a política de personagens ficcionais e evitar sinais distintivos da empresa real.
+
+**Compatibilidade:** a chave antiga de salvamento local só poderá ser lida para migrar partidas. Manter nome técnico do repositório e endereços existentes evita romper links.

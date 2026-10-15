@@ -20,7 +20,8 @@ export interface Snapshot {
   ui: UIState;
 }
 
-const SAVE_KEY = "intergalaxy-save-v1";
+const SAVE_KEY = "intergalatic-save-v1";
+const LEGACY_SAVE_KEY = "intergalaxy-save-v1"; // Only for migrating existing player saves.
 
 let snap: Snapshot = {
   state: newGame(),
@@ -159,14 +160,14 @@ export const game = {
   },
   hasSave() {
     try {
-      return !!localStorage.getItem(SAVE_KEY);
+      return !!(localStorage.getItem(SAVE_KEY) || localStorage.getItem(LEGACY_SAVE_KEY));
     } catch {
       return false;
     }
   },
   load() {
     try {
-      const raw = localStorage.getItem(SAVE_KEY);
+      const raw = localStorage.getItem(SAVE_KEY) || localStorage.getItem(LEGACY_SAVE_KEY);
       if (!raw) return false;
       const base = newGame();
       const saved = JSON.parse(raw) as GameState;
@@ -176,6 +177,7 @@ export const game = {
         state: { ...base, ...saved, floor: saved.floor && FLOORS.some((f) => f.id === saved.floor) ? saved.floor : "office",
           visitedFloors: Array.isArray(saved.visitedFloors) ? [...new Set(["office" as const, ...saved.visitedFloors.filter((id) => FLOORS.some((f) => f.id === id))])] : ["office"], pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...(saved.quests ?? {}) } },
       };
+      game.save(); // migrate legacy save to the new title without losing progress
       emit();
       return true;
     } catch {

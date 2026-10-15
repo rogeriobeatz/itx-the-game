@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Símbolo original de INTERGALATIC">
+<defs><linearGradient id="neon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFA3EC"/><stop offset=".52" stop-color="#A66AFF"/><stop offset="1" stop-color="#5FEAE9"/></linearGradient></defs>
+<rect x="6" y="6" width="244" height="244" rx="52" fill="#160E29" stroke="#664295" stroke-width="9"/>
+<path d="M49 193 L128 53 L207 193" stroke="url(#neon)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<path d="M87 144 H169 M101 173 H155" stroke="#F0D7FF" stroke-width="11" stroke-linecap="round"/>
+<circle cx="128" cy="50" r="12" fill="#FBE3A7"/>
+<circle cx="48" cy="195" r="7" fill="#5FEAE9"/><circle cx="208" cy="195" r="7" fill="#FFA3EC"/>
+</svg>

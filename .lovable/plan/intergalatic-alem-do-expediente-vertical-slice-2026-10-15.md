@@ -1,10 +1,10 @@
-# INTERGALAXY — Além do Expediente (vertical slice)
+# INTERGALATIC — Além do Expediente (vertical slice)
 
 A playable 2D isometric pixel-art RPG that opens straight into the game. All text in Portuguese (BR), satirical tone.
 
 ## What the player gets
 
-1. **Title screen** — Intergalaxy logo, purple/black/magenta neon, "Jogar" and "Continuar" (if a save exists) and "Novo jogo".
+1. **Title screen** — Intergalatic logo, purple/black/magenta neon, "Jogar" and "Continuar" (if a save exists) and "Novo jogo".
 2. **Main office map** (built from separate tiles and objects, not one picture): reception, workstations with PCs and gamer chairs, collectible figures, luxury aquarium, rest area with sofas, decorative staircase + mezzanine, elevator (private), meeting room, columns and industrial lights.
 3. **Controls** — WASD/arrows to walk, E to interact, I inventory, J mission journal, Esc pause. Collisions with walls, furniture and NPCs; correct depth sorting so the player walks behind/in front of objects.
 4. **NPCs** — O Patriarca (founder), Diretor Carimbo (Caneta Forte), Funcionário Fantasma (CLT survival), Profeta KPI (coach). Each has idle wandering/behaviour and branching dialogue with choices that change stats.
