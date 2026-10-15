@@ -305,17 +305,18 @@ function DialogueBox() {
   );
 }
 
-function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+function Modal({ title, hint, children, onClose }: { title: string; hint?: string; children: React.ReactNode; onClose: () => void }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="pixel-panel modal-box" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
+        <div className="modal-head">
           <h2 className="modal-title">{title}</h2>
-          <button className="pixel-btn pixel-btn-sm" onClick={onClose}>
+          <button className="pixel-btn pixel-btn-sm" onClick={onClose} aria-label="Fechar">
             X
           </button>
         </div>
         {children}
+        {hint && <p className="modal-hint">{hint}</p>}
       </div>
     </div>
   );
@@ -325,21 +326,31 @@ function Inventory() {
   const { state } = useGame();
   const close = () => game.setUI({ modal: null });
   return (
-    <Modal title="INVENTÁRIO" onClose={close}>
-      {state.inventory.length === 0 && <p className="hud-dim">Vazio. Como sua caixa de benefícios.</p>}
+    <Modal title="INVENTÁRIO" hint={`${state.inventory.length} itens · I para fechar`} onClose={close}>
+      {state.inventory.length === 0 && (
+        <div className="empty-slot">
+          <span className="empty-icon">▢</span>
+          <p className="hud-dim">Vazio. Como sua caixa de benefícios.</p>
+        </div>
+      )}
       <ul className="flex flex-col gap-2">
         {state.inventory.map((id, i) => {
           const it = ITEMS[id];
           return (
             <li key={i} className="inv-item">
-              <div>
+              <span className="inv-icon" aria-hidden>
+                {id === "bau" ? "▣" : id === "cafe" ? "☕" : "◆"}
+              </span>
+              <div className="flex-1 min-w-0">
                 <div className="quest-title">{it?.name ?? id}</div>
                 <div className="quest-obj">{it?.desc}</div>
               </div>
-              {it?.use && (
-                <button className="pixel-btn pixel-btn-sm" onClick={() => useItem(id, it.use!)}>
+              {it?.use ? (
+                <button className="pixel-btn pixel-btn-sm pixel-btn-primary" onClick={() => useItem(id, it.use!)}>
                   USAR
                 </button>
+              ) : (
+                <span className="status-tag status-available">ITEM-CHAVE</span>
               )}
             </li>
           );
@@ -350,46 +361,65 @@ function Inventory() {
 }
 
 const STATUS_LABEL = { available: "Disponível", active: "Ativa", completed: "Concluída", failed: "Falhou" };
+const MAIN_QUESTS = ["bau"];
+
+function QuestCard({ q }: { q: (typeof QUESTS)[number] }) {
+  const { state } = useGame();
+  const st = state.quests[q.id as keyof typeof state.quests];
+  if (!st) return null;
+  return (
+    <div className={`inv-item flex-col items-start quest-card quest-${st.status}`}>
+      <div className="flex w-full justify-between gap-2">
+        <span className="quest-title">{q.title}</span>
+        <span className={`status-tag status-${st.status}`}>{STATUS_LABEL[st.status]}</span>
+      </div>
+      <p className="quest-obj">{q.description}</p>
+      {st.status !== "available" && (
+        <ul className="mt-1">
+          {q.objectives.map((o, i) => (
+            <li key={o.id} className={i < st.step || st.status === "completed" ? "obj-done" : i === st.step ? "obj-now" : "hud-dim"}>
+              {i < st.step || st.status === "completed" ? "✓" : i === st.step ? "▸" : "□"} {o.text}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 function Journal() {
-  const { state } = useGame();
+  const main = QUESTS.filter((q) => MAIN_QUESTS.includes(q.id));
+  const side = QUESTS.filter((q) => !MAIN_QUESTS.includes(q.id));
   return (
-    <Modal title="DIÁRIO DE MISSÕES" onClose={() => game.setUI({ modal: null })}>
-      <div className="flex flex-col gap-4">
-        {QUESTS.map((q) => {
-          const st = state.quests[q.id as keyof typeof state.quests];
-          if (!st) return null;
-          return (
-            <div key={q.id} className="inv-item flex-col items-start">
-              <div className="flex w-full justify-between gap-2">
-                <span className="quest-title">{q.title}</span>
-                <span className={`status-tag status-${st.status}`}>{STATUS_LABEL[st.status]}</span>
-              </div>
-              <p className="quest-obj">{q.description}</p>
-              {st.status !== "available" && (
-                <ul className="mt-1">
-                  {q.objectives.map((o, i) => (
-                    <li key={o.id} className={i < st.step || st.status === "completed" ? "obj-done" : i === st.step ? "obj-now" : "hud-dim"}>
-                      {i < st.step || st.status === "completed" ? "✓" : "□"} {o.text}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          );
-        })}
+    <Modal title="DIÁRIO DE MISSÕES" hint="J para fechar" onClose={() => game.setUI({ modal: null })}>
+      <div className="section-label">MISSÃO PRINCIPAL</div>
+      <div className="flex flex-col gap-3">
+        {main.map((q) => <QuestCard key={q.id} q={q} />)}
+      </div>
+      <div className="section-label mt-4">SIDEQUESTS</div>
+      <div className="flex flex-col gap-3">
+        {side.map((q) => <QuestCard key={q.id} q={q} />)}
       </div>
     </Modal>
   );
 }
 
 function Pause({ onRestart }: { onRestart: () => void }) {
+  const [confirm, setConfirm] = useState(false);
   return (
-    <Modal title="PAUSA" onClose={() => game.setUI({ modal: null })}>
+    <Modal title="PAUSA" hint="O relógio parou. O boleto não." onClose={() => game.setUI({ modal: null })}>
       <div className="flex flex-col gap-3">
         <button className="pixel-btn pixel-btn-primary" onClick={() => game.setUI({ modal: null })}>
-          VOLTAR AO EXPEDIENTE
+          CONTINUAR
         </button>
+        <div className="grid grid-cols-2 gap-3">
+          <button className="pixel-btn" onClick={() => game.setUI({ modal: "inventory" })}>
+            INVENTÁRIO
+          </button>
+          <button className="pixel-btn" onClick={() => game.setUI({ modal: "journal" })}>
+            DIÁRIO
+          </button>
+        </div>
         <button
           className="pixel-btn"
           onClick={() => {
@@ -399,6 +429,27 @@ function Pause({ onRestart }: { onRestart: () => void }) {
         >
           SALVAR
         </button>
+        {confirm ? (
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              className="pixel-btn pixel-btn-danger"
+              onClick={() => {
+                game.reset();
+                game.setUI({ modal: null, watch: null, dialogue: null });
+                onRestart();
+              }}
+            >
+              SIM, REINICIAR
+            </button>
+            <button className="pixel-btn" onClick={() => setConfirm(false)}>
+              CANCELAR
+            </button>
+          </div>
+        ) : (
+          <button className="pixel-btn" onClick={() => setConfirm(true)}>
+            REINICIAR
+          </button>
+        )}
         <button
           className="pixel-btn"
           onClick={() => {
@@ -407,7 +458,7 @@ function Pause({ onRestart }: { onRestart: () => void }) {
             onRestart();
           }}
         >
-          MENU INICIAL
+          VOLTAR AO MENU
         </button>
       </div>
     </Modal>
