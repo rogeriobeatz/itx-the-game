@@ -134,6 +134,7 @@ export function sickLeave(s0: GameState) {
   s.stats.limpo = clampStat("limpo", s.stats.limpo - BALANCE.sickLeave.limpoPenalty);
   s.clock.day += 1;
   s.clock.minutes = BALANCE.workStart;
+  pyramidNewDay(s, []);
   s.pos = { ...BALANCE.startPos };
   s.floor = "office";
   if (!s.visitedFloors.includes("office")) s.visitedFloors.push("office");

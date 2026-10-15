@@ -111,6 +111,7 @@ export const game = {
   },
   /** Called every frame by the world while the game is unpaused. */
   tick(sec: number) {
+    if (snap.state.pyramid.outcome) return;
     clockAcc += sec * BALANCE.minutesPerSecond;
     saveAcc += sec;
     if (clockAcc >= 1) {
@@ -169,6 +170,7 @@ export const game = {
       if (!raw) return false;
       const base = newGame();
       const saved = JSON.parse(raw) as GameState;
+      if (!saved || typeof saved !== "object" || !saved.stats || !saved.clock) return false;
       snap = {
         ...snap,
         state: { ...base, ...saved, floor: saved.floor && FLOORS.some((f) => f.id === saved.floor) ? saved.floor : "office",
@@ -181,6 +183,8 @@ export const game = {
     }
   },
   reset() {
+    clockAcc = 0;
+    saveAcc = 0;
     snap = { ...snap, state: newGame(), ui: { ...snap.ui, prompt: null, positions: { player: { ...BALANCE.startPos }, npcs: {} } } };
     game.save();
     emit();

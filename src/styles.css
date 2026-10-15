@@ -256,6 +256,11 @@
 .floor-shortcut:hover, .floor-shortcut:focus-visible { background: #ffe59a; outline: 2px solid #f5cd5e; outline-offset: 2px; }
 .floor-shortcut .key-cap { font-size: 8px; color: #fff; background: #402852; border: 1px solid #6e467f; border-bottom: 2px solid #201426; padding: 3px 5px; }
 
+/* Modals must cover touch controls as well as the HUD. */
+.modal-backdrop { z-index: 80; }
+.dialogue-wrap { z-index: 80; }
+.touch-game-controls { user-select:none; -webkit-user-select:none; }
+.pixel-btn:disabled { opacity:.47; cursor:not-allowed; }
 /* Touch-first movement and compact objective directions. */
 .floor-objective { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; font-size:12px; color:#86f9ec; margin:6px 0 3px; }
 .floor-objective strong { font-family:var(--font-pixel); font-size:8px; }

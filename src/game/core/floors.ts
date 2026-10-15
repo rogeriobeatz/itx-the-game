@@ -14,6 +14,7 @@ export function floorDefinition(id: FloorId) { return ANNEX_FLOORS.find((floor) 
 export function canVisit(s: GameState, id: FloorId) {
   const floor = FLOORS.find((f) => f.id === id);
   if (!floor) return false;
+  if (s.pyramid.outcome) return false;
   return s.pyramid.rank >= floor.minRank || (id === "studio11" && currentObjective(s, "bau")?.id === "culto");
 }
 export function floorSize(id: FloorId): [number, number] {

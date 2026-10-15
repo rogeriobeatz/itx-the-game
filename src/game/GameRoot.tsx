@@ -308,7 +308,7 @@ function Title({ onStart }: { onStart: () => void }) {
   const start = (load: boolean) => {
     if (load) game.load();
     else game.reset();
-    game.setUI({ modal: game.get().state.pyramid.outcome ? "ending" : null });
+    game.setUI({ modal: game.get().state.pyramid.outcome ? "ending" : load ? null : "help" });
     onStart();
   };
   return (
@@ -328,7 +328,7 @@ function Title({ onStart }: { onStart: () => void }) {
           </button>
         </div>
         <p className="title-foot">Um RPG de sobrevivência corporativa. Bata o ponto. Se puder.</p>
-        <p className="title-mobile-note">Melhor jogado no computador, com teclado.</p>
+        <p className="title-mobile-note">Funciona com teclado no computador e controles na tela no celular.</p>
       </div>
     </div>
   );
@@ -447,10 +447,14 @@ function QuestCard({ q }: { q: (typeof QUESTS)[number] }) {
 }
 
 function Journal() {
+  const { state } = useGame();
+  const complete = QUESTS.filter(q=>state.quests[q.id as keyof typeof state.quests]?.status === "completed").length;
   const main = QUESTS.filter((q) => MAIN_QUESTS.includes(q.id));
   const side = QUESTS.filter((q) => !MAIN_QUESTS.includes(q.id));
   return (
     <Modal title="DIÁRIO DE MISSÕES" hint="J para fechar" onClose={() => game.setUI({ modal: null })}>
+      <div className="section-label">{complete} DE {QUESTS.length} MISSÕES CONCLUÍDAS</div>
+      <button className="pixel-btn pixel-btn-sm mt-2 mb-3" onClick={() => game.setUI({ modal: "elevator" })}>⇵ ESCOLHER ANDAR DE UMA MISSÃO</button>
       <div className="section-label">MISSÃO PRINCIPAL</div>
       <div className="flex flex-col gap-3">
         {main.map((q) => <QuestCard key={q.id} q={q} />)}
@@ -634,7 +638,7 @@ function ElevatorPanel() {
   const { state } = useGame();
   return (
     <Modal title="ELEVADOR INTERGALÁCTICO" hint="Os espaços são recriações fictícias inspiradas nas fotos enviadas." onClose={() => game.setUI({ modal: null })}>
-      <div className="section-label">ESCOLHA O DESTINO</div>
+      <div className="section-label">ESCOLHA O DESTINO · {state.visitedFloors.length}/{FLOORS.length} EXPLORADOS</div>
       <p className="dlg-text mt-2">Suba na hierarquia para liberar novos ambientes. Algumas missões garantem acesso especial.</p>
       <div className="flex flex-col gap-3 mt-4">
         {FLOORS.map((floor) => {
@@ -659,6 +663,7 @@ function ElevatorPanel() {
 }
 
 function PyramidPanel() {
+  const [confirmWithdraw, setConfirmWithdraw] = useState(false);
   const { state } = useGame();
   const p = state.pyramid;
   const next = RANKS[p.rank + 1];
@@ -667,6 +672,7 @@ function PyramidPanel() {
     <Modal title="A PIRÂMIDE CORPORATIVA" hint="Ficção satírica: nenhum bitcoin real é negociado. P para fechar." onClose={() => game.setUI({ modal: null })}>
       <div style={{ maxWidth: 520 }}>
         <div className="section-label">NÍVEL {p.rank + 1}/6: {RANKS[p.rank]!.name.toUpperCase()}</div>
+        <p className="hud-dim mt-2">{state.visitedFloors.length}/{FLOORS.length} ambientes descobertos · {QUESTS.filter(q=>state.quests[q.id as keyof typeof state.quests]?.status === "completed").length} missões concluídas</p>
         <p className="dlg-text mt-2">Chegue a Faraó e saque antes da fiscalização ou falência.</p>
         <div className="flex flex-wrap gap-2 mt-4">
           {RANKS.map((x, i) => <span key={x.name} style={{ fontSize: 9, padding: 6, border: "1px solid #7659a0", color: i <= p.rank ? "#f4d5ff" : "#777", background: i === p.rank ? "#462363" : "#1a1424" }}>{x.name}</span>)}
@@ -686,7 +692,7 @@ function PyramidPanel() {
         <div className="flex flex-col gap-3 mt-4">
           <button className="pixel-btn pixel-btn-primary" onClick={() => game.pyramidAction("pitch")}>FAZER PITCH · +BTC +INFLUÊNCIA +RISCO</button>
           <button className="pixel-btn" disabled={state.stats.limpo < 40} onClick={() => game.pyramidAction("compliance")}>REUNIÃO DE COMPLIANCE TEATRAL · R$40 · -RISCO PF</button>
-          <button className="pixel-btn" disabled={p.btc <= 0} onClick={() => game.pyramidAction("withdraw")}>SACAR BTC E ENCERRAR PARTIDA</button>
+          {confirmWithdraw ? <div className="inv-item flex-col"><p className="dlg-text">Esse saque fictício encerra a partida imediatamente. Confirma?</p><div className="flex gap-3 mt-3"><button className="pixel-btn pixel-btn-primary" onClick={() => game.pyramidAction("withdraw")}>CONFIRMAR SAQUE</button><button className="pixel-btn" onClick={() => setConfirmWithdraw(false)}>CANCELAR</button></div></div> : <button className="pixel-btn" disabled={p.btc <= 0} onClick={() => setConfirmWithdraw(true)}>SACAR BTC E ENCERRAR PARTIDA</button>}
         </div>
         <p className="hud-dim mt-3">Trabalhe nos computadores para ganhar R$ limpos. Cada pitch custa 45 minutos e aumenta o risco.</p>
       </div>
