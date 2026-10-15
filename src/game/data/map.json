@@ -2,76 +2,632 @@
   "width": 24,
   "height": 22,
   "zones": [
-    { "x": 10, "y": 0, "w": 4, "d": 22, "floor": "gray" },
-    { "x": 16, "y": 0, "w": 8, "d": 6, "floor": "dark" },
-    { "x": 16, "y": 8, "w": 8, "d": 6, "floor": "gray" },
-    { "x": 15, "y": 15, "w": 9, "d": 7, "floor": "lounge" },
-    { "x": 9, "y": 16, "w": 6, "d": 6, "floor": "gray" }
+    {
+      "x": 10,
+      "y": 0,
+      "w": 4,
+      "d": 22,
+      "floor": "gray"
+    },
+    {
+      "x": 16,
+      "y": 0,
+      "w": 8,
+      "d": 6,
+      "floor": "dark"
+    },
+    {
+      "x": 16,
+      "y": 8,
+      "w": 8,
+      "d": 6,
+      "floor": "gray"
+    },
+    {
+      "x": 15,
+      "y": 15,
+      "w": 9,
+      "d": 7,
+      "floor": "lounge"
+    },
+    {
+      "x": 9,
+      "y": 16,
+      "w": 6,
+      "d": 6,
+      "floor": "gray"
+    }
   ],
   "objects": [
-    { "type": "mezzanine", "x": 1.6, "y": 0, "w": 7, "d": 1.6 },
-    { "type": "stairs", "x": 0.15, "y": 0.3, "w": 1.4, "d": 1.4, "id": "stairs", "label": "Examinar a escadaria", "ix": 0.9, "iy": 2.4 },
-    { "type": "aquarium", "x": 10, "y": 0.5, "w": 4, "d": 1, "id": "aquarium", "label": "Contemplar o aquário premium", "ix": 12, "iy": 2.3 },
-    { "type": "elevator", "x": 14.55, "y": 0, "w": 1.3, "d": 0.3, "id": "elevator", "label": "Usar o elevador privativo", "ix": 15.2, "iy": 1.1 },
-
-    { "type": "column", "x": 9, "y": 4, "w": 1, "d": 1 },
-    { "type": "column", "x": 14, "y": 4, "w": 1, "d": 1 },
-    { "type": "column", "x": 9, "y": 10, "w": 1, "d": 1 },
-    { "type": "column", "x": 14, "y": 10, "w": 1, "d": 1 },
-
-    { "type": "desk", "x": 2, "y": 3, "w": 2, "d": 1, "id": "pc_1", "label": "Trabalhar no computador", "ix": 3, "iy": 2.3, "fig": "#d23a3a" },
-    { "type": "desk", "x": 5, "y": 3, "w": 2, "d": 1, "id": "pc_2", "label": "Trabalhar no computador", "ix": 6, "iy": 2.3, "fig": "#3fbf5a" },
-    { "type": "desk", "x": 2, "y": 6, "w": 2, "d": 1, "id": "pc_3", "label": "Trabalhar no computador", "ix": 3, "iy": 5.3, "fig": "#e0e0e8" },
-    { "type": "desk", "x": 5, "y": 6, "w": 2, "d": 1, "id": "pc_4", "label": "Trabalhar no computador", "ix": 6, "iy": 5.3, "fig": "#d23a3a" },
-    { "type": "desk", "x": 2, "y": 9, "w": 2, "d": 1, "id": "pc_5", "label": "Trabalhar no computador", "ix": 3, "iy": 8.3, "fig": "#3f6cff" },
-    { "type": "desk", "x": 5, "y": 9, "w": 2, "d": 1, "id": "pc_6", "label": "Trabalhar no computador", "ix": 6, "iy": 8.3, "fig": "#3fbf5a" },
-    { "type": "desk", "x": 2, "y": 12, "w": 2, "d": 1, "id": "pc_7", "label": "Trabalhar no computador", "ix": 3, "iy": 11.3, "fig": "#ffb02e" },
-    { "type": "desk", "x": 5, "y": 12, "w": 2, "d": 1, "id": "pc_8", "label": "Trabalhar no computador", "ix": 6, "iy": 11.3, "fig": "#d23a3a" },
-    { "type": "desk", "x": 2, "y": 15, "w": 2, "d": 1, "id": "pc_9", "label": "Trabalhar no computador", "ix": 3, "iy": 14.3, "fig": "#e0e0e8" },
-    { "type": "desk", "x": 5, "y": 15, "w": 2, "d": 1, "id": "pc_10", "label": "Trabalhar no computador", "ix": 6, "iy": 14.3, "fig": "#3f6cff" },
-
-    { "type": "chair", "x": 2.2, "y": 4.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 3.2, "y": 4.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 5.2, "y": 4.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 6.2, "y": 4.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 2.2, "y": 7.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 3.2, "y": 7.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 5.2, "y": 7.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 6.2, "y": 7.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 2.2, "y": 10.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 3.2, "y": 10.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 5.2, "y": 10.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 6.2, "y": 10.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 2.2, "y": 13.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 3.2, "y": 13.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 5.2, "y": 13.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 6.2, "y": 13.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 2.2, "y": 16.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 3.2, "y": 16.1, "w": 0.6, "d": 0.6 },
-    { "type": "chair", "x": 5.2, "y": 16.1, "w": 0.6, "d": 0.6 }, { "type": "chair", "x": 6.2, "y": 16.1, "w": 0.6, "d": 0.6 },
-
-    { "type": "glass", "x": 16, "y": 0, "w": 0.12, "d": 6 },
-    { "type": "glass", "x": 16, "y": 6, "w": 3, "d": 0.12 },
-    { "type": "glass", "x": 20.3, "y": 6, "w": 3.7, "d": 0.12 },
-    { "type": "founderDesk", "x": 18.5, "y": 2, "w": 3, "d": 1 },
-    { "type": "chair", "x": 19.7, "y": 1.1, "w": 0.7, "d": 0.6 },
-    { "type": "plant", "x": 23.1, "y": 0.4, "w": 0.6, "d": 0.6 },
-
-    { "type": "glass", "x": 16, "y": 8, "w": 8, "d": 0.12 },
-    { "type": "glass", "x": 16, "y": 8, "w": 0.12, "d": 2.4 },
-    { "type": "glass", "x": 16, "y": 11.8, "w": 0.12, "d": 2.2 },
-    { "type": "glass", "x": 16, "y": 14, "w": 8, "d": 0.12 },
-    { "type": "screen", "x": 17, "y": 8.15, "w": 5, "d": 0.25, "id": "screen", "label": "Assistir ao pitch na telona", "ix": 19.5, "iy": 9.3 },
-    { "type": "armchair", "x": 17, "y": 10.1, "w": 1, "d": 0.9 }, { "type": "armchair", "x": 18.4, "y": 10.1, "w": 1, "d": 0.9 },
-    { "type": "armchair", "x": 19.8, "y": 10.1, "w": 1, "d": 0.9 }, { "type": "armchair", "x": 21.2, "y": 10.1, "w": 1, "d": 0.9 },
-    { "type": "armchair", "x": 17, "y": 12.3, "w": 1, "d": 0.9 }, { "type": "armchair", "x": 18.4, "y": 12.3, "w": 1, "d": 0.9 },
-    { "type": "armchair", "x": 19.8, "y": 12.3, "w": 1, "d": 0.9 }, { "type": "armchair", "x": 21.2, "y": 12.3, "w": 1, "d": 0.9 },
-
-    { "type": "coffee", "x": 15.1, "y": 15.2, "w": 1, "d": 0.8, "id": "coffee", "label": "Pegar um café", "ix": 15.6, "iy": 16.6 },
-    { "type": "sofaWhite", "x": 16.2, "y": 17, "w": 2.6, "d": 1, "id": "sofa", "label": "Descansar no sofá", "ix": 17.5, "iy": 18.6 },
-    { "type": "sofaWhite", "x": 16.2, "y": 20.2, "w": 2.6, "d": 1, "id": "sofa", "label": "Descansar no sofá", "ix": 17.5, "iy": 19.7 },
-    { "type": "table", "x": 19.4, "y": 16.6, "w": 0.9, "d": 0.9 },
-    { "type": "table", "x": 21.3, "y": 16.6, "w": 0.9, "d": 0.9 },
-    { "type": "table", "x": 21.3, "y": 20.3, "w": 0.9, "d": 0.9 },
-    { "type": "sofaDark", "x": 23, "y": 15.8, "w": 1, "d": 5.5 },
-
-    { "type": "reception", "x": 9.6, "y": 17, "w": 4.4, "d": 1, "id": "reception", "label": "Falar com a recepção", "ix": 11.8, "iy": 18.7 },
-    { "type": "plant", "x": 8.7, "y": 17.2, "w": 0.6, "d": 0.6 },
-    { "type": "plant", "x": 14.3, "y": 17.2, "w": 0.6, "d": 0.6 },
-    { "type": "plant", "x": 0.3, "y": 20.8, "w": 0.6, "d": 0.6 },
-    { "type": "plant", "x": 0.3, "y": 9, "w": 0.6, "d": 0.6 },
-    { "type": "plant", "x": 23.2, "y": 7, "w": 0.6, "d": 0.6 },
-    { "type": "plant", "x": 15.1, "y": 7, "w": 0.6, "d": 0.6 }
+    {
+      "type": "mezzanine",
+      "x": 1.6,
+      "y": 0,
+      "w": 7,
+      "d": 1.6
+    },
+    {
+      "type": "stairs",
+      "x": 0.15,
+      "y": 0.3,
+      "w": 1.4,
+      "d": 1.4,
+      "id": "stairs",
+      "label": "Examinar a escadaria",
+      "ix": 0.9,
+      "iy": 2.4
+    },
+    {
+      "type": "aquarium",
+      "x": 10,
+      "y": 0.5,
+      "w": 4,
+      "d": 1,
+      "id": "aquarium",
+      "label": "Contemplar o aquário premium",
+      "ix": 12,
+      "iy": 2.3
+    },
+    {
+      "type": "elevator",
+      "x": 14.55,
+      "y": 0,
+      "w": 1.3,
+      "d": 0.3,
+      "id": "elevator",
+      "label": "Usar o elevador privativo",
+      "ix": 15.2,
+      "iy": 1.1
+    },
+    {
+      "type": "column",
+      "x": 9,
+      "y": 4,
+      "w": 1,
+      "d": 1
+    },
+    {
+      "type": "column",
+      "x": 14,
+      "y": 4,
+      "w": 1,
+      "d": 1
+    },
+    {
+      "type": "column",
+      "x": 9,
+      "y": 10,
+      "w": 1,
+      "d": 1
+    },
+    {
+      "type": "column",
+      "x": 14,
+      "y": 10,
+      "w": 1,
+      "d": 1
+    },
+    {
+      "type": "desk",
+      "x": 2,
+      "y": 3,
+      "w": 2,
+      "d": 1,
+      "id": "pc_1",
+      "label": "Trabalhar no computador",
+      "ix": 3,
+      "iy": 2.3,
+      "fig": "#d23a3a"
+    },
+    {
+      "type": "desk",
+      "x": 5,
+      "y": 3,
+      "w": 2,
+      "d": 1,
+      "id": "pc_2",
+      "label": "Trabalhar no computador",
+      "ix": 6,
+      "iy": 2.3,
+      "fig": "#3fbf5a"
+    },
+    {
+      "type": "desk",
+      "x": 2,
+      "y": 6,
+      "w": 2,
+      "d": 1,
+      "id": "pc_3",
+      "label": "Trabalhar no computador",
+      "ix": 3,
+      "iy": 5.3,
+      "fig": "#e0e0e8"
+    },
+    {
+      "type": "desk",
+      "x": 5,
+      "y": 6,
+      "w": 2,
+      "d": 1,
+      "id": "pc_4",
+      "label": "Trabalhar no computador",
+      "ix": 6,
+      "iy": 5.3,
+      "fig": "#d23a3a"
+    },
+    {
+      "type": "desk",
+      "x": 2,
+      "y": 9,
+      "w": 2,
+      "d": 1,
+      "id": "pc_5",
+      "label": "Trabalhar no computador",
+      "ix": 3,
+      "iy": 8.3,
+      "fig": "#3f6cff"
+    },
+    {
+      "type": "desk",
+      "x": 5,
+      "y": 9,
+      "w": 2,
+      "d": 1,
+      "id": "pc_6",
+      "label": "Trabalhar no computador",
+      "ix": 6,
+      "iy": 8.3,
+      "fig": "#3fbf5a"
+    },
+    {
+      "type": "desk",
+      "x": 2,
+      "y": 12,
+      "w": 2,
+      "d": 1,
+      "id": "pc_7",
+      "label": "Trabalhar no computador",
+      "ix": 3,
+      "iy": 11.3,
+      "fig": "#ffb02e"
+    },
+    {
+      "type": "desk",
+      "x": 5,
+      "y": 12,
+      "w": 2,
+      "d": 1,
+      "id": "pc_8",
+      "label": "Trabalhar no computador",
+      "ix": 6,
+      "iy": 11.3,
+      "fig": "#d23a3a"
+    },
+    {
+      "type": "desk",
+      "x": 2,
+      "y": 15,
+      "w": 2,
+      "d": 1,
+      "id": "pc_9",
+      "label": "Trabalhar no computador",
+      "ix": 3,
+      "iy": 14.3,
+      "fig": "#e0e0e8"
+    },
+    {
+      "type": "desk",
+      "x": 5,
+      "y": 15,
+      "w": 2,
+      "d": 1,
+      "id": "pc_10",
+      "label": "Trabalhar no computador",
+      "ix": 6,
+      "iy": 14.3,
+      "fig": "#3f6cff"
+    },
+    {
+      "type": "chair",
+      "x": 2.2,
+      "y": 4.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 3.2,
+      "y": 4.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 5.2,
+      "y": 4.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 6.2,
+      "y": 4.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 2.2,
+      "y": 7.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 3.2,
+      "y": 7.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 5.2,
+      "y": 7.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 6.2,
+      "y": 7.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 2.2,
+      "y": 10.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 3.2,
+      "y": 10.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 5.2,
+      "y": 10.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 6.2,
+      "y": 10.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 2.2,
+      "y": 13.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 3.2,
+      "y": 13.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 5.2,
+      "y": 13.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 6.2,
+      "y": 13.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 2.2,
+      "y": 16.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 3.2,
+      "y": 16.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 5.2,
+      "y": 16.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "chair",
+      "x": 6.2,
+      "y": 16.1,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "glass",
+      "x": 16,
+      "y": 0,
+      "w": 0.12,
+      "d": 6
+    },
+    {
+      "type": "glass",
+      "x": 16,
+      "y": 6,
+      "w": 3,
+      "d": 0.12
+    },
+    {
+      "type": "glass",
+      "x": 20.3,
+      "y": 6,
+      "w": 3.7,
+      "d": 0.12
+    },
+    {
+      "type": "founderDesk",
+      "x": 18.5,
+      "y": 2,
+      "w": 3,
+      "d": 1
+    },
+    {
+      "type": "chair",
+      "x": 19.7,
+      "y": 1.1,
+      "w": 0.7,
+      "d": 0.6
+    },
+    {
+      "type": "plant",
+      "x": 23.1,
+      "y": 0.4,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "glass",
+      "x": 16,
+      "y": 8,
+      "w": 8,
+      "d": 0.12
+    },
+    {
+      "type": "glass",
+      "x": 16,
+      "y": 8,
+      "w": 0.12,
+      "d": 2.4
+    },
+    {
+      "type": "glass",
+      "x": 16,
+      "y": 11.8,
+      "w": 0.12,
+      "d": 2.2
+    },
+    {
+      "type": "glass",
+      "x": 16,
+      "y": 14,
+      "w": 8,
+      "d": 0.12
+    },
+    {
+      "type": "screen",
+      "x": 17,
+      "y": 8.15,
+      "w": 5,
+      "d": 0.25,
+      "id": "screen",
+      "label": "Assistir ao pitch na telona",
+      "ix": 19.5,
+      "iy": 9.3
+    },
+    {
+      "type": "armchair",
+      "x": 17,
+      "y": 10.1,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "armchair",
+      "x": 18.4,
+      "y": 10.1,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "armchair",
+      "x": 19.8,
+      "y": 10.1,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "armchair",
+      "x": 21.2,
+      "y": 10.1,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "armchair",
+      "x": 17,
+      "y": 12.3,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "armchair",
+      "x": 18.4,
+      "y": 12.3,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "armchair",
+      "x": 19.8,
+      "y": 12.3,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "armchair",
+      "x": 21.2,
+      "y": 12.3,
+      "w": 1,
+      "d": 0.9
+    },
+    {
+      "type": "coffee",
+      "x": 15.1,
+      "y": 15.2,
+      "w": 1,
+      "d": 0.8,
+      "id": "coffee",
+      "label": "Pegar um café",
+      "ix": 15.6,
+      "iy": 16.6
+    },
+    {
+      "type": "sofaWhite",
+      "x": 16.2,
+      "y": 17,
+      "w": 2.6,
+      "d": 1,
+      "id": "sofa",
+      "label": "Descansar no sofá",
+      "ix": 17.5,
+      "iy": 18.6
+    },
+    {
+      "type": "sofaWhite",
+      "x": 16.2,
+      "y": 20.2,
+      "w": 2.6,
+      "d": 1,
+      "id": "sofa",
+      "label": "Descansar no sofá",
+      "ix": 17.5,
+      "iy": 19.7
+    },
+    {
+      "type": "table",
+      "x": 19.4,
+      "y": 16.6,
+      "w": 0.9,
+      "d": 0.9
+    },
+    {
+      "type": "table",
+      "x": 21.3,
+      "y": 16.6,
+      "w": 0.9,
+      "d": 0.9
+    },
+    {
+      "type": "table",
+      "x": 21.3,
+      "y": 20.3,
+      "w": 0.9,
+      "d": 0.9
+    },
+    {
+      "type": "sofaDark",
+      "x": 23,
+      "y": 15.8,
+      "w": 1,
+      "d": 5.5
+    },
+    {
+      "type": "reception",
+      "x": 9.6,
+      "y": 17,
+      "w": 4.4,
+      "d": 1,
+      "id": "reception",
+      "label": "Falar com a recepção",
+      "ix": 11.8,
+      "iy": 18.7
+    },
+    {
+      "type": "plant",
+      "x": 8.7,
+      "y": 17.2,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "plant",
+      "x": 14.3,
+      "y": 17.2,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "plant",
+      "x": 0.3,
+      "y": 20.8,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "plant",
+      "x": 0.3,
+      "y": 9,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "plant",
+      "x": 23.2,
+      "y": 7,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "plant",
+      "x": 15.1,
+      "y": 7,
+      "w": 0.6,
+      "d": 0.6
+    },
+    {
+      "type": "terminal",
+      "x": 14.15,
+      "y": 19.5,
+      "w": 0.8,
+      "d": 0.8,
+      "id": "pyramid_terminal",
+      "label": "Terminal de prosperidade",
+      "ix": 14.65,
+      "iy": 20.75
+    }
   ]
 }

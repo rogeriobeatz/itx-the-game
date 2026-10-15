@@ -51,6 +51,8 @@ export function interact(id: string) {
     return game.run({ stats: { limpo: 20, burnout: 6, reputacao: 1 }, minutes: 30 });
   }
   switch (id) {
+    case "pyramid_terminal":
+      return game.setUI({ modal: "pyramid" });
     case "elevator":
       if (currentObjective(s, "bau")?.id === "deliver_elevator" && s.inventory.includes("bau")) {
         game.toast("O baú some no elevador. Você escuta um 'obrigado' em latim.");

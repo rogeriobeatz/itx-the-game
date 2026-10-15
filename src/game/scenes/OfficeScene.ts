@@ -243,6 +243,10 @@ export class OfficeScene extends Phaser.Scene {
         this.box(g, o.x + 0.1, o.y + 0.1, o.w - 0.2, o.d - 0.2, 6, 0x5a1a8a, { base: 18 });
         this.addFish(o, front + 1);
         break;
+      case "terminal":
+        this.box(g, o.x, o.y, o.w, o.d, 23, 0x29213b, { top: 0x4c3276 });
+        this.box(g, o.x + 0.12, o.y + 0.18, 0.55, 0.07, 19, 0x120e20, { base: 23, left: 0x9e60ff });
+        break;
       case "elevator":
         break;
       case "mezzanine":
