@@ -10,6 +10,7 @@ import { CRISIS_DAY, RANKS, VICTORY_BTC } from "./core/pyramid";
 import { BALANCE } from "./config/balance";
 import { joystickVector, knobOffset, type InputVector } from "./core/touch";
 import { LOGO_URL, PORTRAITS, TITLE_BG } from "./assets";
+import { GAME_TITLE, GAME_SUBTITLE } from "./brand";
 import charactersData from "./data/characters.json";
 import pitchData from "./data/pitch.json";
 
@@ -316,8 +317,8 @@ function Title({ onStart }: { onStart: () => void }) {
     <div className="title-screen" style={{ backgroundImage: `url(${TITLE_BG})` }}>
       <div className="title-inner">
         <img src={LOGO_URL} alt="Logo Intergalatic" className="title-logo" width={96} height={96} />
-        <h1 className="title-h1">INTERGALATIC</h1>
-        <p className="title-sub">ALÉM DO EXPEDIENTE</p>
+        <h1 className="title-h1">{GAME_TITLE}</h1>
+        <p className="title-sub">{GAME_SUBTITLE.toUpperCase()}</p>
         <div className="flex flex-col gap-3 mt-8 w-64">
           {hasSave && (
             <button className="pixel-btn pixel-btn-primary" onClick={() => start(true)}>

@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { GAME_FULL_TITLE, BRAND_ICON } from "../game/brand";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -78,9 +79,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "INTERGALATIC: Além do Expediente" },
+      { title: GAME_FULL_TITLE },
       { name: "description", content: "RPG isométrico de sobrevivência corporativa." },
-      { property: "og:title", content: "INTERGALATIC: Além do Expediente" },
+      { property: "og:title", content: GAME_FULL_TITLE },
       { property: "og:description", content: "RPG isométrico de sobrevivência corporativa." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -96,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap",
       },
-      { rel: "icon", href: "/intergalatic-symbol.svg", type: "image/svg+xml" },
+      { rel: "icon", href: BRAND_ICON, type: "image/svg+xml" },
     ],
   }),
   shellComponent: RootShell,
