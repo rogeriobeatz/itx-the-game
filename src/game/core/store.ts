@@ -4,7 +4,7 @@ import { applyEffects, isCollapsed, newGame, tickClock } from "./logic";
 import { canVisit, arrivalPoint, FLOORS } from "./floors";
 import type { Effects, GameState, FloorId } from "./types";
 
-export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover" | "pyramid" | "ending" | "elevator";
+export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover" | "pyramid" | "ending" | "elevator" | "help";
 
 export interface UIState {
   modal: Modal;

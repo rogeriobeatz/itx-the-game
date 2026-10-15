@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { BALANCE } from "../config/balance";
 import { floorDefinition, type AnnexDef, type AnnexObject } from "../core/floors";
+import { navigationTarget } from "../core/wayfinding";
 import { game } from "../core/store";
 import { blocked, screenToTileDir, type Rect } from "../core/world";
 
@@ -19,6 +20,8 @@ export class AnnexScene extends Phaser.Scene {
   private py = 3;
   private walk = 0;
   private posAcc = 0;
+  private virtualDir = { sx: 0, sy: 0 };
+  private questMarkers: { objectId: string; marker: Phaser.GameObjects.Text }[] = [];
   private solids: Rect[] = [];
   private points: { id: string; label: string; x: number; y: number }[] = [];
 
@@ -41,6 +44,12 @@ export class AnnexScene extends Phaser.Scene {
       x: o.ix ?? o.x + o.w / 2, y: o.iy ?? o.y + o.d + 0.5,
     }));
 
+    for (const point of this.points) {
+      if (point.id === "elevator") continue;
+      const pos = iso(point.x, point.y);
+      const mark = this.add.text(pos.x, pos.y - 55, "◆", { fontFamily: "monospace", fontSize: "24px", color: "#ffe27b" }).setOrigin(0.5).setDepth(pos.y + 150).setStroke("#20112f", 4).setVisible(false);
+      this.questMarkers.push({ objectId: point.id, marker: mark });
+    }
     if (!this.textures.exists("char-player")) {
       const maker = this.make.graphics({ x: 0, y: 0 }, false);
       maker.fillStyle(0xe5d5ff).fillRect(10, 0, 12, 18);
@@ -64,9 +73,12 @@ export class AnnexScene extends Phaser.Scene {
       this.py = pos.y;
       this.repositionPlayer();
     };
+    const onVirtualMove = (dir: { sx: number; sy: number }) => { this.virtualDir = dir; };
     this.game.events.on("teleport", onTeleport);
+    this.game.events.on("virtual-move", onVirtualMove);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.game.events.off("teleport", onTeleport);
+      this.game.events.off("virtual-move", onVirtualMove);
       game.setUI({ prompt: null });
     });
   }
@@ -116,8 +128,7 @@ export class AnnexScene extends Phaser.Scene {
       }).setOrigin(0.5).setDepth(-89000);
       sky.setStroke("#1b1830",4);
     }
-    const sign = this.floor.id==="refeitorio"?"REFEITÓRIO · NUTRIR PARA PRODUZIR":
-      this.floor.id==="studio11"?"11º · LOUVOR & YAH CAFÉ":"ÁREA DE DESCOMPRESSÃO";
+    const sign = this.floor.name.toUpperCase() + " · " + this.floor.level.toUpperCase();
     const p=iso(w/2,0);
     this.add.text(p.x,p.y-130,sign,{fontFamily:"'Press Start 2P'",fontSize:"8px",
       color:this.floor.id==="terraco"?"#b9e0dc":"#f2d8ff"}).setOrigin(0.5).setDepth(-88500).setStroke("#160b24",3);
@@ -141,9 +152,19 @@ export class AnnexScene extends Phaser.Scene {
       case "beanbag": h=9;c=0x984abb;break;
       case "plant": h=30;c=0x48734d;break;
       case "glass": h=70;c=0x739bb4;break;
+      case "desk": h=23;c=0x342c42;break;
+      case "board": h=49;c=0x3b3978;break;
+      case "kiosk": h=38;c=0x6c4ca0;break;
+      case "printer": h=22;c=0xe0d7de;break;
+      case "cabinet": h=58;c=0x4b4755;break;
+      case "screen": h=59;c=0x1d2137;break;
+      case "archive": h=39;c=0x867d9e;break;
+      case "vault": h=68;c=0xcea649;break;
     }
     this.box(g,o,h,c);
     if(o.type==="glass")g.setAlpha(0.27);
+    if(o.type==="vault") this.add.text(p.x,p.y-85,"₿ COFRE", {fontFamily:"'Press Start 2P'",fontSize:"10px",color:"#ffe6a1"}).setOrigin(0.5).setDepth(p.y+125).setStroke("#1a1226",3);
+    if(o.type==="board") this.add.text(p.x,p.y-65,"METAS", {fontFamily:"'Press Start 2P'",fontSize:"7px",color:"#faedff"}).setOrigin(0.5).setDepth(p.y+40);
     if(o.type==="speaker") {
       this.add.text(p.x,p.y-57,"♪  PROFETA KPI", {fontFamily:"'Press Start 2P'",fontSize:"7px",color:"#ffd67e"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1).setStroke("#1b1229",3);
     }
@@ -166,8 +187,8 @@ export class AnnexScene extends Phaser.Scene {
     const ui=game.get().ui;
     if(!ui.modal){
       const k=this.keys;
-      const sx=Number(k.D.isDown||k.RIGHT.isDown)-Number(k.A.isDown||k.LEFT.isDown);
-      const sy=Number(k.S.isDown||k.DOWN.isDown)-Number(k.W.isDown||k.UP.isDown);
+      const sx=Number(k.D.isDown||k.RIGHT.isDown)-Number(k.A.isDown||k.LEFT.isDown) + this.virtualDir.sx;
+      const sy=Number(k.S.isDown||k.DOWN.isDown)-Number(k.W.isDown||k.UP.isDown) + this.virtualDir.sy;
       const dir=screenToTileDir(sx,sy);
       if(dir.dx||dir.dy){
         const sp=BALANCE.playerSpeed*dt;
@@ -179,6 +200,10 @@ export class AnnexScene extends Phaser.Scene {
       game.tick(dt);
     }
     this.repositionPlayer();
+    const target = navigationTarget(game.get().state);
+    for (const { objectId, marker } of this.questMarkers) {
+      marker.setVisible(target?.floor === this.floor.id && target.interaction === objectId);
+    }
     if(this.walk) this.player.y-=Math.abs(Math.sin(this.walk*10))*3;
     let nearest:typeof this.points[number] | null=null;
     let dMin: number = BALANCE.interactRadius;

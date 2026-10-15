@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import charactersData from "../data/characters.json";
 import { BALANCE } from "../config/balance";
 import { currentObjective } from "../core/logic";
+import { navigationTarget } from "../core/wayfinding";
 import { game } from "../core/store";
 import type { Palette } from "../core/types";
 import { INTERACTABLES, MAP, SOLIDS, blocked, screenToTileDir, type MapObject, type Rect } from "../core/world";
@@ -48,6 +49,7 @@ export class OfficeScene extends Phaser.Scene {
   private npcs: Actor[] = [];
   keys!: Record<"W" | "A" | "S" | "D" | "UP" | "DOWN" | "LEFT" | "RIGHT", Phaser.Input.Keyboard.Key>;
   private posAcc = 0;
+  private virtualDir = { sx: 0, sy: 0 };
   private aquariumPoint = INTERACTABLES.find((i) => i.id === "aquarium")!;
 
   constructor() {
@@ -94,8 +96,10 @@ export class OfficeScene extends Phaser.Scene {
       this.player.x = pos.x;
       this.player.y = pos.y;
     };
+    const onVirtualMove = (dir: { sx: number; sy: number }) => { this.virtualDir = dir; };
+    this.game.events.on("virtual-move", onVirtualMove);
     this.game.events.on("teleport", onTeleport);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.game.events.off("teleport", onTeleport));
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { this.game.events.off("teleport", onTeleport); this.game.events.off("virtual-move", onVirtualMove); });
   }
 
   // ---------- drawing ----------
@@ -456,8 +460,8 @@ export class OfficeScene extends Phaser.Scene {
 
     if (!paused) {
       const k = this.keys;
-      const sx = (k.D.isDown || k.RIGHT.isDown ? 1 : 0) - (k.A.isDown || k.LEFT.isDown ? 1 : 0);
-      const sy = (k.S.isDown || k.DOWN.isDown ? 1 : 0) - (k.W.isDown || k.UP.isDown ? 1 : 0);
+      const sx = (k.D.isDown || k.RIGHT.isDown ? 1 : 0) - (k.A.isDown || k.LEFT.isDown ? 1 : 0) + this.virtualDir.sx;
+      const sy = (k.S.isDown || k.DOWN.isDown ? 1 : 0) - (k.W.isDown || k.UP.isDown ? 1 : 0) + this.virtualDir.sy;
       const { dx, dy } = screenToTileDir(sx, sy);
       if (dx || dy) {
         const sp = BALANCE.playerSpeed * dt;
@@ -511,6 +515,10 @@ export class OfficeScene extends Phaser.Scene {
     for (const it of INTERACTABLES) {
       const d = Math.hypot(it.x - p.x, it.y - p.y);
       if (d < BALANCE.interactRadius && (!best || d < best.d)) best = { id: it.id, label: it.label, d };
+    }
+    const objective = navigationTarget(game.get().state);
+    for (const n of this.npcs) {
+      if (n.mark && objective) n.mark.setVisible(n.id === objective.interaction.replace("npc:", "") && objective.floor === "office" || this.hasMarker(n.id));
     }
     const cur = ui.prompt;
     if ((best?.id ?? null) !== (cur?.id ?? null)) game.setUI({ prompt: best ? { id: best.id, label: best.label } : null });

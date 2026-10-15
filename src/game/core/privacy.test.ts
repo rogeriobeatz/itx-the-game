@@ -24,7 +24,7 @@ describe("fictional cast and privacy", () => {
 
   it("does not reference unregistered people as quest NPCs or world interactions", () => {
     const roleIds = new Set(Object.keys(FICTIONAL_CAST));
-    const props = new Set(["aquario", "refeitorio", "auditorio", "terraco"]);
+    const props = new Set(["aquario", "refeitorio", "auditorio", "terraco", "portaria", "criativo", "compliance", "diretoria", "tesouraria"]);
     for (const quest of quests) expect(roleIds.has(quest.npc) || props.has(quest.npc)).toBe(true);
     for (const floor of floors)
       for (const prop of floor.decor)

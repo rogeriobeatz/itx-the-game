@@ -255,3 +255,22 @@
 .floor-shortcut { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 5px; padding: 9px 8px; font: 9px var(--font-pixel); cursor: pointer; color: #231527; background: #f5cd5e; border: 2px solid #fff1a3; border-bottom: 4px solid #a96d34; }
 .floor-shortcut:hover, .floor-shortcut:focus-visible { background: #ffe59a; outline: 2px solid #f5cd5e; outline-offset: 2px; }
 .floor-shortcut .key-cap { font-size: 8px; color: #fff; background: #402852; border: 1px solid #6e467f; border-bottom: 2px solid #201426; padding: 3px 5px; }
+
+/* Touch-first movement and compact objective directions. */
+.floor-objective { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; font-size:12px; color:#86f9ec; margin:6px 0 3px; }
+.floor-objective strong { font-family:var(--font-pixel); font-size:8px; }
+.touch-game-controls { display:none; }
+@media (hover:none) and (pointer:coarse), (max-width:700px) {
+ .touch-game-controls { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; position:absolute; z-index:35; left:12px; right:12px; bottom:18px; pointer-events:none; }
+ .touch-dpad { display:grid; grid-template-columns:repeat(3,42px); grid-template-rows:repeat(3,42px); gap:3px; pointer-events:auto; touch-action:none; }
+ .touch-center { display:grid; place-items:center; color:#bda2ed; background:rgba(22,14,36,.58); border-radius:6px; }
+ .touch-arrow,.touch-action { background:rgba(37,19,61,.93); color:#fff5d6; border:2px solid #9b67d2; box-shadow:0 3px 0 #392044; border-radius:6px; touch-action:none; font-family:var(--font-pixel); }
+ .touch-arrow { font-size:20px; font-weight:800; }
+ .touch-arrow:active,.touch-action:active { background:#70549b; transform:translateY(2px); }
+ .touch-actions { display:grid; grid-template-columns:repeat(2,auto); gap:7px; pointer-events:auto; }
+ .touch-action { min-width:73px; min-height:47px; padding:8px; font-size:8px; }
+ .touch-primary { background:#693e93; border-color:#f4d273; }
+ .hud-bl { bottom:166px; max-width:min(340px,53vw); }
+ .hud-br { bottom:166px; right:8px; transform:scale(.82); transform-origin:bottom right; }
+ .prompt-hint { bottom:169px; }
+}

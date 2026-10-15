@@ -5,6 +5,7 @@ import { choose, DIALOGUES, interact, useItem, visibleChoices } from "./core/int
 import { applyEffects, currentObjective, fmtClock, ITEMS, QUESTS, sickLeave } from "./core/logic";
 import { MAP } from "./core/world";
 import { FLOORS, canVisit, floorDefinition } from "./core/floors";
+import { navigationTarget, floorHasMission } from "./core/wayfinding";
 import { CRISIS_DAY, RANKS, VICTORY_BTC } from "./core/pyramid";
 import { BALANCE } from "./config/balance";
 import { LOGO_URL, PORTRAITS, TITLE_BG } from "./assets";
@@ -77,6 +78,7 @@ export default function GameRoot() {
       if (k === "j") return game.setUI({ modal: ui.modal === "journal" ? null : "journal" });
       if (k === "p") return game.setUI({ modal: ui.modal === "pyramid" ? null : "pyramid" });
       if (k === "l") return game.setUI({ modal: ui.modal === "elevator" ? null : "elevator" });
+      if (k === "h") return game.setUI({ modal: ui.modal === "help" ? null : "help" });
       if (k === "e" && !ui.modal && ui.prompt) interact(ui.prompt.id);
     };
     window.addEventListener("keydown", onKey);
@@ -89,6 +91,7 @@ export default function GameRoot() {
     <div className="game-root">
       <div ref={host} className="absolute inset-0" />
       {ui.modal !== "title" && <Hud />}
+      {ui.modal !== "title" && ui.modal !== "ending" && <TouchControls emitMove={(dir) => phaser.current?.events.emit("virtual-move", dir)} />}
       {ui.prompt && !ui.modal && (
         <div className="prompt-hint">
           <span className="key-cap">E</span> {ui.prompt.label}
@@ -104,6 +107,7 @@ export default function GameRoot() {
       {ui.modal === "pitch" && <Pitch />}
       {ui.modal === "pyramid" && <PyramidPanel />}
       {ui.modal === "elevator" && <ElevatorPanel />}
+      {ui.modal === "help" && <HelpPanel />}
       {ui.modal === "ending" && <PyramidEnding onRestart={teleport} />}
       {ui.modal === "gameover" && <GameOver onBack={teleport} />}
     </div>
@@ -180,7 +184,7 @@ function Hud() {
         )}
         <div className="hud-help">
           <span className="key-cap">WASD</span>mover <span className="key-cap">E</span>agir <span className="key-cap">I</span>itens{" "}
-          <span className="key-cap">J</span>diário <span className="key-cap">L</span>andares <span className="key-cap">ESC</span>pausa
+          <span className="key-cap">J</span>diário <span className="key-cap">L</span>andares <span className="key-cap">H</span>ajuda <span className="key-cap">ESC</span>pausa
         </div>
       </div>
       <Minimap />
@@ -191,6 +195,7 @@ function Hud() {
 function Minimap() {
   const ref = useRef<HTMLCanvasElement>(null);
   const { ui, state } = useGame();
+  const destination = navigationTarget(state);
   const annex = state.floor === "office" ? undefined : floorDefinition(state.floor);
   const width = annex?.size[0] ?? MAP.width;
   const height = annex?.size[1] ?? MAP.height;
@@ -225,6 +230,15 @@ function Minimap() {
       ctx.fillStyle = "#201426";
       ctx.fillText("E", x, y + 0.5);
     }
+    // Mission waypoint, distinct from the elevator marker.
+    if (destination?.floor === state.floor) {
+      const item = (annex?.decor ?? MAP.objects).find((obj) => obj.id === destination.interaction);
+      const person = CHARS.find((npc) => "npc:" + npc.id === destination.interaction);
+      const point = item ? { x: item.ix ?? item.x + item.w/2, y: item.iy ?? item.y + item.d + .5 } :
+        person ? { x: person.id === "patriarca" ? 20.5 : person.id === "carimbo" ? 20.5 : 8.4,
+          y: person.id === "patriarca" ? 4.2 : person.id === "carimbo" ? 18.6 : 8 } : null;
+      if (point) { ctx.fillStyle = "#32f0eb"; ctx.fillRect(point.x * S - 4, point.y * S - 4, 8, 8); }
+    }
     ctx.fillStyle = css.getPropertyValue("--mm-player");
     ctx.fillRect(ui.positions.player.x * S - 3, ui.positions.player.y * S - 3, 6, 6);
   }, [ui.positions, state.floor, width, height, annex]);
@@ -232,6 +246,7 @@ function Minimap() {
     <div className="pixel-panel hud-br">
       <div className="hud-tag">MAPA · {FLOORS.find((x) => x.id === state.floor)?.level ?? "ESCRITÓRIO"}</div>
       <canvas key={state.floor} ref={ref} width={width * 6} height={height * 6} className="minimap" />
+      {destination && <div className="floor-objective"><strong>◆ OBJETIVO</strong><span>{destination.floor === state.floor ? "Neste andar" : "Ir para " + (FLOORS.find(x=>x.id === destination.floor)?.name ?? "outro andar")}</span></div>}
       <button type="button" className="floor-shortcut" onClick={() => game.setUI({ modal: "elevator" })} title="Abrir seleção de andares (tecla L)">
         ⇵ ANDARES <span className="key-cap">L</span>
       </button>
@@ -572,6 +587,49 @@ function Pitch() {
 }
 
 
+
+function HelpPanel() {
+  return (
+    <Modal title="MANUAL DE SOBREVIVÊNCIA" hint="H para fechar" onClose={() => game.setUI({ modal: null })}>
+      <div className="flex flex-col gap-3 dlg-text">
+        <p><strong>WASD ou setas:</strong> mover pelo escritório. No celular, use as setas na tela.</p>
+        <p><strong>E ou AGIR:</strong> falar com alguém ou ativar um objeto próximo.</p>
+        <p><strong>L ou ANDARES:</strong> viajar de elevador. Alguns setores exigem uma patente maior.</p>
+        <p><strong>P:</strong> acompanhar sua patente, BTC fictícios e o risco da empresa.</p>
+        <p><strong>I / J:</strong> inventário e diário de missões.</p>
+        <p><strong>◆ no minimapa:</strong> objetivo ativo neste andar. <strong>E amarelo:</strong> elevador.</p>
+        <p>Você deve subir até Faraó, cumprir as missões e sacar antes da falência fictícia. Nada envolve dinheiro real.</p>
+      </div>
+      <button className="pixel-btn pixel-btn-primary mt-4" onClick={() => game.setUI({ modal: "elevator" })}>EXPLORAR ANDARES ⇵</button>
+    </Modal>
+  );
+}
+
+type MoveDir = { sx: number; sy: number };
+function TouchControls({ emitMove }: { emitMove: (dir: MoveDir) => void }) {
+  const send = (sx: number, sy: number) => emitMove({ sx, sy });
+  const btn = (label: string, x: number, y: number, extra = "") =>
+    <button key={label} aria-label={"Mover " + label} className={"touch-arrow " + extra}
+      onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); send(x,y); }}
+      onPointerUp={() => send(0,0)} onPointerCancel={() => send(0,0)}
+      onLostPointerCapture={() => send(0,0)}>{label}</button>;
+  return <div className="touch-game-controls" aria-label="Controles móveis">
+    <div className="touch-dpad">
+      <div />{btn("↑",0,-1)}<div />
+      {btn("←",-1,0)}<div className="touch-center">✦</div>{btn("→",1,0)}
+      <div />{btn("↓",0,1)}<div />
+    </div>
+    <div className="touch-actions">
+      <button className="touch-action touch-primary" onClick={() => {
+        const { ui } = game.get(); if (!ui.modal && ui.prompt) interact(ui.prompt.id);
+      }}>AGIR</button>
+      <button className="touch-action" onClick={() => game.setUI({ modal: "elevator" })}>ANDARES</button>
+      <button className="touch-action" onClick={() => game.setUI({ modal: "pyramid" })}>PATENTE</button>
+      <button className="touch-action" onClick={() => game.setUI({ modal: "journal" })}>MISSÕES</button>
+    </div>
+  </div>;
+}
+
 function ElevatorPanel() {
   const { state } = useGame();
   return (
@@ -590,6 +648,8 @@ function ElevatorPanel() {
               {" · "}{floor.level}
               {!accessible && ` · requer ${RANKS[floor.minRank]!.name}`}
               {current && " · VOCÊ ESTÁ AQUI"}
+              {state.visitedFloors.includes(floor.id) && !current && " · VISITADO"}
+              {floorHasMission(state, floor.id) && " · ◆ MISSÃO"}
             </button>
           );
         })}
