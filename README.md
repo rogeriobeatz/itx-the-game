@@ -1,6 +1,8 @@
-# INTERGALAXY - Além do Expediente
+# INTERGALAXY — Além do Expediente
 
-Implement exactly the screenshot and nothing else
+RPG satírico 2D isométrico em pixel art. O jogador sobrevive a uma corporação fictícia, sobe na hierarquia de uma pirâmide caricatural, acumula bitcoins **sem valor real** e decide quando sacar antes da falência ou da fiscalização igualmente fictícia.
+
+**Personagens são arquétipos inventados. Nenhum nome real de pessoa pode entrar na versão pública, nos dados, nos diálogos ou nos assets.** Consulte [Política de privacidade e elenco fictício](docs/PRIVACIDADE_E_PERSONAGENS.md).
 
 This project was built with [Lovable](https://lovable.dev).
 
@@ -24,6 +26,14 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Escopo e progresso
+
+- Mundo: escritório, refeitório, auditório/Yah Café e terraço.
+- Jogo: missões, diálogos, atributos, inventário, níveis até Faraó e finais.
+- Gestão: 134 ideias catalogadas, 116 tarefas acompanhadas e checklists de privacidade.
+- Arte: cenários e sprites atuais ainda possuem recursos provisórios, que serão substituídos por criação visual autoral.
+- Qualidade: testes do GitHub Actions, TypeScript e build; testes manuais continuam necessários.
 
 ## Acompanhamento do desenvolvimento
 
