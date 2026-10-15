@@ -1,4 +1,6 @@
 export type StatKey = "vida" | "fe" | "burnout" | "reputacao" | "limpo" | "sujo";
+export type QuestId = "bau" | "aquario" | "pitch";
+export type Palette = Record<"skin" | "hair" | "top" | "bottom" | "accent", string>;
 export type QuestStatus = "available" | "active" | "completed" | "failed";
 
 export interface Effects {
@@ -38,7 +40,7 @@ export interface ItemDef {
 export interface GameState {
   stats: Record<StatKey, number>;
   inventory: string[];
-  quests: Record<string, { status: QuestStatus; step: number }>;
+  quests: Record<QuestId, { status: QuestStatus; step: number }>;
   flags: Record<string, boolean>;
   clock: { day: number; minutes: number };
   pos: { x: number; y: number };

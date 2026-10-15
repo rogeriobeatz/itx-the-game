@@ -3,6 +3,7 @@ import charactersData from "../data/characters.json";
 import { BALANCE } from "../config/balance";
 import { currentObjective } from "../core/logic";
 import { game } from "../core/store";
+import type { Palette } from "../core/types";
 import { INTERACTABLES, MAP, SOLIDS, blocked, screenToTileDir, type MapObject, type Rect } from "../core/world";
 
 const TW = 64;
@@ -15,9 +16,9 @@ interface CharDef {
   name: string;
   home: [number, number];
   wander: number;
-  palette: Record<"skin" | "hair" | "top" | "bottom" | "accent", string>;
+  palette: Palette;
 }
-const CHARS = charactersData as CharDef[];
+const CHARS = charactersData as unknown as CharDef[];
 
 interface Actor {
   id: string;
@@ -132,7 +133,7 @@ export class OfficeScene extends Phaser.Scene {
       for (const z of MAP.zones) if (x >= z.x && x < z.x + z.w && y >= z.y && y < z.y + z.d) f = z.floor;
       return f;
     };
-    const palette: Record<string, [number, number]> = {
+    const palette: Record<string, [number, number] | undefined> = {
       carpet: [0x3a1a63, 0x34175a],
       gray: [0x3b3a44, 0x35343e],
       dark: [0x1c1b24, 0x19181f],
@@ -141,7 +142,7 @@ export class OfficeScene extends Phaser.Scene {
     for (let y = 0; y < MAP.height; y++)
       for (let x = 0; x < MAP.width; x++) {
         const f = zoneAt(x + 0.5, y + 0.5);
-        const [c1, c2] = palette[f];
+        const [c1, c2] = palette[f] ?? [0x3a1a63, 0x34175a];
         const c = (x + y) % 2 ? c1 : c2;
         this.poly(g, [iso(x, y), iso(x + 1, y), iso(x + 1, y + 1), iso(x, y + 1)], c);
         // speckle texture like the real stone walkway / carpet
@@ -352,7 +353,7 @@ export class OfficeScene extends Phaser.Scene {
     }
   }
 
-  private makeCharTexture(key: string, pal: Record<string, string>) {
+  private makeCharTexture(key: string, pal: Palette) {
     if (this.textures.exists(key)) return;
     const g = this.make.graphics({ x: 0, y: 0 }, false);
     const P = 2;

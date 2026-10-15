@@ -315,7 +315,8 @@ function Journal() {
     <Modal title="DIÁRIO DE MISSÕES" onClose={() => game.setUI({ modal: null })}>
       <div className="flex flex-col gap-4">
         {QUESTS.map((q) => {
-          const st = state.quests[q.id];
+          const st = state.quests[q.id as keyof typeof state.quests];
+          if (!st) return null;
           return (
             <div key={q.id} className="inv-item flex-col items-start">
               <div className="flex w-full justify-between gap-2">
@@ -379,7 +380,7 @@ function Pitch() {
 
   const answer = (choice: number | null) => {
     if (feedback) return;
-    const slide = PITCH[idx];
+    const slide = PITCH[idx]!;
     const right = choice === slide.correct;
     const gain = BALANCE.pitch.baseBurnout + (choice === null ? BALANCE.pitch.timeoutBurnout : right ? 0 : BALANCE.pitch.wrongBurnout);
     game.setState(applyEffects(game.get().state, { stats: { burnout: gain, reputacao: right ? 2 : 0 } }).state);
@@ -407,7 +408,7 @@ function Pitch() {
     return () => clearTimeout(t);
   });
 
-  const slide = PITCH[idx];
+  const slide = PITCH[idx]!;
   return (
     <div className="modal-backdrop">
       <div className="pixel-panel pitch-box">

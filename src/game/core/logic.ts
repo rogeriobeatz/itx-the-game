@@ -1,7 +1,7 @@
 import questsData from "../data/quests.json";
 import itemsData from "../data/items.json";
 import { BALANCE } from "../config/balance";
-import type { Cond, Effects, GameState, ItemDef, QuestDef, StatKey } from "./types";
+import type { Cond, Effects, GameState, ItemDef, QuestDef, QuestId, StatKey } from "./types";
 
 export const QUESTS = questsData as QuestDef[];
 export const ITEMS = itemsData as Record<string, ItemDef>;
@@ -21,7 +21,7 @@ export function newGame(): GameState {
   return {
     stats: { vida: 100, fe: 70, burnout: 10, reputacao: 20, limpo: 0, sujo: 0 },
     inventory: [],
-    quests: Object.fromEntries(QUESTS.map((q) => [q.id, { status: "available" as const, step: 0 }])),
+    quests: Object.fromEntries(QUESTS.map((q) => [q.id, { status: "available" as const, step: 0 }])) as GameState["quests"],
     flags: {},
     clock: { day: 1, minutes: BALANCE.workStart },
     pos: { ...BALANCE.startPos },
@@ -73,7 +73,7 @@ function mutate(s: GameState, e: Effects, log: string[]) {
   }
   if (e.flag) s.flags[e.flag] = true;
   if (e.startQuest) {
-    const q = s.quests[e.startQuest];
+    const q = s.quests[e.startQuest as QuestId];
     if (q && (q.status === "available" || q.status === "failed")) {
       q.status = "active";
       q.step = 0;
@@ -82,7 +82,7 @@ function mutate(s: GameState, e: Effects, log: string[]) {
   }
   for (const a of e.advance ?? []) {
     const def = questDef(a.quest);
-    const q = s.quests[a.quest];
+    const q = s.quests[a.quest as QuestId];
     if (!def || !q || q.status !== "active") continue;
     if (def.objectives[q.step]?.id !== a.objective) continue;
     q.step += 1;
@@ -111,7 +111,8 @@ export function tickClock(s0: GameState, minutes: number) {
 
 export function failQuest(s0: GameState, id: string) {
   const state = clone(s0);
-  if (state.quests[id]?.status === "active") state.quests[id].status = "failed";
+  const q = state.quests[id as QuestId];
+  if (q?.status === "active") q.status = "failed";
   return state;
 }
 
@@ -128,7 +129,7 @@ export function sickLeave(s0: GameState) {
 }
 
 export function currentObjective(s: GameState, questId: string) {
-  const q = s.quests[questId];
+  const q = s.quests[questId as QuestId];
   const def = questDef(questId);
   if (!q || !def || q.status !== "active") return null;
   return def.objectives[q.step] ?? null;
@@ -140,7 +141,8 @@ export function checkCond(s: GameState, c?: Cond) {
   if (c.questStatus) {
     const [id, st] = c.questStatus;
     const list = Array.isArray(st) ? st : [st];
-    if (!list.includes(s.quests[id]?.status)) return false;
+    const st2 = s.quests[id as QuestId]?.status;
+    if (!st2 || !list.includes(st2)) return false;
   }
   if (c.hasItem && !s.inventory.includes(c.hasItem)) return false;
   if (c.flag && !s.flags[c.flag]) return false;

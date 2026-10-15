@@ -79,7 +79,7 @@ export function interact(id: string) {
       return game.run({ stats: { vida: 10, burnout: -8, reputacao: -2 }, minutes: 20 });
     default: {
       const lines = FLAVOR[id];
-      if (lines) game.toast(lines[flavorIdx++ % lines.length]);
+      if (lines) game.toast(lines[flavorIdx++ % lines.length] ?? "");
     }
   }
 }
