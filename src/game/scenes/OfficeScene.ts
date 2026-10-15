@@ -54,12 +54,12 @@ export class OfficeScene extends Phaser.Scene {
     super("office");
   }
 
-  override preload() {
+  preload() {
     const logo = (this.game.registry.get("logoUrl") as string) ?? "";
     if (logo) this.load.image("logo", logo);
   }
 
-  override create() {
+  create() {
     this.cameras.main.setBackgroundColor("#07040d");
     this.drawFloor();
     this.drawWalls();
@@ -346,7 +346,7 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   private drawLights() {
-    for (const [x, y] of [[4, 5], [4, 11], [12, 4], [12, 10], [12, 16], [20, 3], [19.5, 11], [19, 18.5], [4, 17]]) {
+    for (const [x, y] of <[number, number][]>[[4, 5], [4, 11], [12, 4], [12, 10], [12, 16], [20, 3], [19.5, 11], [19, 18.5], [4, 17]]) {
       const p = iso(x, y);
       this.add.ellipse(p.x, p.y, 220, 110, 0xb44cff, 0.07).setDepth(-99000).setBlendMode(Phaser.BlendModes.ADD);
       this.add.ellipse(p.x, p.y, 110, 55, 0xffe8ff, 0.05).setDepth(-99000).setBlendMode(Phaser.BlendModes.ADD);
