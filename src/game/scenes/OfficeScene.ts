@@ -249,8 +249,28 @@ export class OfficeScene extends Phaser.Scene {
         this.box(g, o.x, o.y, o.w, o.d, 23, 0x29213b, { top: 0x4c3276 });
         this.box(g, o.x + 0.12, o.y + 0.18, 0.55, 0.07, 19, 0x120e20, { base: 23, left: 0x9e60ff });
         break;
-      case "elevator":
+      case "elevator": {
+        // The original elevator had no visible geometry. Give it an unmistakable doorway and sign.
+        this.box(g, o.x, o.y, o.w, Math.max(o.d, 0.18), 91, 0x393042, {
+          left: 0x8b63bc, right: 0x8b63bc, top: 0x704ba1,
+        });
+        this.box(g, o.x + 0.12, o.y + o.d - 0.13, o.w - 0.24, 0.13, 72, 0x8b829a, {
+          left: 0x5a5265, right: 0xaaa1b5, top: 0xddd0e8,
+        });
+        this.box(g, o.x + o.w / 2 - 0.015, o.y + o.d - 0.14, 0.03, 0.14, 72, 0x191021);
+        const door = iso(o.x + o.w / 2, o.y + o.d);
+        const label = this.add.text(door.x, door.y - 113, "⇵ ELEVADOR", {
+          fontFamily: "'Press Start 2P'", fontSize: "10px", color: "#ffdf72",
+          backgroundColor: "#24112f", padding: { x: 8, y: 5 },
+        }).setOrigin(0.5).setDepth(front + 550).setStroke("#130914", 3);
+        this.tweens.add({ targets: label, alpha: { from: 0.8, to: 1 }, y: { from: door.y - 115, to: door.y - 110 }, duration: 1300, yoyo: true, repeat: -1 });
+        const floorMark = iso(15.0, 3.0);
+        this.add.text(floorMark.x, floorMark.y - 8, "⇧ ELEVADOR", {
+          fontFamily: "'Press Start 2P'", fontSize: "8px", color: "#ffe99f",
+          backgroundColor: "#21172a", padding: { x: 4, y: 4 },
+        }).setOrigin(0.5).setDepth(front + 1).setStroke("#20152c", 2);
         break;
+      }
       case "mezzanine":
         this.box(g, o.x, o.y, o.w, o.d, 10, 0x1a1720, { base: 86 });
         for (let i = 0; i <= o.w; i += 1) this.box(g, o.x + i, o.y + o.d - 0.06, 0.06, 0.06, 86, 0x2a2733);

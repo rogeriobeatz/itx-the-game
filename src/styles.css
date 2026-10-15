@@ -250,3 +250,8 @@
   .title-mobile-note { display: block; }
   .hud-help { display: none; }
 }
+
+/* Persistent wayfinding for multi-floor exploration (also usable on touchscreens). */
+.floor-shortcut { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 5px; padding: 9px 8px; font: 9px var(--font-pixel); cursor: pointer; color: #231527; background: #f5cd5e; border: 2px solid #fff1a3; border-bottom: 4px solid #a96d34; }
+.floor-shortcut:hover, .floor-shortcut:focus-visible { background: #ffe59a; outline: 2px solid #f5cd5e; outline-offset: 2px; }
+.floor-shortcut .key-cap { font-size: 8px; color: #fff; background: #402852; border: 1px solid #6e467f; border-bottom: 2px solid #201426; padding: 3px 5px; }

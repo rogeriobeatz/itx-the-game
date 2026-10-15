@@ -76,6 +76,7 @@ export default function GameRoot() {
       if (k === "i") return game.setUI({ modal: ui.modal === "inventory" ? null : "inventory" });
       if (k === "j") return game.setUI({ modal: ui.modal === "journal" ? null : "journal" });
       if (k === "p") return game.setUI({ modal: ui.modal === "pyramid" ? null : "pyramid" });
+      if (k === "l") return game.setUI({ modal: ui.modal === "elevator" ? null : "elevator" });
       if (k === "e" && !ui.modal && ui.prompt) interact(ui.prompt.id);
     };
     window.addEventListener("keydown", onKey);
@@ -179,7 +180,7 @@ function Hud() {
         )}
         <div className="hud-help">
           <span className="key-cap">WASD</span>mover <span className="key-cap">E</span>agir <span className="key-cap">I</span>itens{" "}
-          <span className="key-cap">J</span>diário <span className="key-cap">ESC</span>pausa
+          <span className="key-cap">J</span>diário <span className="key-cap">L</span>andares <span className="key-cap">ESC</span>pausa
         </div>
       </div>
       <Minimap />
@@ -211,6 +212,19 @@ function Minimap() {
     for (const o of annex?.decor ?? MAP.objects) ctx.fillRect(o.x * S, o.y * S, Math.max(1, o.w * S), Math.max(1, o.d * S));
     ctx.fillStyle = css.getPropertyValue("--mm-npc");
     for (const n of Object.values(ui.positions.npcs)) ctx.fillRect(n.x * S - 2, n.y * S - 2, 4, 4);
+    // Distinct elevator locator: visible even on a busy minimap.
+    const exit = (annex?.decor ?? MAP.objects).find((obj) => obj.id === "elevator");
+    if (exit) {
+      const x = (exit.ix ?? exit.x + exit.w / 2) * S;
+      const y = (exit.iy ?? exit.y + exit.d + 0.5) * S;
+      ctx.fillStyle = "#ffdd55";
+      ctx.fillRect(x - 5, y - 5, 10, 10);
+      ctx.font = "bold 8px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#201426";
+      ctx.fillText("E", x, y + 0.5);
+    }
     ctx.fillStyle = css.getPropertyValue("--mm-player");
     ctx.fillRect(ui.positions.player.x * S - 3, ui.positions.player.y * S - 3, 6, 6);
   }, [ui.positions, state.floor, width, height, annex]);
@@ -218,6 +232,9 @@ function Minimap() {
     <div className="pixel-panel hud-br">
       <div className="hud-tag">MAPA · {FLOORS.find((x) => x.id === state.floor)?.level ?? "ESCRITÓRIO"}</div>
       <canvas key={state.floor} ref={ref} width={width * 6} height={height * 6} className="minimap" />
+      <button type="button" className="floor-shortcut" onClick={() => game.setUI({ modal: "elevator" })} title="Abrir seleção de andares (tecla L)">
+        ⇵ ANDARES <span className="key-cap">L</span>
+      </button>
     </div>
   );
 }
