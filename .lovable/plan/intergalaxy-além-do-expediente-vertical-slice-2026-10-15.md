@@ -14,7 +14,7 @@ A playable 2D isometric pixel-art RPG that opens straight into the game. All tex
    - **O Baú Roxo**: talk to Patriarca → receive chest (inventory) → carry to private elevator → attend Profeta KPI's "culto motivacional" to restore Fé → return to Patriarca for reward (clean + dirty money, reputation).
    - **Contemplação Premium**: stand at the aquarium watching fish for 60 seconds (progress bar, cancels if you walk away) → less Burnout, more Fé.
    - **O Pitch Infinito**: meeting-room presentation mini-event: slides of absurd marketing jargon, each requiring a quick choice; wrong choices raise Burnout; survive without hitting 100 → Reputação up.
-8. **HUD** — top-left Vida/Fé/Burnout bars; top-right wallets, reputation, day/time; bfantasmam-left current mission + objectives; bfantasmam-right minimap. Dialogue box with pixel portrait, name, text, choices.
+8. **HUD** — top-left Vida/Fé/Burnout bars; top-right wallets, reputation, day/time; bottom-left current mission + objectives; bottom-right minimap. Dialogue box with pixel portrait, name, text, choices.
 9. **Saving** — progress (stats, inventory, mission states, position, clock) saved locally in the browser automatically and on key events.
 
 ## Visual direction

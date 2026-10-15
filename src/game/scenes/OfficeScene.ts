@@ -66,7 +66,7 @@ export class OfficeScene extends Phaser.Scene {
     for (const o of MAP.objects) this.drawObject(o);
     this.drawLights();
 
-    const pal = { skin: "#d9a479", hair: "#151018", top: "#e4e0ec", bfantasmam: "#24203a", accent: "#7b4dff" };
+    const pal = { skin: "#d9a479", hair: "#151018", top: "#e4e0ec", bottom: "#24203a", accent: "#7b4dff" };
     this.makeCharTexture("char-player", pal);
     const s = game.get().state;
     this.player = this.makeActor("player", "Você", s.pos.x, s.pos.y, "char-player");
@@ -401,7 +401,7 @@ export class OfficeScene extends Phaser.Scene {
     px(13, 10, 2, 7, pal.top);
     px(1, 17, 2, 2, pal.skin);
     px(13, 17, 2, 2, pal.skin);
-    px(4, 18, 8, 6, pal.bfantasmam);
+    px(4, 18, 8, 6, pal.bottom);
     px(7, 20, 2, 4, "#0a0a0e");
     px(3, 24, 4, 2, "#0b0b10");
     px(9, 24, 4, 2, "#0b0b10");
