@@ -293,12 +293,13 @@
  }
  .touch-joystick-hint { position:absolute; bottom:0; left:0; width:100%; text-align:center; color:rgba(238,222,255,.82);
   font-size:8px; font-family:var(--font-pixel); text-shadow:0 2px 3px #100a20; pointer-events:none; }
- .touch-actions { display:grid; grid-template-columns:repeat(2,minmax(65px,1fr)); gap:8px; pointer-events:auto; flex:0 0 auto; align-items:end; }
- .touch-action { min-width:65px; min-height:52px; padding:10px 8px; font-size:9px; color:#fff6dc;
+ .touch-actions { display:flex; align-items:center; gap:8px; pointer-events:auto; flex:0 0 auto; }
+ .touch-action-secondary { display:grid; grid-template-columns:1fr; gap:7px; }
+ .touch-action { min-width:68px; min-height:43px; padding:7px 5px; font-size:8px; color:#fff6dc;
   background:rgba(39,20,63,.94); border:2px solid #ab7ce2; border-bottom:5px solid #38204c;
   border-radius:12px; touch-action:manipulation; font-family:var(--font-pixel); -webkit-tap-highlight-color:transparent; }
  .touch-action:active { background:#7752a5; transform:translateY(2px); border-bottom-width:3px; }
- .touch-act { grid-row:span 2; min-height:112px; border-radius:38px; background:linear-gradient(140deg,#9860ca,#603185);
+ .touch-act { width:82px; min-width:82px; height:82px; min-height:82px; border-radius:50%; background:linear-gradient(140deg,#9860ca,#603185);
   border-color:#f9e091; box-shadow:0 0 19px rgba(251,209,115,.28); font-size:11px; }
  .hud-bl { bottom:185px; max-width:min(340px,54vw); }
  .hud-br { bottom:185px; right:8px; transform:scale(.8); transform-origin:bottom right; }
@@ -309,8 +310,8 @@
  .touch-joystick-base { width:110px; height:110px; top:50%; }
  .touch-joystick-knob { width:52px; height:52px; }
  .touch-joystick-hint { font-size:7px; }
- .touch-action { min-height:44px; padding:6px; font-size:8px; }
- .touch-act { min-height:96px; }
+ .touch-action { min-height:35px; padding:5px; font-size:8px; }
+ .touch-act { min-width:74px; width:74px; min-height:74px; height:74px; }
  .hud-bl { bottom:146px; }
  .hud-br { bottom:146px; }
  .prompt-hint { bottom:140px; }

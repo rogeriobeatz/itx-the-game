@@ -685,9 +685,11 @@ function TouchControls({ emitMove }: { emitMove: (dir: InputVector) => void }) {
         if (ui.prompt && !ui.modal) interact(ui.prompt.id);
         else game.toast("Aproxime-se de um personagem ou objeto para interagir.");
       }} aria-label="Interagir com objeto ou personagem próximo">AGIR</button>
-      <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "elevator" })}>ANDARES</button>
-      <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "inventory" })}>ITENS</button>
-      <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "journal" })}>MISSÕES</button>
+      <div className="touch-action-secondary">
+        <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "elevator" })}>ANDARES</button>
+        <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "inventory" })}>ITENS</button>
+        <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "journal" })}>MISSÕES</button>
+      </div>
     </div>
   </div>;
 }
