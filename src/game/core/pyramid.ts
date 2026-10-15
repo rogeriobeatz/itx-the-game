@@ -18,7 +18,7 @@ export const newPyramid = (): PyramidProgress => ({
 });
 export function rankForInfluence(n: number) {
   let result = 0;
-  for (let i = 0; i < RANKS.length; i++) if (n >= RANKS[i].influence) result = i;
+  for (let i = 0; i < RANKS.length; i++) if (n >= RANKS[i]!.influence) result = i;
   return result;
 }
 export function checkPyramidCrisis(s: GameState, log: string[]) {
@@ -57,7 +57,7 @@ export function performPyramidAction(old: GameState, action: PyramidAction) {
     p.rank = rankForInfluence(p.influence);
     minutes = 45;
     log.push("Pitch: +" + influence + " influência e +" + earned.toFixed(4) + " BTC fictícios.");
-    if (p.rank > before) log.push("PROMOÇÃO: " + RANKS[p.rank].name.toUpperCase() + "!");
+    if (p.rank > before) log.push("PROMOÇÃO: " + RANKS[p.rank]!.name.toUpperCase() + "!");
   } else if (action === "compliance") {
     if (s.stats.limpo < 40)
       return { state: old, log: ["Precisa de R$ 40 limpos. Trabalhe nos computadores."], minutes: 0, ok: false };

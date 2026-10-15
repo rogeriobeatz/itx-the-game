@@ -65,7 +65,7 @@ describe("pirâmide fictícia", () => {
     let s = newGame();
     s.stats.limpo = 100;
     for (let i = 0; i < 5; i++) s = performPyramidAction(s, "pitch").state;
-    expect(RANKS[s.pyramid.rank].name).toBe("Faraó");
+    expect(RANKS[s.pyramid.rank]!.name).toBe("Faraó");
     expect(s.pyramid.outcome).toBeNull();
     s = performPyramidAction(s, "withdraw").state;
     expect(s.pyramid.outcome).toBe("farao");

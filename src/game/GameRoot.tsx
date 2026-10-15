@@ -151,7 +151,7 @@ function Hud() {
         </div>
       </div>
       <button className="pixel-panel" style={{ position: "absolute", top: 146, left: 12, zIndex: 20, textAlign: "left", fontSize: 10, padding: 10, color: "#e4c8ff", cursor: "pointer" }} onClick={() => game.setUI({ modal: "pyramid" })}>
-        <b>▲ {RANKS[p.rank].name.toUpperCase()}</b> · ₿ {p.btc.toFixed(4)}<br />
+        <b>▲ {RANKS[p.rank]!.name.toUpperCase()}</b> · ₿ {p.btc.toFixed(4)}<br />
         <span style={{ color: "#fbbf69" }}>PF {p.heat}%</span> · <span style={{ color: "#ff7799" }}>FALÊNCIA {p.instability}%</span><br />
         <small>P: ABRIR PIRÂMIDE</small>
       </button>
@@ -543,11 +543,11 @@ function PyramidPanel() {
   const { state } = useGame();
   const p = state.pyramid;
   const next = RANKS[p.rank + 1];
-  const pct = next ? Math.max(0, Math.min(100, 100 * (p.influence - RANKS[p.rank].influence) / (next.influence - RANKS[p.rank].influence))) : 100;
+  const pct = next ? Math.max(0, Math.min(100, 100 * (p.influence - RANKS[p.rank]!.influence) / (next.influence - RANKS[p.rank]!.influence))) : 100;
   return (
     <Modal title="A PIRÂMIDE CORPORATIVA" hint="Ficção satírica: nenhum bitcoin real é negociado. P para fechar." onClose={() => game.setUI({ modal: null })}>
       <div style={{ maxWidth: 520 }}>
-        <div className="section-label">NÍVEL {p.rank + 1}/6: {RANKS[p.rank].name.toUpperCase()}</div>
+        <div className="section-label">NÍVEL {p.rank + 1}/6: {RANKS[p.rank]!.name.toUpperCase()}</div>
         <p className="dlg-text mt-2">Chegue a Faraó e saque antes da fiscalização ou falência.</p>
         <div className="flex flex-wrap gap-2 mt-4">
           {RANKS.map((x, i) => <span key={x.name} style={{ fontSize: 9, padding: 6, border: "1px solid #7659a0", color: i <= p.rank ? "#f4d5ff" : "#777", background: i === p.rank ? "#462363" : "#1a1424" }}>{x.name}</span>)}
@@ -583,11 +583,11 @@ function PyramidEnding({ onRestart }: { onRestart: () => void }) {
     raided: ["OPERAÇÃO PF", "A fiscalização fictícia chegou antes do saque. A pirâmide virou uma apresentação no PowerPoint."],
     bankrupt: ["FALÊNCIA", "A empresa fictícia quebrou e a carteira não sacada virou fumaça de PowerPoint."],
   };
-  const info = outcomes[p.outcome ?? "bankrupt"];
+  const info = outcomes[p.outcome ?? "bankrupt"]!;
   return <div className="modal-backdrop"><div className="pixel-panel modal-box text-center">
     <h2 className="gameover-title">{info[0]}</h2>
     <p className="dlg-text mt-4">{info[1]}</p>
-    <p className="quest-title mt-4">{RANKS[p.rank].name} · Sacado: ₿ {p.withdrawn.toFixed(4)}</p>
+    <p className="quest-title mt-4">{RANKS[p.rank]!.name} · Sacado: ₿ {p.withdrawn.toFixed(4)}</p>
     <button className="pixel-btn pixel-btn-primary mt-6" onClick={() => { game.reset(); game.setUI({ modal: null, dialogue: null, watch: null }); onRestart(); }}>JOGAR NOVAMENTE</button>
   </div></div>;
 }
