@@ -1,0 +1,5 @@
+{
+  "bau": { "name": "Baú Roxo Misterioso", "desc": "Pesado. Vibra levemente. Cheira a abundância." },
+  "cafe": { "name": "Café Requentado", "desc": "Passado às 7h. É a sexta vez que esquenta.", "use": { "stats": { "burnout": -12, "vida": 4 } } },
+  "pendrive": { "name": "Pendrive Suspeito", "desc": "Etiqueta: 'NÃO ABRIR (planilha_real_final_v3)'." }
+}
