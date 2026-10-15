@@ -193,3 +193,9 @@
   @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 6px var(--neon); } 50% { box-shadow: 0 0 18px var(--neon); } }
   @keyframes toast-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
 }
+
+.title-mobile-note { display: none; margin-top: 1rem; font-size: 0.6rem; opacity: 0.7; text-align: center; }
+@media (max-width: 900px), (pointer: coarse) {
+  .title-mobile-note { display: block; }
+  .hud-help { display: none; }
+}

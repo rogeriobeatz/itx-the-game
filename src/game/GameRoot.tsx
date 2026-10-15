@@ -229,6 +229,7 @@ function Title({ onStart }: { onStart: () => void }) {
           </button>
         </div>
         <p className="title-foot">Um RPG de sobrevivência corporativa. Bata o ponto. Se puder.</p>
+        <p className="title-mobile-note">Melhor jogado no computador, com teclado.</p>
       </div>
     </div>
   );
