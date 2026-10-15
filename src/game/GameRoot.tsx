@@ -96,11 +96,16 @@ export default function GameRoot() {
 }
 
 function Bar({ label, value, kind }: { label: string; value: number; kind: "vida" | "fe" | "burnout" }) {
+  const danger = kind === "burnout" ? value >= 75 : value <= 25;
   return (
-    <div className="stat-row">
+    <div className={`stat-row ${danger ? "stat-danger" : ""}`}>
+      <span className={`stat-icon icon-${kind}`} aria-hidden>
+        {kind === "vida" ? "♥" : kind === "fe" ? "✦" : "▲"}
+      </span>
       <span className="stat-label">{label}</span>
       <div className="stat-track">
         <div className={`stat-fill stat-${kind}`} style={{ width: `${value}%` }} />
+        <div className="stat-ticks" />
       </div>
       <span className="stat-num">{Math.round(value)}</span>
     </div>
@@ -111,28 +116,37 @@ function Hud() {
   const { state } = useGame();
   const s = state.stats;
   const active = QUESTS.filter((q) => state.quests[q.id as keyof typeof state.quests]?.status === "active");
+  const alert = s.burnout >= 75 ? "ALERTA: BURNOUT CRÍTICO" : s.fe <= 25 ? "FÉ EM QUEDA LIVRE" : s.vida <= 25 ? "VIDA BAIXA" : null;
   return (
     <>
       <div className="pixel-panel hud-tl">
+        <div className="hud-tag">FUNCIONÁRIO #0042</div>
         <Bar label="VIDA" value={s.vida} kind="vida" />
         <Bar label="FÉ" value={s.fe} kind="fe" />
         <Bar label="BURN" value={s.burnout} kind="burnout" />
       </div>
+      {alert && <div className="hud-alert">⚠ {alert}</div>}
       <div className="pixel-panel hud-tr">
-        <div className="hud-line">
-          <span className="text-money">R$ {s.limpo}</span> <span className="hud-dim">limpo</span>
+        <div className="hud-clock-big">
+          <span className="hud-day">DIA {state.clock.day}</span>
+          <span>{fmtClock(state.clock.minutes)}</span>
         </div>
-        <div className="hud-line">
-          <span className="text-dirty">R$ {s.sujo}</span> <span className="hud-dim">sujo</span>
+        <div className="hud-divider" />
+        <div className="hud-wallet">
+          <span className="hud-dim">Limpo</span>
+          <span className="text-money hud-val">R$ {s.limpo}</span>
         </div>
-        <div className="hud-line">
-          <span className="text-rep">★ {s.reputacao}</span> <span className="hud-dim">reputação</span>
+        <div className="hud-wallet">
+          <span className="hud-dim">Sujo</span>
+          <span className="text-dirty hud-val">R$ {s.sujo}</span>
         </div>
-        <div className="hud-line hud-clock">
-          DIA {state.clock.day} · {fmtClock(state.clock.minutes)}
+        <div className="hud-wallet">
+          <span className="hud-dim">Reputação</span>
+          <span className="text-rep hud-val">★ {s.reputacao}</span>
         </div>
       </div>
       <div className="pixel-panel hud-bl">
+        <div className="hud-tag">MISSÃO ATUAL</div>
         {active.length === 0 ? (
           <p className="hud-dim">Sem missão ativa. Procure alguém com <span className="text-rep">!</span></p>
         ) : (
@@ -143,7 +157,10 @@ function Hud() {
             </div>
           ))
         )}
-        <div className="hud-help">WASD mover · E interagir · I inventário · J diário · ESC pausa</div>
+        <div className="hud-help">
+          <span className="key-cap">WASD</span>mover <span className="key-cap">E</span>agir <span className="key-cap">I</span>itens{" "}
+          <span className="key-cap">J</span>diário <span className="key-cap">ESC</span>pausa
+        </div>
       </div>
       <Minimap />
     </>
