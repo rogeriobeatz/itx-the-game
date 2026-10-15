@@ -8,6 +8,7 @@ import { FLOORS, canVisit, floorDefinition } from "./core/floors";
 import { navigationTarget, floorHasMission } from "./core/wayfinding";
 import { CRISIS_DAY, RANKS, VICTORY_BTC } from "./core/pyramid";
 import { BALANCE } from "./config/balance";
+import { joystickVector, knobOffset, type InputVector } from "./core/touch";
 import { LOGO_URL, PORTRAITS, TITLE_BG } from "./assets";
 import charactersData from "./data/characters.json";
 import pitchData from "./data/pitch.json";
@@ -91,7 +92,7 @@ export default function GameRoot() {
     <div className="game-root">
       <div ref={host} className="absolute inset-0" />
       {ui.modal !== "title" && <Hud />}
-      {ui.modal !== "title" && ui.modal !== "ending" && <TouchControls emitMove={(dir) => phaser.current?.events.emit("virtual-move", dir)} />}
+      {ui.modal === null && <TouchControls emitMove={(dir) => phaser.current?.events.emit("virtual-move", dir)} />}
       {ui.prompt && !ui.modal && (
         <div className="prompt-hint">
           <span className="key-cap">E</span> {ui.prompt.label}
@@ -596,7 +597,7 @@ function HelpPanel() {
   return (
     <Modal title="MANUAL DE SOBREVIVÊNCIA" hint="H para fechar" onClose={() => game.setUI({ modal: null })}>
       <div className="flex flex-col gap-3 dlg-text">
-        <p><strong>WASD ou setas:</strong> mover pelo escritório. No celular, use as setas na tela.</p>
+        <p><strong>WASD ou setas:</strong> mover pelo escritório. <strong>No celular:</strong> toque e arraste o joystick virtual no canto inferior esquerdo para caminhar, inclusive nas diagonais. Quanto mais longe do centro, mais rápido você anda.</p>
         <p><strong>E ou AGIR:</strong> falar com alguém ou ativar um objeto próximo.</p>
         <p><strong>L ou ANDARES:</strong> viajar de elevador. Alguns setores exigem uma patente maior.</p>
         <p><strong>P:</strong> acompanhar sua patente, BTC fictícios e o risco da empresa.</p>
@@ -609,27 +610,84 @@ function HelpPanel() {
   );
 }
 
-type MoveDir = { sx: number; sy: number };
-function TouchControls({ emitMove }: { emitMove: (dir: MoveDir) => void }) {
-  const send = (sx: number, sy: number) => emitMove({ sx, sy });
-  const btn = (label: string, x: number, y: number, extra = "") =>
-    <button key={label} aria-label={"Mover " + label} className={"touch-arrow " + extra}
-      onPointerDown={(e) => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); send(x,y); }}
-      onPointerUp={() => send(0,0)} onPointerCancel={() => send(0,0)}
-      onLostPointerCapture={() => send(0,0)}>{label}</button>;
-  return <div className="touch-game-controls" aria-label="Controles móveis">
-    <div className="touch-dpad">
-      <div />{btn("↑",0,-1)}<div />
-      {btn("←",-1,0)}<div className="touch-center">✦</div>{btn("→",1,0)}
-      <div />{btn("↓",0,1)}<div />
+type StickPosition = { x: number; y: number };
+type StickView = { origin: StickPosition; offset: StickPosition; active: boolean };
+const REST_STICK: StickView = { origin: { x: 0, y: 0 }, offset: { x: 0, y: 0 }, active: false };
+
+function TouchControls({ emitMove }: { emitMove: (dir: InputVector) => void }) {
+  const [stick, setStick] = useState<StickView>(REST_STICK);
+  const pointer = useRef<number | null>(null);
+  const anchor = useRef<StickPosition>({ x: 0, y: 0 });
+  const sendRef = useRef(emitMove);
+  sendRef.current = emitMove;
+
+  const release = (pointerId?: number) => {
+    if (pointerId !== undefined && pointer.current !== pointerId) return;
+    if (pointer.current === null) return;
+    pointer.current = null;
+    sendRef.current({ sx: 0, sy: 0 });
+    setStick(REST_STICK);
+  };
+
+  useEffect(() => {
+    const onBlur = () => release();
+    const onVisibility = () => { if (document.hidden) release(); };
+    window.addEventListener("blur", onBlur);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("blur", onBlur);
+      document.removeEventListener("visibilitychange", onVisibility);
+      pointer.current = null;
+      sendRef.current({ sx: 0, sy: 0 });
+    };
+  }, []);
+
+  const begin = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (pointer.current !== null || (e.pointerType === "mouse" && e.button !== 0)) return;
+    e.preventDefault();
+    const bounds = e.currentTarget.getBoundingClientRect();
+    pointer.current = e.pointerId;
+    anchor.current = { x: e.clientX, y: e.clientY };
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setStick({ origin: { x: e.clientX - bounds.left, y: e.clientY - bounds.top }, offset: { x: 0, y: 0 }, active: true });
+    sendRef.current({ sx: 0, sy: 0 });
+  };
+
+  const move = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (pointer.current !== e.pointerId) return;
+    e.preventDefault();
+    const dx = e.clientX - anchor.current.x;
+    const dy = e.clientY - anchor.current.y;
+    const offset = knobOffset(dx, dy);
+    setStick((s) => ({ ...s, offset }));
+    sendRef.current(joystickVector(dx, dy));
+  };
+
+  return <div className="touch-game-controls" aria-label="Controles móveis do jogo">
+    <div className="touch-joystick-zone" role="group" aria-label="Toque e arraste para movimentar"
+      onPointerDown={begin} onPointerMove={move}
+      onPointerUp={(e) => release(e.pointerId)}
+      onPointerCancel={(e) => release(e.pointerId)}
+      onLostPointerCapture={(e) => release(e.pointerId)}
+      onContextMenu={(e) => e.preventDefault()}>
+      <div className={`touch-joystick-base ${stick.active ? "is-active" : ""}`}
+        style={stick.active ? { left: stick.origin.x, top: stick.origin.y } : undefined}>
+        <div className="touch-joystick-inner" aria-hidden="true"/>
+        <div className="touch-joystick-knob" style={{ transform: `translate(-50%, -50%) translate(${stick.offset.x}px, ${stick.offset.y}px)` }}>
+          <span aria-hidden="true">✦</span>
+        </div>
+      </div>
+      <span className="touch-joystick-hint">ARRASTE PARA MOVER</span>
     </div>
     <div className="touch-actions">
-      <button className="touch-action touch-primary" onClick={() => {
-        const { ui } = game.get(); if (!ui.modal && ui.prompt) interact(ui.prompt.id);
-      }}>AGIR</button>
-      <button className="touch-action" onClick={() => game.setUI({ modal: "elevator" })}>ANDARES</button>
-      <button className="touch-action" onClick={() => game.setUI({ modal: "pyramid" })}>PATENTE</button>
-      <button className="touch-action" onClick={() => game.setUI({ modal: "journal" })}>MISSÕES</button>
+      <button type="button" className="touch-action touch-primary touch-act" onClick={() => {
+        const { ui } = game.get();
+        if (ui.prompt && !ui.modal) interact(ui.prompt.id);
+        else game.toast("Aproxime-se de um personagem ou objeto para interagir.");
+      }} aria-label="Interagir com objeto ou personagem próximo">AGIR</button>
+      <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "elevator" })}>ANDARES</button>
+      <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "inventory" })}>ITENS</button>
+      <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "journal" })}>MISSÕES</button>
     </div>
   </div>;
 }

@@ -3,7 +3,8 @@ import { BALANCE } from "../config/balance";
 import { floorDefinition, type AnnexDef, type AnnexObject } from "../core/floors";
 import { navigationTarget } from "../core/wayfinding";
 import { game } from "../core/store";
-import { blocked, screenToTileDir, type Rect } from "../core/world";
+import { playerMovement, type InputVector } from "../core/touch";
+import { blocked, type Rect } from "../core/world";
 
 const TW = 64;
 const TH = 32;
@@ -20,7 +21,7 @@ export class AnnexScene extends Phaser.Scene {
   private py = 3;
   private walk = 0;
   private posAcc = 0;
-  private virtualDir = { sx: 0, sy: 0 };
+  private virtualDir: InputVector = { sx: 0, sy: 0 };
   private questMarkers: { objectId: string; marker: Phaser.GameObjects.Text }[] = [];
   private solids: Rect[] = [];
   private points: { id: string; label: string; x: number; y: number }[] = [];
@@ -73,7 +74,7 @@ export class AnnexScene extends Phaser.Scene {
       this.py = pos.y;
       this.repositionPlayer();
     };
-    const onVirtualMove = (dir: { sx: number; sy: number }) => { this.virtualDir = dir; };
+    const onVirtualMove = (dir: InputVector) => { this.virtualDir = dir; };
     this.game.events.on("teleport", onTeleport);
     this.game.events.on("virtual-move", onVirtualMove);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -187,15 +188,15 @@ export class AnnexScene extends Phaser.Scene {
     const ui=game.get().ui;
     if(!ui.modal){
       const k=this.keys;
-      const sx=Number(k.D.isDown||k.RIGHT.isDown)-Number(k.A.isDown||k.LEFT.isDown) + this.virtualDir.sx;
-      const sy=Number(k.S.isDown||k.DOWN.isDown)-Number(k.W.isDown||k.UP.isDown) + this.virtualDir.sy;
-      const dir=screenToTileDir(sx,sy);
-      if(dir.dx||dir.dy){
-        const sp=BALANCE.playerSpeed*dt;
+      const keyX=Number(k.D.isDown||k.RIGHT.isDown)-Number(k.A.isDown||k.LEFT.isDown);
+      const keyY=Number(k.S.isDown||k.DOWN.isDown)-Number(k.W.isDown||k.UP.isDown);
+      const dir=playerMovement(keyX,keyY,this.virtualDir);
+      if(dir.amount){
+        const sp=BALANCE.playerSpeed*dt*dir.amount;
         if(!blocked(this.px+dir.dx*sp,this.py,this.solids,0.22,...this.floor.size))this.px+=dir.dx*sp;
         if(!blocked(this.px,this.py+dir.dy*sp,this.solids,0.22,...this.floor.size))this.py+=dir.dy*sp;
-        this.walk+=dt;
-        if(sx)this.player.setFlipX(sx<0);
+        this.walk+=dt*dir.amount;
+        if(keyX||this.virtualDir.sx)this.player.setFlipX(keyX+this.virtualDir.sx<0);
       } else this.walk=0;
       game.tick(dt);
     }

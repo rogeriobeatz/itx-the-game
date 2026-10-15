@@ -261,21 +261,57 @@
 .dialogue-wrap { z-index: 80; }
 .touch-game-controls { user-select:none; -webkit-user-select:none; }
 .pixel-btn:disabled { opacity:.47; cursor:not-allowed; }
-/* Touch-first movement and compact objective directions. */
+/* Mobile game surface: touch gestures move the character, not the webpage. */
+.game-root canvas { touch-action: none; }
 .floor-objective { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; font-size:12px; color:#86f9ec; margin:6px 0 3px; }
 .floor-objective strong { font-family:var(--font-pixel); font-size:8px; }
-.touch-game-controls { display:none; }
-@media (hover:none) and (pointer:coarse), (max-width:700px) {
- .touch-game-controls { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; position:absolute; z-index:35; left:12px; right:12px; bottom:18px; pointer-events:none; }
- .touch-dpad { display:grid; grid-template-columns:repeat(3,42px); grid-template-rows:repeat(3,42px); gap:3px; pointer-events:auto; touch-action:none; }
- .touch-center { display:grid; place-items:center; color:#bda2ed; background:rgba(22,14,36,.58); border-radius:6px; }
- .touch-arrow,.touch-action { background:rgba(37,19,61,.93); color:#fff5d6; border:2px solid #9b67d2; box-shadow:0 3px 0 #392044; border-radius:6px; touch-action:none; font-family:var(--font-pixel); }
- .touch-arrow { font-size:20px; font-weight:800; }
- .touch-arrow:active,.touch-action:active { background:#70549b; transform:translateY(2px); }
- .touch-actions { display:grid; grid-template-columns:repeat(2,auto); gap:7px; pointer-events:auto; }
- .touch-action { min-width:73px; min-height:47px; padding:8px; font-size:8px; }
- .touch-primary { background:#693e93; border-color:#f4d273; }
- .hud-bl { bottom:166px; max-width:min(340px,53vw); }
- .hud-br { bottom:166px; right:8px; transform:scale(.82); transform-origin:bottom right; }
- .prompt-hint { bottom:169px; }
+.touch-game-controls { display: none; }
+@media (hover: none) and (pointer: coarse), (max-width: 700px) {
+ .touch-game-controls {
+  display:flex; align-items:flex-end; justify-content:space-between; gap:clamp(6px,2vw,20px);
+  position:absolute; z-index:35; left:max(8px,env(safe-area-inset-left)); right:max(8px,env(safe-area-inset-right));
+  bottom:max(10px,env(safe-area-inset-bottom)); pointer-events:none; user-select:none; -webkit-user-select:none;
+ }
+ .touch-joystick-zone {
+  position:relative; flex:0 1 50%; width:min(48vw,300px); height:172px; min-width:145px; touch-action:none;
+  pointer-events:auto; overscroll-behavior:contain; -webkit-tap-highlight-color:transparent;
+ }
+ .touch-joystick-base {
+  position:absolute; left:42%; top:54%; width:128px; height:128px;
+  transform:translate(-50%,-50%); border-radius:50%; border:2px solid rgba(232,198,255,.62);
+  background:radial-gradient(circle,rgba(111,75,161,.46),rgba(31,18,52,.76));
+  box-shadow:0 0 0 7px rgba(40,24,68,.18),inset 0 0 25px rgba(0,0,0,.38);
+  pointer-events:none; transition:border-color .12s,background .12s;
+ }
+ .touch-joystick-base.is-active { border-color:#f5d57c; background:rgba(60,35,98,.82); }
+ .touch-joystick-inner { position:absolute; inset:30px; border:1px dashed rgba(241,225,255,.22); border-radius:50%; }
+ .touch-joystick-knob {
+  position:absolute; left:50%; top:50%; width:57px; height:57px; border-radius:50%; display:grid; place-items:center;
+  transform:translate(-50%,-50%); background:linear-gradient(145deg,#aa85ed,#5b318f);
+  border:3px solid #efddff; color:#fff1c6; font-size:22px;
+  box-shadow:0 5px 0 rgba(12,9,25,.55),inset 0 3px 7px rgba(255,255,255,.19); will-change:transform;
+ }
+ .touch-joystick-hint { position:absolute; bottom:0; left:0; width:100%; text-align:center; color:rgba(238,222,255,.82);
+  font-size:8px; font-family:var(--font-pixel); text-shadow:0 2px 3px #100a20; pointer-events:none; }
+ .touch-actions { display:grid; grid-template-columns:repeat(2,minmax(65px,1fr)); gap:8px; pointer-events:auto; flex:0 0 auto; align-items:end; }
+ .touch-action { min-width:65px; min-height:52px; padding:10px 8px; font-size:9px; color:#fff6dc;
+  background:rgba(39,20,63,.94); border:2px solid #ab7ce2; border-bottom:5px solid #38204c;
+  border-radius:12px; touch-action:manipulation; font-family:var(--font-pixel); -webkit-tap-highlight-color:transparent; }
+ .touch-action:active { background:#7752a5; transform:translateY(2px); border-bottom-width:3px; }
+ .touch-act { grid-row:span 2; min-height:112px; border-radius:38px; background:linear-gradient(140deg,#9860ca,#603185);
+  border-color:#f9e091; box-shadow:0 0 19px rgba(251,209,115,.28); font-size:11px; }
+ .hud-bl { bottom:185px; max-width:min(340px,54vw); }
+ .hud-br { bottom:185px; right:8px; transform:scale(.8); transform-origin:bottom right; }
+ .prompt-hint { bottom:176px; font-size:9px; max-width:90vw; white-space:normal; text-align:center; }
+}
+@media (max-height:490px) and (orientation: landscape) {
+ .touch-joystick-zone { height:135px; }
+ .touch-joystick-base { width:110px; height:110px; top:50%; }
+ .touch-joystick-knob { width:52px; height:52px; }
+ .touch-joystick-hint { font-size:7px; }
+ .touch-action { min-height:44px; padding:6px; font-size:8px; }
+ .touch-act { min-height:96px; }
+ .hud-bl { bottom:146px; }
+ .hud-br { bottom:146px; }
+ .prompt-hint { bottom:140px; }
 }

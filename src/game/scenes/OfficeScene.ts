@@ -3,9 +3,10 @@ import charactersData from "../data/characters.json";
 import { BALANCE } from "../config/balance";
 import { currentObjective } from "../core/logic";
 import { navigationTarget } from "../core/wayfinding";
+import { playerMovement, type InputVector } from "../core/touch";
 import { game } from "../core/store";
 import type { Palette } from "../core/types";
-import { INTERACTABLES, MAP, SOLIDS, blocked, screenToTileDir, type MapObject, type Rect } from "../core/world";
+import { INTERACTABLES, MAP, SOLIDS, blocked, type MapObject, type Rect } from "../core/world";
 
 const TW = 64;
 const TH = 32;
@@ -49,7 +50,7 @@ export class OfficeScene extends Phaser.Scene {
   private npcs: Actor[] = [];
   keys!: Record<"W" | "A" | "S" | "D" | "UP" | "DOWN" | "LEFT" | "RIGHT", Phaser.Input.Keyboard.Key>;
   private posAcc = 0;
-  private virtualDir = { sx: 0, sy: 0 };
+  private virtualDir: InputVector = { sx: 0, sy: 0 };
   private aquariumPoint = INTERACTABLES.find((i) => i.id === "aquarium")!;
 
   constructor() {
@@ -96,7 +97,7 @@ export class OfficeScene extends Phaser.Scene {
       this.player.x = pos.x;
       this.player.y = pos.y;
     };
-    const onVirtualMove = (dir: { sx: number; sy: number }) => { this.virtualDir = dir; };
+    const onVirtualMove = (dir: InputVector) => { this.virtualDir = dir; };
     this.game.events.on("virtual-move", onVirtualMove);
     this.game.events.on("teleport", onTeleport);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { this.game.events.off("teleport", onTeleport); this.game.events.off("virtual-move", onVirtualMove); });
@@ -460,16 +461,16 @@ export class OfficeScene extends Phaser.Scene {
 
     if (!paused) {
       const k = this.keys;
-      const sx = (k.D.isDown || k.RIGHT.isDown ? 1 : 0) - (k.A.isDown || k.LEFT.isDown ? 1 : 0) + this.virtualDir.sx;
-      const sy = (k.S.isDown || k.DOWN.isDown ? 1 : 0) - (k.W.isDown || k.UP.isDown ? 1 : 0) + this.virtualDir.sy;
-      const { dx, dy } = screenToTileDir(sx, sy);
-      if (dx || dy) {
-        const sp = BALANCE.playerSpeed * dt;
+      const keyX = Number(k.D.isDown || k.RIGHT.isDown) - Number(k.A.isDown || k.LEFT.isDown);
+      const keyY = Number(k.S.isDown || k.DOWN.isDown) - Number(k.W.isDown || k.UP.isDown);
+      const { dx, dy, amount } = playerMovement(keyX, keyY, this.virtualDir);
+      if (amount) {
+        const sp = BALANCE.playerSpeed * dt * amount;
         const rects = [...SOLIDS, ...this.npcs.map((n) => this.actorRect(n))];
         if (!blocked(p.x + dx * sp, p.y, rects)) p.x += dx * sp;
         if (!blocked(p.x, p.y + dy * sp, rects)) p.y += dy * sp;
         p.walk += dt;
-        if (sx) p.sprite.setFlipX(sx < 0);
+        if (keyX || this.virtualDir.sx) p.sprite.setFlipX(keyX + this.virtualDir.sx < 0);
       } else p.walk = 0;
       game.tick(dt);
     }
