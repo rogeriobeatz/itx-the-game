@@ -110,7 +110,7 @@ function Bar({ label, value, kind }: { label: string; value: number; kind: "vida
 function Hud() {
   const { state } = useGame();
   const s = state.stats;
-  const active = QUESTS.filter((q) => state.quests[q.id]?.status === "active");
+  const active = QUESTS.filter((q) => state.quests[q.id as keyof typeof state.quests]?.status === "active");
   return (
     <>
       <div className="pixel-panel hud-tl">

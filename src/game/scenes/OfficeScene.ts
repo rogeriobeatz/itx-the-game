@@ -54,12 +54,12 @@ export class OfficeScene extends Phaser.Scene {
     super("office");
   }
 
-  preload() {
+  override preload() {
     const logo = (this.game.registry.get("logoUrl") as string) ?? "";
     if (logo) this.load.image("logo", logo);
   }
 
-  create() {
+  override create() {
     this.cameras.main.setBackgroundColor("#07040d");
     this.drawFloor();
     this.drawWalls();
@@ -422,7 +422,7 @@ export class OfficeScene extends Phaser.Scene {
     return false;
   }
 
-  update(_t: number, dtMs: number) {
+  override update(_t: number, dtMs: number) {
     const dt = Math.min(dtMs, 50) / 1000;
     const ui = game.get().ui;
     const paused = ui.modal !== null;
