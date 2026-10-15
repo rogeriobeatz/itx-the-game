@@ -1,0 +1,8 @@
+[
+  { "text": "Nossa visão: disruptar a jornada sinérgica do cliente omnichannel.", "options": ["Que visão!", "Isso quer dizer o quê?", "(bocejar)"], "correct": 0 },
+  { "text": "O KPI principal deste trimestre é... o próprio KPI. Ele é autossustentável.", "options": ["Brilhante. Metalinguístico.", "Isso não faz sentido.", "Posso ir ao banheiro?"], "correct": 0 },
+  { "text": "Vamos pivotar o pivô. Para frente. E para cima. Simultaneamente.", "options": ["Isso é impossível.", "Pivô 360°, amei!", "(fingir anotar)"], "correct": 1 },
+  { "text": "Quem aqui já sentiu o poder de uma call que poderia ter sido um e-mail?", "options": ["Eu, agora mesmo.", "Calls são a essência do ser.", "(levantar a mão chorando)"], "correct": 1 },
+  { "text": "Nosso novo produto é um token que representa a fé dos colaboradores. Já valorizou 3000%.", "options": ["Isso é legal?", "Quero dez!", "(olhar pro aquário)"], "correct": 1 },
+  { "text": "Para concluir: o pitch não acaba. O pitch é uma mentalidade. Alguma dúvida?", "options": ["Nenhuma! Bravo!", "Várias.", "Dá pra encerrar?"], "correct": 0 }
+]

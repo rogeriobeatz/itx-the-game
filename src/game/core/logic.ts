@@ -123,7 +123,6 @@ export function sickLeave(s0: GameState) {
   s.clock.day += 1;
   s.clock.minutes = BALANCE.workStart;
   s.pos = { ...BALANCE.startPos };
-  for (const q of Object.values(s.quests)) if (q.status === "active" && false) q.status = "failed";
   if (s.quests.pitch?.status === "active") s.quests.pitch.status = "failed";
   return s;
 }

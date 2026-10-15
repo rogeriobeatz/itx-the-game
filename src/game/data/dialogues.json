@@ -1,0 +1,172 @@
+{
+  "francis": {
+    "entries": [
+      { "cond": { "objective": ["bau", "return_founder"] }, "node": "retorno" },
+      { "cond": { "questStatus": ["bau", "active"] }, "node": "lembrete" },
+      { "cond": { "questStatus": ["bau", "completed"] }, "node": "pos" },
+      { "node": "intro" }
+    ],
+    "nodes": {
+      "intro": {
+        "text": "Bem-vindo à Intergalaxy, colaborador! Aqui não temos funcionários, temos ALMAS ALINHADAS. Preciso que você leve este baú até o elevador privativo. Depois, passe no culto para renovar suas energias. E, por favor, não faça perguntas.",
+        "choices": [
+          { "text": "Claro, Francis. Sem perguntas.", "effects": { "startQuest": "bau", "advance": [{ "quest": "bau", "objective": "talk_founder" }], "stats": { "fe": 5 } }, "next": "entrega" },
+          { "text": "O que tem dentro do baú?", "effects": { "stats": { "fe": -5 } }, "next": "pergunta" },
+          { "text": "Isso tá na minha descrição de cargo?", "effects": { "stats": { "reputacao": -3 } }, "next": "cargo" }
+        ]
+      },
+      "pergunta": {
+        "text": "Abundância, meu filho. Abundância embalada a vácuo. A próxima pergunta é descontada da PLR.",
+        "choices": [
+          { "text": "Entendido. Eu levo.", "effects": { "startQuest": "bau", "advance": [{ "quest": "bau", "objective": "talk_founder" }] }, "next": "entrega" }
+        ]
+      },
+      "cargo": {
+        "text": "Sua descrição de cargo é 'fazer acontecer'. Isso inclui baús. E feriados.",
+        "choices": [
+          { "text": "Justo.", "effects": { "startQuest": "bau", "advance": [{ "quest": "bau", "objective": "talk_founder" }] }, "next": "entrega" }
+        ]
+      },
+      "entrega": {
+        "text": "Tome. Pesa um pouco: é a densidade da prosperidade. O elevador privativo fica no fundo, ao lado do aquário.",
+        "choices": [
+          { "text": "Partiu.", "effects": { "give": ["bau"], "advance": [{ "quest": "bau", "objective": "get_chest" }] } }
+        ]
+      },
+      "lembrete": {
+        "text": "O baú não vai se teletransportar sozinho. Ainda não aprovamos verba pra isso. Elevador. Culto. Volta aqui. Simples como um IPO.",
+        "choices": [{ "text": "Tô indo!" }]
+      },
+      "retorno": {
+        "text": "Sinto sua vibração mais alinhada. O baú chegou? Não responda. Eu sei que chegou.",
+        "choices": [
+          { "text": "Missão cumprida, chefe.", "effects": { "advance": [{ "quest": "bau", "objective": "return_founder" }] }, "next": "pos" },
+          { "text": "Posso receber tudo em dinheiro limpo?", "effects": { "advance": [{ "quest": "bau", "objective": "return_founder" }], "stats": { "fe": -5 } }, "next": "limpo" }
+        ]
+      },
+      "limpo": {
+        "text": "Limpo, sujo... dinheiro não tem cor, tem PROPÓSITO. Te mandei metade de cada. Propósito em dobro.",
+        "choices": [{ "text": "...Obrigado?" }]
+      },
+      "pos": {
+        "text": "Você é o colaborador do mês. Do mês passado também, retroativamente. Agora vai lá ser abundante.",
+        "choices": [{ "text": "Valeu, chefe." }]
+      }
+    }
+  },
+  "mumuzinho": {
+    "entries": [
+      { "cond": { "objective": ["bau", "culto"] }, "node": "culto" },
+      { "node": "intro" }
+    ],
+    "nodes": {
+      "intro": {
+        "text": "Ei, campeão! Você tá com cara de quem precisa de um ALINHAMENTO. Bora um minutinho de gratidão corporativa?",
+        "choices": [
+          { "text": "Bora! Gratidão!", "effects": { "stats": { "fe": 8, "burnout": 3 }, "minutes": 10 } },
+          { "text": "Tô de boa, valeu.", "effects": { "stats": { "fe": -2 } } }
+        ]
+      },
+      "culto": {
+        "text": "BOM DIA, GUERREIROS DO EXCEL! Repitam comigo: EU SOU UM ATIVO DE ALTO RENDIMENTO!",
+        "choices": [
+          { "text": "EU SOU UM ATIVO DE ALTO RENDIMENTO!!", "effects": { "stats": { "fe": 30, "burnout": -10 }, "minutes": 20, "advance": [{ "quest": "bau", "objective": "culto" }] }, "next": "culto2" },
+          { "text": "(murmurar baixinho)", "effects": { "stats": { "fe": 15 }, "minutes": 20, "advance": [{ "quest": "bau", "objective": "culto" }] }, "next": "culto2" }
+        ]
+      },
+      "culto2": {
+        "text": "ISSO! Sinto o ROI espiritual subindo! Agora volta lá no Francis, que ele tá esperando sua energia.",
+        "choices": [{ "text": "Gratidão." }]
+      }
+    }
+  },
+  "mikey": {
+    "entries": [
+      { "cond": { "questStatus": ["pitch", "completed"] }, "node": "pos" },
+      { "cond": { "questStatus": ["pitch", "active"] }, "node": "ativo" },
+      { "cond": { "questStatus": ["pitch", "failed"] }, "node": "falhou" },
+      { "node": "intro" }
+    ],
+    "nodes": {
+      "intro": {
+        "text": "Eu sou o Mikey. A caneta é forte, a assinatura é cara. O marketing vai apresentar o PITCH INFINITO na sala de cinema. Sobrevive até o fim e eu assino sua promoção.",
+        "choices": [
+          { "text": "Aceito o desafio.", "effects": { "startQuest": "pitch" }, "next": "aceito" },
+          { "text": "Tem algum serviço... por fora?", "cond": { "notFlag": "pendrive_taken" }, "next": "pendrive" },
+          { "text": "Hoje não, Mikey." }
+        ]
+      },
+      "aceito": {
+        "text": "É só tocar na telona da sala de cinema. Dica: concorde com tudo. Ninguém lê os slides mesmo.",
+        "choices": [{ "text": "Anotado." }]
+      },
+      "ativo": {
+        "text": "Ainda aqui? O pitch não vai se assistir sozinho. A telona fica na sala de cinema.",
+        "choices": [
+          { "text": "Tô indo." },
+          { "text": "Tem algum serviço por fora?", "cond": { "notFlag": "pendrive_taken" }, "next": "pendrive" }
+        ]
+      },
+      "falhou": {
+        "text": "Você desmaiou no slide de sinergia? Clássico. Quer tentar de novo? A caneta perdoa.",
+        "choices": [
+          { "text": "Quero revanche.", "effects": { "startQuest": "pitch" }, "next": "aceito" },
+          { "text": "Preciso de um tempo." }
+        ]
+      },
+      "pendrive": {
+        "text": "Leva esse pendrive pro Otto. Não abre. Não pluga. Não pensa sobre ele.",
+        "choices": [
+          { "text": "Fechado.", "effects": { "give": ["pendrive"], "flag": "pendrive_taken" } },
+          { "text": "Melhor não.", "effects": { "stats": { "reputacao": -1 } } }
+        ]
+      },
+      "pos": {
+        "text": "Assinei sua promoção. Com a caneta forte. Ela não pega, mas a intenção é o que conta.",
+        "choices": [
+          { "text": "Que honra." },
+          { "text": "Tem algum serviço por fora?", "cond": { "notFlag": "pendrive_taken" }, "next": "pendrive" }
+        ]
+      }
+    }
+  },
+  "otto": {
+    "entries": [
+      { "cond": { "hasItem": "pendrive" }, "node": "deal" },
+      { "node": "intro" }
+    ],
+    "nodes": {
+      "intro": {
+        "text": "Shhh. Fala baixo que tem gerente num raio de 5 metros. Regra número 1 da CLT: nunca pareça ocioso. Pareça PENSATIVO.",
+        "choices": [
+          { "text": "Me ensina mais.", "next": "dicas" },
+          { "text": "Tem café?", "effects": { "give": ["cafe"] }, "next": "cafe" },
+          { "text": "Como você sai às 17h59?", "next": "segredo" },
+          { "text": "Vou nessa." }
+        ]
+      },
+      "dicas": {
+        "text": "Ande sempre rápido com uma folha na mão. Ninguém para quem tá com folha na mão. E se o burnout apertar, vai olhar os peixes do aquário. Cada um vale 20 mil. Relaxa só de pensar no valor.",
+        "choices": [{ "text": "Gênio.", "effects": { "stats": { "burnout": -5, "reputacao": -1 } } }]
+      },
+      "cafe": {
+        "text": "Passado às 7h. Já esquentei seis vezes. Tem gosto de resiliência.",
+        "choices": [{ "text": "Delícia..." }]
+      },
+      "segredo": {
+        "text": "Deixo o casaco na cadeira e o monitor num PowerPoint aberto. Ninguém percebeu. Há três anos. Tecnicamente, eu ainda estou aqui.",
+        "choices": [{ "text": "Lendário.", "effects": { "stats": { "burnout": -3 } } }]
+      },
+      "deal": {
+        "text": "Ah... o pendrive. Você não viu nada, eu não vi nada. Toma esse agradecimento. Em espécie.",
+        "choices": [
+          { "text": "Que espécie?", "effects": { "take": ["pendrive"], "stats": { "sujo": 250, "reputacao": -3, "fe": -5 } }, "next": "deal2" }
+        ]
+      },
+      "deal2": {
+        "text": "Espécie rara. Igual os peixes do aquário. Agora some daqui antes que alguém faça uma reunião sobre isso.",
+        "choices": [{ "text": "Sumindo." }]
+      }
+    }
+  }
+}
