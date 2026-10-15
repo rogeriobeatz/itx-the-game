@@ -288,8 +288,9 @@ function DialogueBox() {
       <div className="pixel-panel dialogue">
         <img src={PORTRAITS[dlg.npc]} alt={char?.name} className="portrait" width={160} height={160} />
         <div className="flex-1 min-w-0">
-          <div className="dlg-name">
-            {char?.name} <span className="hud-dim">· {char?.title}</span>
+          <div className="dlg-head">
+            <span className="dlg-name">{char?.name}</span>
+            <span className="dlg-role">{char?.title}</span>
           </div>
           <p className="dlg-text">{node.text}</p>
           <div className="flex flex-col gap-1.5 mt-3">
