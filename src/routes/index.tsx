@@ -1,24 +1,36 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { ClientOnly, createFileRoute } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+const GameRoot = lazy(() => import("@/game/GameRoot"));
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "INTERGALAXY: Além do Expediente — RPG corporativo" },
+      { name: "description", content: "RPG isométrico em pixel art de sobrevivência corporativa com humor ácido brasileiro." },
+      { property: "og:title", content: "INTERGALAXY: Além do Expediente" },
+      { property: "og:description", content: "Sobreviva ao expediente, entregue o baú roxo e não faça perguntas." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+function Loading() {
+  return (
+    <div className="game-root flex items-center justify-center">
+      <p className="title-sub">CARREGANDO EXPEDIENTE...</p>
+    </div>
+  );
+}
+
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <ClientOnly fallback={<Loading />}>
+      <Suspense fallback={<Loading />}>
+        <GameRoot />
+      </Suspense>
+    </ClientOnly>
   );
 }

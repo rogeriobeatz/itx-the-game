@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bau",
+    "title": "O Baú Roxo",
+    "description": "O fundador precisa que um baú misterioso chegue ao elevador privativo. Sem perguntas.",
+    "npc": "francis",
+    "objectives": [
+      { "id": "talk_founder", "text": "Conversar com o fundador" },
+      { "id": "get_chest", "text": "Receber o baú misterioso" },
+      { "id": "deliver_elevator", "text": "Levar o baú até o elevador privativo (fundo, ao lado do aquário)" },
+      { "id": "culto", "text": "Participar do culto do Mumuzinho (sala de cinema)" },
+      { "id": "return_founder", "text": "Voltar ao Francis e receber a recompensa" }
+    ],
+    "rewards": { "stats": { "limpo": 500, "sujo": 300, "reputacao": 15 } }
+  },
+  {
+    "id": "aquario",
+    "title": "Contemplação Premium",
+    "description": "Observe por 60 segundos os peixes de R$ 20 mil cada. Dizem que relaxa. Dizem que é dedutível.",
+    "npc": "aquario",
+    "objectives": [{ "id": "watch", "text": "Contemplar o aquário por 60s sem se afastar" }],
+    "rewards": { "stats": { "burnout": -30, "fe": 20 } }
+  },
+  {
+    "id": "pitch",
+    "title": "O Pitch Infinito",
+    "description": "Sobreviva à apresentação de marketing na sala de cinema sem o Burnout chegar a 100.",
+    "npc": "mikey",
+    "objectives": [{ "id": "watch_pitch", "text": "Assistir ao pitch na telona da sala de cinema" }],
+    "rewards": { "stats": { "reputacao": 25, "limpo": 100 } }
+  }
+]
