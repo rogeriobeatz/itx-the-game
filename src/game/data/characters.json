@@ -1,10 +1,10 @@
 [
-  { "id": "francis", "name": "Francis Valdevino", "title": "O Fundador", "home": [20.5, 4.2], "wander": 0.8,
-    "palette": { "skin": "#c68a5e", "hair": "#2a1a12", "top": "#7a1f2b", "bottom": "#141418", "accent": "#0d0d10" } },
-  { "id": "mikey", "name": "Mikey", "title": "O Homem da Caneta Forte", "home": [20.5, 18.6], "wander": 1.0,
-    "palette": { "skin": "#d29a6a", "hair": "#8a5a2b", "top": "#d4a531", "bottom": "#1a1a1f", "accent": "#7a2fa8" } },
-  { "id": "otto", "name": "Otto Vonbora", "title": "Mestre da Sobrevivência CLT", "home": [8.4, 8], "wander": 1.2,
-    "palette": { "skin": "#d9a479", "hair": "#3a2416", "top": "#1d1d26", "bottom": "#2a2a3a", "accent": "#3b6cff" } },
-  { "id": "mumuzinho", "name": "Mumuzinho", "title": "Líder Coach", "home": [22.8, 11.2], "wander": 0.6,
-    "palette": { "skin": "#c9875a", "hair": "#4a2c18", "top": "#c81e8c", "bottom": "#1a1a22", "accent": "#ffd23f" } }
+  { "id": "patriarca", "name": "O Patriarca", "title": "O Fundador", "home": [20.5, 4.2], "wander": 0.8,
+    "palette": { "skin": "#c68a5e", "hair": "#2a1a12", "top": "#7a1f2b", "bfantasmam": "#141418", "accent": "#0d0d10" } },
+  { "id": "carimbo", "name": "Diretor Carimbo", "title": "O Homem da Caneta Forte", "home": [20.5, 18.6], "wander": 1.0,
+    "palette": { "skin": "#d29a6a", "hair": "#8a5a2b", "top": "#d4a531", "bfantasmam": "#1a1a1f", "accent": "#7a2fa8" } },
+  { "id": "fantasma", "name": "Funcionário Fantasma", "title": "Mestre da Sobrevivência CLT", "home": [8.4, 8], "wander": 1.2,
+    "palette": { "skin": "#d9a479", "hair": "#3a2416", "top": "#1d1d26", "bfantasmam": "#2a2a3a", "accent": "#3b6cff" } },
+  { "id": "profeta_kpi", "name": "Profeta KPI", "title": "Líder Coach", "home": [22.8, 11.2], "wander": 0.6,
+    "palette": { "skin": "#c9875a", "hair": "#4a2c18", "top": "#c81e8c", "bfantasmam": "#1a1a22", "accent": "#ffd23f" } }
 ]

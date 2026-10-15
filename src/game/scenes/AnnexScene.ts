@@ -145,7 +145,7 @@ export class AnnexScene extends Phaser.Scene {
     this.box(g,o,h,c);
     if(o.type==="glass")g.setAlpha(0.27);
     if(o.type==="speaker") {
-      this.add.text(p.x,p.y-57,"♪  MUMUZINHO", {fontFamily:"'Press Start 2P'",fontSize:"7px",color:"#ffd67e"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1).setStroke("#1b1229",3);
+      this.add.text(p.x,p.y-57,"♪  PROFETA KPI", {fontFamily:"'Press Start 2P'",fontSize:"7px",color:"#ffd67e"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1).setStroke("#1b1229",3);
     }
     if(o.type==="elevator")this.add.text(p.x,p.y-52,"⇵", {fontFamily:"monospace",fontSize:"22px",color:"#ecdbff"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1);
     if(o.type==="counter" && this.floor.id==="studio11")this.add.text(p.x,p.y-35,"YAH CAFÉ", {fontFamily:"'Press Start 2P'",fontSize:"7px",color:"#f7e4ff"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1);

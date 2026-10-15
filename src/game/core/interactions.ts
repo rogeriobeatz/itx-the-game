@@ -37,7 +37,7 @@ const FLAVOR: Record<string, string[]> = {
   reception: [
     "Recepção: 'Bem-vindo! Seu crachá vem em 30 dias úteis. Use seu sorriso enquanto isso.'",
     "Recepção: 'Wi-Fi? A senha é Abundancia2026. Com A maiúsculo, como tudo aqui.'",
-    "Recepção: 'O Francis pediu pra avisar que está no aquário... digo, na sala de vidro.'",
+    "Recepção: 'O Patriarca pediu pra avisar que está no aquário... digo, na sala de vidro.'",
   ],
 };
 let flavorIdx = 0;
@@ -93,7 +93,7 @@ export function interact(id: string) {
     }
     case "screen":
       if (s.quests.pitch.status === "active") return game.setUI({ modal: "pitch" });
-      return game.toast("Telona 8K. Só liga com pitch agendado. Fale com o Mikey.");
+      return game.toast("Telona 8K. Só liga com pitch agendado. Fale com o Diretor Carimbo.");
     case "coffee":
       game.toast("A máquina faz um barulho de turbina e entrega... algo.");
       return game.run({ give: ["cafe"], stats: { fe: -1 }, minutes: 5 });

@@ -3,7 +3,7 @@
     "id": "bau",
     "title": "O Baú Roxo",
     "description": "O fundador precisa que um baú misterioso chegue ao elevador privativo. Sem perguntas.",
-    "npc": "francis",
+    "npc": "patriarca",
     "objectives": [
       {
         "id": "talk_founder",
@@ -19,11 +19,11 @@
       },
       {
         "id": "culto",
-        "text": "Participar do culto do Mumuzinho (auditório, 11º andar)"
+        "text": "Participar do culto do Profeta KPI (auditório, 11º andar)"
       },
       {
         "id": "return_founder",
-        "text": "Voltar ao Francis e receber a recompensa"
+        "text": "Voltar ao Patriarca e receber a recompensa"
       }
     ],
     "rewards": {
@@ -56,7 +56,7 @@
     "id": "pitch",
     "title": "O Pitch Infinito",
     "description": "Sobreviva à apresentação de marketing na sala de cinema sem o Burnout chegar a 100.",
-    "npc": "mikey",
+    "npc": "carimbo",
     "objectives": [
       {
         "id": "watch_pitch",

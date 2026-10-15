@@ -1,5 +1,5 @@
 {
-  "francis": {
+  "patriarca": {
     "entries": [
       { "cond": { "objective": ["bau", "return_founder"] }, "node": "retorno" },
       { "cond": { "questStatus": ["bau", "active"] }, "node": "lembrete" },
@@ -10,7 +10,7 @@
       "intro": {
         "text": "Bem-vindo à Intergalaxy, colaborador! Aqui não temos funcionários, temos ALMAS ALINHADAS. Preciso que você leve este baú até o elevador privativo. Depois, passe no culto para renovar suas energias. E, por favor, não faça perguntas.",
         "choices": [
-          { "text": "Claro, Francis. Sem perguntas.", "effects": { "startQuest": "bau", "advance": [{ "quest": "bau", "objective": "talk_founder" }], "stats": { "fe": 5 } }, "next": "entrega" },
+          { "text": "Claro, Patriarca. Sem perguntas.", "effects": { "startQuest": "bau", "advance": [{ "quest": "bau", "objective": "talk_founder" }], "stats": { "fe": 5 } }, "next": "entrega" },
           { "text": "O que tem dentro do baú?", "effects": { "stats": { "fe": -5 } }, "next": "pergunta" },
           { "text": "Isso tá na minha descrição de cargo?", "effects": { "stats": { "reputacao": -3 } }, "next": "cargo" }
         ]
@@ -54,7 +54,7 @@
       }
     }
   },
-  "mumuzinho": {
+  "profeta_kpi": {
     "entries": [
       { "cond": { "objective": ["bau", "culto"] }, "node": "culto" },
       { "node": "intro" }
@@ -75,12 +75,12 @@
         ]
       },
       "culto2": {
-        "text": "ISSO! Sinto o ROI espiritual subindo! Agora volta lá no Francis, que ele tá esperando sua energia.",
+        "text": "ISSO! Sinto o ROI espiritual subindo! Agora volta lá no Patriarca, que ele tá esperando sua energia.",
         "choices": [{ "text": "Gratidão." }]
       }
     }
   },
-  "mikey": {
+  "carimbo": {
     "entries": [
       { "cond": { "questStatus": ["pitch", "completed"] }, "node": "pos" },
       { "cond": { "questStatus": ["pitch", "active"] }, "node": "ativo" },
@@ -89,11 +89,11 @@
     ],
     "nodes": {
       "intro": {
-        "text": "Eu sou o Mikey. A caneta é forte, a assinatura é cara. O marketing vai apresentar o PITCH INFINITO na sala de cinema. Sobrevive até o fim e eu assino sua promoção.",
+        "text": "Eu sou o Diretor Carimbo. A caneta é forte, a assinatura é cara. O marketing vai apresentar o PITCH INFINITO na sala de cinema. Sobrevive até o fim e eu assino sua promoção.",
         "choices": [
           { "text": "Aceito o desafio.", "effects": { "startQuest": "pitch" }, "next": "aceito" },
           { "text": "Tem algum serviço... por fora?", "cond": { "notFlag": "pendrive_taken" }, "next": "pendrive" },
-          { "text": "Hoje não, Mikey." }
+          { "text": "Hoje não, Diretor Carimbo." }
         ]
       },
       "aceito": {
@@ -115,7 +115,7 @@
         ]
       },
       "pendrive": {
-        "text": "Leva esse pendrive pro Otto. Não abre. Não pluga. Não pensa sobre ele.",
+        "text": "Leva esse pendrive pro Fantasma. Não abre. Não pluga. Não pensa sobre ele.",
         "choices": [
           { "text": "Fechado.", "effects": { "give": ["pendrive"], "flag": "pendrive_taken" } },
           { "text": "Melhor não.", "effects": { "stats": { "reputacao": -1 } } }
@@ -130,7 +130,7 @@
       }
     }
   },
-  "otto": {
+  "fantasma": {
     "entries": [
       { "cond": { "hasItem": "pendrive" }, "node": "deal" },
       { "node": "intro" }

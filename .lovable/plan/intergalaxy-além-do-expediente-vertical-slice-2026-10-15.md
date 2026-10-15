@@ -7,14 +7,14 @@ A playable 2D isometric pixel-art RPG that opens straight into the game. All tex
 1. **Title screen** — Intergalaxy logo, purple/black/magenta neon, "Jogar" and "Continuar" (if a save exists) and "Novo jogo".
 2. **Main office map** (built from separate tiles and objects, not one picture): reception, workstations with PCs and gamer chairs, collectible figures, luxury aquarium, rest area with sofas, decorative staircase + mezzanine, elevator (private), meeting room, columns and industrial lights.
 3. **Controls** — WASD/arrows to walk, E to interact, I inventory, J mission journal, Esc pause. Collisions with walls, furniture and NPCs; correct depth sorting so the player walks behind/in front of objects.
-4. **NPCs** — Francis Valdevino (founder), Mikey (Caneta Forte), Otto Vonbora (CLT survival), Mumuzinho (coach). Each has idle wandering/behaviour and branching dialogue with choices that change stats.
+4. **NPCs** — O Patriarca (founder), Diretor Carimbo (Caneta Forte), Funcionário Fantasma (CLT survival), Profeta KPI (coach). Each has idle wandering/behaviour and branching dialogue with choices that change stats.
 5. **Stats** — Vida, Fé, Burnout, Reputação (0–100), Dinheiro Limpo, Dinheiro Sujo. Fé drains and Burnout rises slowly with the in-game clock. Burnout 100 or Vida 0 → "Afastamento" game-over screen with restart from last save.
 6. **Clock** — workday 09:00–18:00 that runs in accelerated time; day counter.
 7. **Missions**
-   - **O Baú Roxo**: talk to Francis → receive chest (inventory) → carry to private elevator → attend Mumuzinho's "culto motivacional" to restore Fé → return to Francis for reward (clean + dirty money, reputation).
+   - **O Baú Roxo**: talk to Patriarca → receive chest (inventory) → carry to private elevator → attend Profeta KPI's "culto motivacional" to restore Fé → return to Patriarca for reward (clean + dirty money, reputation).
    - **Contemplação Premium**: stand at the aquarium watching fish for 60 seconds (progress bar, cancels if you walk away) → less Burnout, more Fé.
    - **O Pitch Infinito**: meeting-room presentation mini-event: slides of absurd marketing jargon, each requiring a quick choice; wrong choices raise Burnout; survive without hitting 100 → Reputação up.
-8. **HUD** — top-left Vida/Fé/Burnout bars; top-right wallets, reputation, day/time; bottom-left current mission + objectives; bottom-right minimap. Dialogue box with pixel portrait, name, text, choices.
+8. **HUD** — top-left Vida/Fé/Burnout bars; top-right wallets, reputation, day/time; bfantasmam-left current mission + objectives; bfantasmam-right minimap. Dialogue box with pixel portrait, name, text, choices.
 9. **Saving** — progress (stats, inventory, mission states, position, clock) saved locally in the browser automatically and on key events.
 
 ## Visual direction

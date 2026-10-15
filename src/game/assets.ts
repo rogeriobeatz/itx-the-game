@@ -1,11 +1,13 @@
-// Single manifest for swappable art. Replace files here to upgrade visuals.
-import francis from "@/assets/portrait-francis.jpg";
-import mikey from "@/assets/portrait-mikey.jpg";
-import otto from "@/assets/portrait-otto.jpg";
-import mumuzinho from "@/assets/portrait-mumuzinho.jpg";
+// Manifest for fictional cast portraits. Avoid personal names/likeness identifiers.
+import patriarca from "@/assets/portrait-patriarca.jpg";
+import carimbo from "@/assets/portrait-carimbo.jpg";
+import fantasma from "@/assets/portrait-fantasma.jpg";
+import profetaKpi from "@/assets/portrait-profeta-kpi.jpg";
 import titleBg from "@/assets/title-bg.jpg";
 import logo from "@/assets/intergalaxy-logo.png.asset.json";
 
-export const PORTRAITS: Record<string, string> = { francis, mikey, otto, mumuzinho };
+export const PORTRAITS: Record<string, string> = {
+  patriarca, carimbo, fantasma, profeta_kpi: profetaKpi,
+};
 export const TITLE_BG = titleBg;
 export const LOGO_URL = logo.url;
