@@ -24,3 +24,10 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Acompanhamento do desenvolvimento
+
+- [Planilha viva: backlog, bugs, entregas e indicadores](https://docs.google.com/spreadsheets/d/18jLzWjctJ0Ec6T2TH_Our_AYzCmUJbD6R_VTM8_F8yE/edit)
+- [CI e testes](https://github.com/rogeriobeatz/itx-the-game/actions)
+
+Atualize o status da planilha depois de cada entrega e registre bugs antes de marcá-los como resolvidos.
