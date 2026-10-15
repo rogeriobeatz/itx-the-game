@@ -27,6 +27,7 @@ export function newGame(): GameState {
     flags: {},
     clock: { day: 1, minutes: BALANCE.workStart },
     pos: { ...BALANCE.startPos },
+    floor: "office",
   };
 }
 
@@ -128,6 +129,7 @@ export function sickLeave(s0: GameState) {
   s.clock.day += 1;
   s.clock.minutes = BALANCE.workStart;
   s.pos = { ...BALANCE.startPos };
+  s.floor = "office";
   if (s.quests.pitch?.status === "active") s.quests.pitch.status = "failed";
   return s;
 }

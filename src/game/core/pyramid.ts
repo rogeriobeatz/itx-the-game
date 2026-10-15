@@ -26,7 +26,7 @@ export function eligibleRank(s: GameState): number {
   return Math.min(rankForInfluence(s.pyramid.influence), unlocked ? 5 : 4);
 }
 export function rewardQuestInfluence(s: GameState, id: string, log: string[]) {
-  const rewards: Record<string, number> = { bau: 60, pitch: 45, aquario: 30 };
+  const rewards: Record<string, number> = { bau: 60, pitch: 45, aquario: 30, refeicao: 12, louvor: 25, respiro: 20 };
   const amount = rewards[id] ?? 0;
   if (!amount || s.pyramid.outcome) return;
   const oldRank = s.pyramid.rank;

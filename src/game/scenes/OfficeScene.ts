@@ -70,7 +70,7 @@ export class OfficeScene extends Phaser.Scene {
     this.makeCharTexture("char-player", pal);
     const s = game.get().state;
     this.player = this.makeActor("player", "Você", s.pos.x, s.pos.y, "char-player");
-    for (const c of CHARS) {
+    for (const c of CHARS.filter((c) => c.id !== "mumuzinho")) {
       this.makeCharTexture(`char-${c.id}`, c.palette);
       const a = this.makeActor(c.id, c.name, c.home[0], c.home[1], `char-${c.id}`);
       a.home = c.home;
@@ -90,10 +90,12 @@ export class OfficeScene extends Phaser.Scene {
     kb.disableGlobalCapture();
 
     // Allow restoring position from a reloaded save.
-    this.game.events.on("teleport", (pos: { x: number; y: number }) => {
+    const onTeleport = (pos: { x: number; y: number }) => {
       this.player.x = pos.x;
       this.player.y = pos.y;
-    });
+    };
+    this.game.events.on("teleport", onTeleport);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.game.events.off("teleport", onTeleport));
   }
 
   // ---------- drawing ----------

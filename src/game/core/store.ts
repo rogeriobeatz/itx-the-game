@@ -1,9 +1,10 @@
 import { BALANCE } from "../config/balance";
 import { newPyramid, performPyramidAction, type PyramidAction } from "./pyramid";
 import { applyEffects, isCollapsed, newGame, tickClock } from "./logic";
-import type { Effects, GameState } from "./types";
+import { canVisit, arrivalPoint } from "./floors";
+import type { Effects, GameState, FloorId } from "./types";
 
-export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover" | "pyramid" | "ending";
+export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover" | "pyramid" | "ending" | "elevator";
 
 export interface UIState {
   modal: Modal;
@@ -83,6 +84,19 @@ export const game = {
     game.save();
     emit();
   },
+  travelTo(id: FloorId): boolean {
+    if (!canVisit(snap.state, id) || snap.state.pyramid.outcome) return false;
+    const position = arrivalPoint(id);
+    const moved = { ...snap.state, floor: id, pos: position };
+    const { state, log } = tickClock(moved, 5);
+    snap = { ...snap, state, ui: { ...snap.ui, modal: null, dialogue: null, prompt: null, watch: null,
+      positions: { player: position, npcs: {} } } };
+    log.forEach((msg) => game.toast(msg));
+    checkCollapse();
+    game.save();
+    emit();
+    return true;
+  },
   pyramidAction(action: PyramidAction) {
     const result = performPyramidAction(snap.state, action);
     result.log.forEach((message) => game.toast(message));
@@ -156,7 +170,7 @@ export const game = {
       const saved = JSON.parse(raw) as GameState;
       snap = {
         ...snap,
-        state: { ...base, ...saved, pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...saved.quests } },
+        state: { ...base, ...saved, floor: saved.floor && ["office", "refeitorio", "studio11", "terraco"].includes(saved.floor) ? saved.floor : "office", pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...saved.quests } },
       };
       emit();
       return true;
@@ -165,7 +179,7 @@ export const game = {
     }
   },
   reset() {
-    snap = { ...snap, state: newGame() };
+    snap = { ...snap, state: newGame(), ui: { ...snap.ui, prompt: null, positions: { player: { ...BALANCE.startPos }, npcs: {} } } };
     game.save();
     emit();
   },

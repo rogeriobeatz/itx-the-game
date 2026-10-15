@@ -5,28 +5,129 @@
     "description": "O fundador precisa que um baú misterioso chegue ao elevador privativo. Sem perguntas.",
     "npc": "francis",
     "objectives": [
-      { "id": "talk_founder", "text": "Conversar com o fundador" },
-      { "id": "get_chest", "text": "Receber o baú misterioso" },
-      { "id": "deliver_elevator", "text": "Levar o baú até o elevador privativo (fundo, ao lado do aquário)" },
-      { "id": "culto", "text": "Participar do culto do Mumuzinho (sala de cinema)" },
-      { "id": "return_founder", "text": "Voltar ao Francis e receber a recompensa" }
+      {
+        "id": "talk_founder",
+        "text": "Conversar com o fundador"
+      },
+      {
+        "id": "get_chest",
+        "text": "Receber o baú misterioso"
+      },
+      {
+        "id": "deliver_elevator",
+        "text": "Levar o baú até o elevador privativo (fundo, ao lado do aquário)"
+      },
+      {
+        "id": "culto",
+        "text": "Participar do culto do Mumuzinho (sala de cinema)"
+      },
+      {
+        "id": "return_founder",
+        "text": "Voltar ao Francis e receber a recompensa"
+      }
     ],
-    "rewards": { "stats": { "limpo": 500, "sujo": 300, "reputacao": 15 } }
+    "rewards": {
+      "stats": {
+        "limpo": 500,
+        "sujo": 300,
+        "reputacao": 15
+      }
+    }
   },
   {
     "id": "aquario",
     "title": "Contemplação Premium",
     "description": "Observe por 60 segundos os peixes de R$ 20 mil cada. Dizem que relaxa. Dizem que é dedutível.",
     "npc": "aquario",
-    "objectives": [{ "id": "watch", "text": "Contemplar o aquário por 60s sem se afastar" }],
-    "rewards": { "stats": { "burnout": -30, "fe": 20 } }
+    "objectives": [
+      {
+        "id": "watch",
+        "text": "Contemplar o aquário por 60s sem se afastar"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "burnout": -30,
+        "fe": 20
+      }
+    }
   },
   {
     "id": "pitch",
     "title": "O Pitch Infinito",
     "description": "Sobreviva à apresentação de marketing na sala de cinema sem o Burnout chegar a 100.",
     "npc": "mikey",
-    "objectives": [{ "id": "watch_pitch", "text": "Assistir ao pitch na telona da sala de cinema" }],
-    "rewards": { "stats": { "reputacao": 25, "limpo": 100 } }
+    "objectives": [
+      {
+        "id": "watch_pitch",
+        "text": "Assistir ao pitch na telona da sala de cinema"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "reputacao": 25,
+        "limpo": 100
+      }
+    }
+  },
+  {
+    "id": "refeicao",
+    "title": "Almoço de Sinergia",
+    "description": "No refeitório, sobreviva ao almoço e volte para o trabalho com a garrafinha cheia.",
+    "npc": "refeitorio",
+    "objectives": [
+      {
+        "id": "water",
+        "text": "Encher a garrafinha no refeitório"
+      },
+      {
+        "id": "eat",
+        "text": "Retirar o almoço no balcão"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "vida": 15,
+        "burnout": -15,
+        "reputacao": 3
+      }
+    }
+  },
+  {
+    "id": "louvor",
+    "title": "Louvor de Emergência",
+    "description": "No andar 11, faça um louvor no palco do auditório para renovar a fé corporativa.",
+    "npc": "auditorio",
+    "objectives": [
+      {
+        "id": "sing",
+        "text": "Interagir com o púlpito do auditório"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "fe": 25,
+        "burnout": -10
+      }
+    }
+  },
+  {
+    "id": "respiro",
+    "title": "Pausa Estratégica",
+    "description": "Encontre um pufe na área externa e recupere o fôlego antes do colapso.",
+    "npc": "terraco",
+    "objectives": [
+      {
+        "id": "rest",
+        "text": "Descansar num pufe do terraço"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "vida": 10,
+        "burnout": -20,
+        "fe": 5
+      }
+    }
   }
 ]

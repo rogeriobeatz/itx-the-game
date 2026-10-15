@@ -51,14 +51,35 @@ export function interact(id: string) {
     return game.run({ stats: { limpo: 20, burnout: 6, reputacao: 1 }, minutes: 30 });
   }
   switch (id) {
+    case "water":
+      if (s.quests.refeicao.status === "completed") return game.toast("Garrafinha cheia. Seu KPI de hidratação já bateu.");
+      if (s.quests.refeicao.status === "available") game.run({ startQuest: "refeicao" });
+      if (currentObjective(game.get().state, "refeicao")?.id === "water") game.run({ advance: [{ quest: "refeicao", objective: "water" }], minutes: 3 });
+      return game.toast("Hidratação corporativa concluída.");
+    case "lunch":
+      if (currentObjective(s, "refeicao")?.id === "eat") return game.run({ advance: [{ quest: "refeicao", objective: "eat" }], minutes: 20 });
+      return game.toast("Sem garrafinha não tem almoço. Política de RH não escrita.");
+    case "louvor":
+      if (s.quests.louvor.status === "completed") return game.toast("Seu louvor já foi contabilizado na planilha celestial.");
+      if (s.quests.louvor.status === "available") game.run({ startQuest: "louvor" });
+      return game.run({ advance: [{ quest: "louvor", objective: "sing" }], minutes: 15 });
+    case "yah_cafe":
+      if (s.stats.limpo < 15) return game.toast("O Yah Café cobra R$ 15. Até a fé precisa de saldo limpo.");
+      game.toast("Yah Café: café especial, fé e cafeína em doses desproporcionais.");
+      return game.run({ stats: { limpo: -15, vida: 5, burnout: -10, fe: 2 }, minutes: 5 });
+    case "terrace_rest":
+      if (s.quests.respiro.status === "completed") return game.toast("O pufe já te reconhece. Hora de voltar ao corre.");
+      if (s.quests.respiro.status === "available") game.run({ startQuest: "respiro" });
+      return game.run({ advance: [{ quest: "respiro", objective: "rest" }], minutes: 15 });
     case "pyramid_terminal":
       return game.setUI({ modal: "pyramid" });
     case "elevator":
       if (currentObjective(s, "bau")?.id === "deliver_elevator" && s.inventory.includes("bau")) {
         game.toast("O baú some no elevador. Você escuta um 'obrigado' em latim.");
-        return game.run({ take: ["bau"], advance: [{ quest: "bau", objective: "deliver_elevator" }], stats: { burnout: 5 } });
+        game.run({ take: ["bau"], advance: [{ quest: "bau", objective: "deliver_elevator" }], stats: { burnout: 5 } });
+        return game.toast("Baú despachado! Aperte E novamente para escolher o 11º andar.");
       }
-      return game.toast("Elevador privativo. Acesso restrito a almas nível Diamante.");
+      return game.setUI({ modal: "elevator" });
     case "aquarium": {
       const q = s.quests.aquario;
       if (q.status === "completed") {
