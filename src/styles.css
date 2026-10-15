@@ -196,7 +196,8 @@
   @keyframes toast-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
 
   /* ---- UI system v2 ---- */
-  .pixel-panel { position: relative; background: linear-gradient(180deg, oklch(0.14 0.05 300 / 0.92), oklch(0.09 0.035 295 / 0.92)); }
+  .modal-box, .dialogue, .pitch-box { position: relative; }
+  .pixel-panel { background: linear-gradient(180deg, oklch(0.14 0.05 300 / 0.92), oklch(0.09 0.035 295 / 0.92)); }
   .pixel-panel::after { content: ""; position: absolute; top: -3px; left: 10px; width: 28px; height: 3px; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); pointer-events: none; }
   .hud-tag { font-family: var(--font-pixel); font-size: 7px; letter-spacing: 2px; color: var(--cyan); opacity: 0.85; margin-bottom: 4px; }
   .stat-icon { width: 14px; text-align: center; font-size: 15px; line-height: 1; }
