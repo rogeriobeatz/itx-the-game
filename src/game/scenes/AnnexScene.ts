@@ -181,7 +181,7 @@ export class AnnexScene extends Phaser.Scene {
     this.repositionPlayer();
     if(this.walk) this.player.y-=Math.abs(Math.sin(this.walk*10))*3;
     let nearest:typeof this.points[number] | null=null;
-    let dMin=BALANCE.interactRadius;
+    let dMin: number = BALANCE.interactRadius;
     for(const point of this.points){
       const d=Math.hypot(point.x-this.px,point.y-this.py);
       if(d<dMin){dMin=d;nearest=point;}
