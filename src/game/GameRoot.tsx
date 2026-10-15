@@ -563,6 +563,7 @@ function PyramidPanel() {
         <div className="mt-3">⌛ RISCO DE FALÊNCIA: {p.instability}%</div>
         <div className="stat-track mt-2"><div className="stat-fill stat-vida" style={{ width: p.instability + "%" }} /></div>
         <p className="hud-dim mt-3">Prazo: dia {CRISIS_DAY}. Hoje: dia {state.clock.day}. Vitória máxima: Faraó com pelo menos ₿ {VICTORY_BTC.toFixed(2)} sacados.</p>
+        <p className="hud-dim mt-2">Para desbloquear Faraó: concluir O Baú Roxo e O Pitch Infinito. As missões também concedem influência.</p>
         <div className="flex flex-col gap-3 mt-4">
           <button className="pixel-btn pixel-btn-primary" onClick={() => game.pyramidAction("pitch")}>FAZER PITCH · +BTC +INFLUÊNCIA +RISCO</button>
           <button className="pixel-btn" disabled={state.stats.limpo < 40} onClick={() => game.pyramidAction("compliance")}>REUNIÃO DE COMPLIANCE TEATRAL · R$40 · -RISCO PF</button>

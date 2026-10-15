@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { applyEffects, isCollapsed, newGame, sickLeave, tickClock } from "./logic";
 import { blocked } from "./world";
-import { RANKS, performPyramidAction } from "./pyramid";
+import { RANKS, performPyramidAction, rewardQuestInfluence } from "./pyramid";
 
 describe("stat rules", () => {
   it("clamps bounded stats between 0 and 100", () => {
@@ -64,6 +64,8 @@ describe("pirâmide fictícia", () => {
   it("permite subir até Faraó com controle do risco", () => {
     let s = newGame();
     s.stats.limpo = 100;
+    s.quests.bau.status = "completed";
+    s.quests.pitch.status = "completed";
     for (let i = 0; i < 5; i++) s = performPyramidAction(s, "pitch").state;
     expect(RANKS[s.pyramid.rank]!.name).toBe("Faraó");
     expect(s.pyramid.outcome).toBeNull();
@@ -88,5 +90,24 @@ describe("pirâmide fictícia", () => {
     const s = newGame();
     s.pyramid.heat = 95;
     expect(performPyramidAction(s, "pitch").state.pyramid.outcome).toBe("raided");
+  });
+});
+
+describe("progresso narrativo", () => {
+  it("sem as duas missões principais não libera o nível Faraó", () => {
+    let s = newGame();
+    s.stats.limpo = 100;
+    for (let i = 0; i < 5; i++) s = performPyramidAction(s, "pitch").state;
+    expect(s.pyramid.rank).toBe(4);
+  });
+  it("missões concedem influência e destravam Faraó", () => {
+    const s = newGame();
+    s.pyramid.influence = 210;
+    s.pyramid.rank = 4;
+    s.quests.bau.status = "completed";
+    s.quests.pitch.status = "completed";
+    rewardQuestInfluence(s, "pitch", []);
+    expect(s.pyramid.rank).toBe(5);
+    expect(s.pyramid.influence).toBe(255);
   });
 });

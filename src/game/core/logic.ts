@@ -1,5 +1,5 @@
 import questsData from "../data/quests.json";
-import { newPyramid, pyramidNewDay } from "./pyramid";
+import { newPyramid, pyramidNewDay, rewardQuestInfluence } from "./pyramid";
 import itemsData from "../data/items.json";
 import { BALANCE } from "../config/balance";
 import type { Cond, Effects, GameState, ItemDef, QuestDef, QuestId, StatKey } from "./types";
@@ -93,6 +93,7 @@ function mutate(s: GameState, e: Effects, log: string[]) {
       q.status = "completed";
       log.push(`Missão concluída: ${def.title}`);
       mutate(s, def.rewards, log);
+      rewardQuestInfluence(s, a.quest, log);
     }
   }
   if (e.minutes) advanceClock(s, e.minutes, log);

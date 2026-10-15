@@ -21,6 +21,20 @@ export function rankForInfluence(n: number) {
   for (let i = 0; i < RANKS.length; i++) if (n >= RANKS[i]!.influence) result = i;
   return result;
 }
+export function eligibleRank(s: GameState): number {
+  const unlocked = s.quests.bau?.status === "completed" && s.quests.pitch?.status === "completed";
+  return Math.min(rankForInfluence(s.pyramid.influence), unlocked ? 5 : 4);
+}
+export function rewardQuestInfluence(s: GameState, id: string, log: string[]) {
+  const rewards: Record<string, number> = { bau: 60, pitch: 45, aquario: 30 };
+  const amount = rewards[id] ?? 0;
+  if (!amount || s.pyramid.outcome) return;
+  const oldRank = s.pyramid.rank;
+  s.pyramid.influence += amount;
+  s.pyramid.rank = eligibleRank(s);
+  log.push("Missão concluída: +" + amount + " influência na hierarquia!");
+  if (s.pyramid.rank > oldRank) log.push("PROMOÇÃO: " + RANKS[s.pyramid.rank]!.name.toUpperCase() + "!");
+}
 export function checkPyramidCrisis(s: GameState, log: string[]) {
   const p = s.pyramid;
   if (p.outcome) return;
@@ -54,7 +68,7 @@ export function performPyramidAction(old: GameState, action: PyramidAction) {
     p.instability = cap(p.instability + 6 + before * 2);
     s.stats.burnout = cap(s.stats.burnout + 7);
     s.stats.fe = cap(s.stats.fe - 3);
-    p.rank = rankForInfluence(p.influence);
+    p.rank = eligibleRank(s);
     minutes = 45;
     log.push("Pitch: +" + influence + " influência e +" + earned.toFixed(4) + " BTC fictícios.");
     if (p.rank > before) log.push("PROMOÇÃO: " + RANKS[p.rank]!.name.toUpperCase() + "!");
