@@ -190,6 +190,7 @@ function Minimap() {
   }, [ui.positions]);
   return (
     <div className="pixel-panel hud-br">
+      <div className="hud-tag">MAPA · ANDAR 7</div>
       <canvas ref={ref} width={MAP.width * 6} height={MAP.height * 6} className="minimap" />
     </div>
   );
@@ -207,15 +208,38 @@ function WatchBar({ elapsed }: { elapsed: number }) {
   );
 }
 
+/** Pick a visual style for a feedback message based on its wording. */
+function toastKind(text: string): { kind: string; icon: string } {
+  const t = text.toLowerCase();
+  if (t.startsWith("missão iniciada")) return { kind: "quest", icon: "!" };
+  if (t.startsWith("missão concluída")) return { kind: "done", icon: "✓" };
+  if (t.startsWith("recebeu")) return { kind: "item", icon: "◆" };
+  const m = t.match(/^([+-])\d+\s+(.+)$/);
+  if (m) {
+    const up = m[1] === "+";
+    const stat = m[2]!;
+    if (stat.startsWith("burnout")) return up ? { kind: "warn", icon: "▲" } : { kind: "up", icon: "▼" };
+    if (stat.startsWith("fé") && !up) return { kind: "fe", icon: "✦" };
+    if (stat.startsWith("reputa") && up) return { kind: "rep", icon: "★" };
+    return up ? { kind: "up", icon: "▲" } : { kind: "down", icon: "▼" };
+  }
+  if (t.includes("salário")) return { kind: "up", icon: "$" };
+  return { kind: "info", icon: "›" };
+}
+
 function Toasts() {
   const { ui } = useGame();
   return (
     <div className="toasts">
-      {ui.toasts.map((t) => (
-        <div key={t.id} className="toast-item">
-          {t.text}
-        </div>
-      ))}
+      {ui.toasts.map((t) => {
+        const k = toastKind(t.text);
+        return (
+          <div key={t.id} className={`toast-item toast-${k.kind}`}>
+            <span className="toast-icon">{k.icon}</span>
+            {t.text}
+          </div>
+        );
+      })}
     </div>
   );
 }
