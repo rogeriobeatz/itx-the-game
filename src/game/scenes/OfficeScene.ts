@@ -45,7 +45,7 @@ function shade(c: number, f: number) {
 export class OfficeScene extends Phaser.Scene {
   private player!: Actor;
   private npcs: Actor[] = [];
-  private keys!: Record<string, Phaser.Input.Keyboard.Key>;
+  keys!: Record<"W" | "A" | "S" | "D" | "UP" | "DOWN" | "LEFT" | "RIGHT", Phaser.Input.Keyboard.Key>;
   private posAcc = 0;
   private aquariumPoint = INTERACTABLES.find((i) => i.id === "aquarium")!;
 
@@ -85,7 +85,7 @@ export class OfficeScene extends Phaser.Scene {
     cam.setZoom(this.scale.width < 800 ? 1 : 1.25);
 
     const kb = this.input.keyboard!;
-    this.keys = kb.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as Record<string, Phaser.Input.Keyboard.Key>;
+    this.keys = kb.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as OfficeScene["keys"];
     kb.disableGlobalCapture();
 
     // Allow restoring position from a reloaded save.
