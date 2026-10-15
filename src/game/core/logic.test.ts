@@ -1,0 +1,60 @@
+import { describe, expect, it } from "vitest";
+import { applyEffects, isCollapsed, newGame, sickLeave, tickClock } from "./logic";
+import { blocked } from "./world";
+
+describe("stat rules", () => {
+  it("clamps bounded stats between 0 and 100", () => {
+    const { state } = applyEffects(newGame(), { stats: { fe: 500, vida: -500 } });
+    expect(state.stats.fe).toBe(100);
+    expect(state.stats.vida).toBe(0);
+  });
+
+  it("collapses when burnout reaches 100", () => {
+    const { state } = applyEffects(newGame(), { stats: { burnout: 90 } });
+    expect(state.stats.burnout).toBe(100);
+    expect(isCollapsed(state)).toBe(true);
+  });
+
+  it("drains 1 Fé and adds 1 Burnout every 10 game minutes", () => {
+    const s = newGame();
+    const { state } = tickClock(s, 30);
+    expect(state.stats.fe).toBe(s.stats.fe - 3);
+    expect(state.stats.burnout).toBe(s.stats.burnout + 3);
+  });
+
+  it("pays 150 salary when the workday ends at 18:00", () => {
+    const { state } = tickClock(newGame(), 9 * 60);
+    expect(state.clock.day).toBe(2);
+    expect(state.stats.limpo).toBe(150);
+  });
+
+  it("sick leave resets burnout to 35 and fails the pitch", () => {
+    let s = applyEffects(newGame(), { startQuest: "pitch", stats: { burnout: 100 } }).state;
+    s = sickLeave(s);
+    expect(s.stats.burnout).toBe(35);
+    expect(s.quests.pitch.status).toBe("failed");
+  });
+});
+
+describe("O Baú Roxo", () => {
+  it("only advances objectives in order and pays rewards at the end", () => {
+    let s = applyEffects(newGame(), { startQuest: "bau" }).state;
+    s = applyEffects(s, { advance: [{ quest: "bau", objective: "culto" }] }).state;
+    expect(s.quests.bau.step).toBe(0);
+    for (const o of ["talk_founder", "get_chest", "deliver_elevator", "culto", "return_founder"]) {
+      s = applyEffects(s, { advance: [{ quest: "bau", objective: o }] }).state;
+    }
+    expect(s.quests.bau.status).toBe("completed");
+    expect(s.stats.limpo).toBe(500);
+    expect(s.stats.sujo).toBe(300);
+  });
+});
+
+describe("collision", () => {
+  it("blocks inside a rect and at the map edge", () => {
+    const rects = [{ x: 2, y: 2, w: 1, d: 1 }];
+    expect(blocked(2.5, 2.5, rects)).toBe(true);
+    expect(blocked(5, 5, rects)).toBe(false);
+    expect(blocked(0.1, 5, rects)).toBe(true);
+  });
+});
