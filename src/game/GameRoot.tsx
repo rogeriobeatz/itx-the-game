@@ -4,6 +4,7 @@ import { game } from "./core/store";
 import { choose, DIALOGUES, interact, useItem, visibleChoices } from "./core/interactions";
 import { applyEffects, currentObjective, fmtClock, ITEMS, QUESTS, sickLeave } from "./core/logic";
 import { MAP } from "./core/world";
+import { FLOORS, canVisit, floorDefinition } from "./core/floors";
 import { CRISIS_DAY, RANKS, VICTORY_BTC } from "./core/pyramid";
 import { BALANCE } from "./config/balance";
 import { LOGO_URL, PORTRAITS, TITLE_BG } from "./assets";
@@ -29,6 +30,7 @@ export default function GameRoot() {
     (async () => {
       const Phaser = (await import("phaser")).default;
       const { OfficeScene } = await import("./scenes/OfficeScene");
+      const { AnnexScene } = await import("./scenes/AnnexScene");
       try {
         await document.fonts.load("10px 'Press Start 2P'");
       } catch {
@@ -42,7 +44,7 @@ export default function GameRoot() {
         pixelArt: true,
         scale: { mode: Phaser.Scale.RESIZE, width: "100%", height: "100%" },
         callbacks: { preBoot: (gm) => gm.registry.set("logoUrl", LOGO_URL) },
-        scene: [OfficeScene],
+        scene: [OfficeScene, AnnexScene],
       });
       phaser.current = g;
     })();
@@ -51,6 +53,13 @@ export default function GameRoot() {
       g?.destroy(true);
     };
   }, []);
+
+  useEffect(() => {
+    const instance = phaser.current;
+    if (!instance) return;
+    const key = snap.state.floor === "office" ? "office" : "annex";
+    instance.scene.start(key);
+  }, [snap.state.floor]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -93,6 +102,7 @@ export default function GameRoot() {
       {ui.modal === "pause" && <Pause onRestart={teleport} />}
       {ui.modal === "pitch" && <Pitch />}
       {ui.modal === "pyramid" && <PyramidPanel />}
+      {ui.modal === "elevator" && <ElevatorPanel />}
       {ui.modal === "ending" && <PyramidEnding onRestart={teleport} />}
       {ui.modal === "gameover" && <GameOver onBack={teleport} />}
     </div>
@@ -125,7 +135,7 @@ function Hud() {
   return (
     <>
       <div className="pixel-panel hud-tl">
-        <div className="hud-tag">FUNCIONÁRIO #0042</div>
+        <div className="hud-tag">FUNCIONÁRIO #0042 · {FLOORS.find((x) => x.id === state.floor)?.name ?? "Escritório"}</div>
         <Bar label="VIDA" value={s.vida} kind="vida" />
         <Bar label="FÉ" value={s.fe} kind="fe" />
         <Bar label="BURN" value={s.burnout} kind="burnout" />
@@ -179,29 +189,35 @@ function Hud() {
 
 function Minimap() {
   const ref = useRef<HTMLCanvasElement>(null);
-  const { ui } = useGame();
+  const { ui, state } = useGame();
+  const annex = state.floor === "office" ? undefined : floorDefinition(state.floor);
+  const width = annex?.size[0] ?? MAP.width;
+  const height = annex?.size[1] ?? MAP.height;
   useEffect(() => {
-    const c = ref.current;
-    if (!c) return;
-    const ctx = c.getContext("2d")!;
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
     const S = 6;
-    const css = getComputedStyle(c);
-    ctx.clearRect(0, 0, c.width, c.height);
+    const css = getComputedStyle(canvas);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = css.getPropertyValue("--mm-floor");
-    ctx.fillRect(0, 0, MAP.width * S, MAP.height * S);
-    ctx.fillStyle = css.getPropertyValue("--mm-path");
-    for (const z of MAP.zones) ctx.fillRect(z.x * S, z.y * S, z.w * S, z.d * S);
+    ctx.fillRect(0, 0, width * S, height * S);
+    if (state.floor === "office") {
+      ctx.fillStyle = css.getPropertyValue("--mm-path");
+      for (const z of MAP.zones) ctx.fillRect(z.x * S, z.y * S, z.w * S, z.d * S);
+    }
     ctx.fillStyle = css.getPropertyValue("--mm-solid");
-    for (const o of MAP.objects) ctx.fillRect(o.x * S, o.y * S, Math.max(1, o.w * S), Math.max(1, o.d * S));
+    for (const o of annex?.decor ?? MAP.objects) ctx.fillRect(o.x * S, o.y * S, Math.max(1, o.w * S), Math.max(1, o.d * S));
     ctx.fillStyle = css.getPropertyValue("--mm-npc");
     for (const n of Object.values(ui.positions.npcs)) ctx.fillRect(n.x * S - 2, n.y * S - 2, 4, 4);
     ctx.fillStyle = css.getPropertyValue("--mm-player");
     ctx.fillRect(ui.positions.player.x * S - 3, ui.positions.player.y * S - 3, 6, 6);
-  }, [ui.positions]);
+  }, [ui.positions, state.floor, width, height, annex]);
   return (
     <div className="pixel-panel hud-br">
-      <div className="hud-tag">MAPA · ANDAR 7</div>
-      <canvas ref={ref} width={MAP.width * 6} height={MAP.height * 6} className="minimap" />
+      <div className="hud-tag">MAPA · {FLOORS.find((x) => x.id === state.floor)?.level ?? "ESCRITÓRIO"}</div>
+      <canvas key={state.floor} ref={ref} width={width * 6} height={height * 6} className="minimap" />
     </div>
   );
 }
@@ -538,6 +554,32 @@ function Pitch() {
   );
 }
 
+
+function ElevatorPanel() {
+  const { state } = useGame();
+  return (
+    <Modal title="ELEVADOR INTERGALÁCTICO" hint="Os espaços são recriações fictícias inspiradas nas fotos enviadas." onClose={() => game.setUI({ modal: null })}>
+      <div className="section-label">ESCOLHA O DESTINO</div>
+      <p className="dlg-text mt-2">Suba na hierarquia para liberar novos ambientes. Algumas missões garantem acesso especial.</p>
+      <div className="flex flex-col gap-3 mt-4">
+        {FLOORS.map((floor) => {
+          const accessible = canVisit(state, floor.id);
+          const current = state.floor === floor.id;
+          return (
+            <button key={floor.id} className={`pixel-btn ${current ? "pixel-btn-primary" : ""}`}
+              disabled={!accessible || current}
+              onClick={() => game.travelTo(floor.id)}>
+              {current ? "● " : accessible ? "⇧ " : "🔒 "}{floor.name.toUpperCase()}
+              {" · "}{floor.level}
+              {!accessible && ` · requer ${RANKS[floor.minRank]!.name}`}
+              {current && " · VOCÊ ESTÁ AQUI"}
+            </button>
+          );
+        })}
+      </div>
+    </Modal>
+  );
+}
 
 function PyramidPanel() {
   const { state } = useGame();

@@ -1,0 +1,196 @@
+import Phaser from "phaser";
+import { BALANCE } from "../config/balance";
+import { floorDefinition, type AnnexDef, type AnnexObject } from "../core/floors";
+import { game } from "../core/store";
+import { blocked, screenToTileDir, type Rect } from "../core/world";
+
+const TW = 64;
+const TH = 32;
+const iso = (x: number, y: number) => ({ x: (x - y) * TW / 2, y: (x + y) * TH / 2 });
+const color = (s: string) => parseInt(s.replace("#", ""), 16);
+type Keys = Record<"W" | "A" | "S" | "D" | "UP" | "DOWN" | "LEFT" | "RIGHT", Phaser.Input.Keyboard.Key>;
+
+/** Playable photo-inspired annexes: cafeteria, auditorium/Yah Café and outdoor lounge. */
+export class AnnexScene extends Phaser.Scene {
+  private floor!: AnnexDef;
+  private player!: Phaser.GameObjects.Image;
+  private keys!: Keys;
+  private px = 10;
+  private py = 3;
+  private walk = 0;
+  private posAcc = 0;
+  private solids: Rect[] = [];
+  private points: { id: string; label: string; x: number; y: number }[] = [];
+
+  constructor() { super("annex"); }
+
+  create() {
+    const floor = floorDefinition(game.get().state.floor);
+    if (!floor) return;
+    this.floor = floor;
+    this.px = game.get().state.pos.x;
+    this.py = game.get().state.pos.y;
+    this.posAcc = 0;
+    this.cameras.main.setBackgroundColor(floor.id === "terraco" ? "#19273a" : "#0d0c18");
+    this.paintFloor();
+    this.paintArchitecture();
+    for (const obj of floor.decor) this.paintObject(obj);
+    this.solids = floor.decor.map((o) => ({ x: o.x, y: o.y, w: o.w, d: o.d }));
+    this.points = floor.decor.filter((o) => o.id).map((o) => ({
+      id: o.id!, label: o.label ?? o.id!,
+      x: o.ix ?? o.x + o.w / 2, y: o.iy ?? o.y + o.d + 0.5,
+    }));
+
+    if (!this.textures.exists("char-player")) {
+      const maker = this.make.graphics({ x: 0, y: 0 }, false);
+      maker.fillStyle(0xe5d5ff).fillRect(10, 0, 12, 18);
+      maker.fillStyle(0x7b4dff).fillRect(7, 18, 18, 24);
+      maker.fillStyle(0x151020).fillRect(10, 42, 6, 8).fillRect(21, 42, 6, 8);
+      maker.generateTexture("char-player", 32, 52);
+      maker.destroy();
+    }
+    this.player = this.add.image(0, 0, "char-player").setOrigin(0.5, 1);
+    this.repositionPlayer();
+    const cam = this.cameras.main;
+    const pt = iso(this.px, this.py);
+    cam.centerOn(pt.x, pt.y);
+    cam.startFollow(this.player, true, 0.12, 0.12, 0, 30);
+    cam.setZoom(this.scale.width < 800 ? 1 : 1.25);
+    this.keys = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as Keys;
+    this.input.keyboard!.disableGlobalCapture();
+
+    const onTeleport = (pos: { x: number; y: number }) => {
+      this.px = pos.x;
+      this.py = pos.y;
+      this.repositionPlayer();
+    };
+    this.game.events.on("teleport", onTeleport);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.game.events.off("teleport", onTeleport);
+      game.setUI({ prompt: null });
+    });
+  }
+
+  private diamond(g: Phaser.GameObjects.Graphics, x: number, y: number, w: number, d: number, c: number) {
+    g.fillStyle(c);
+    g.fillPoints([iso(x,y),iso(x+w,y),iso(x+w,y+d),iso(x,y+d)].map((p)=>new Phaser.Geom.Point(p.x,p.y)),true);
+  }
+  private box(g: Phaser.GameObjects.Graphics, o: AnnexObject, h: number, top: number, base = 0) {
+    const a=iso(o.x,o.y), b=iso(o.x+o.w,o.y), c=iso(o.x+o.w,o.y+o.d), d=iso(o.x,o.y+o.d);
+    const face=(pts:{x:number;y:number}[], shade:number) => {
+      g.fillStyle(shade);
+      g.fillPoints(pts.map((p)=>new Phaser.Geom.Point(p.x,p.y)),true);
+    };
+    face([{x:d.x,y:d.y-base},{x:c.x,y:c.y-base},{x:c.x,y:c.y-base-h},{x:d.x,y:d.y-base-h}],Phaser.Display.Color.IntegerToColor(top).darken(32).color);
+    face([{x:b.x,y:b.y-base},{x:c.x,y:c.y-base},{x:c.x,y:c.y-base-h},{x:b.x,y:b.y-base-h}],Phaser.Display.Color.IntegerToColor(top).darken(15).color);
+    face([a,b,c,d].map(p=>({x:p.x,y:p.y-base-h})),top);
+  }
+  private paintFloor() {
+    const g=this.add.graphics().setDepth(-100000);
+    const [w,h]=this.floor.size;
+    const fc=color(this.floor.floorColor);
+    for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+      const c=(x+y)%2===0?fc:Phaser.Display.Color.IntegerToColor(fc).lighten(5).color;
+      this.diamond(g,x,y,1,1,c);
+      if(this.floor.id==="terraco" && (x*11+y*17)%6===0){
+        const p=iso(x+0.3,y+0.4);
+        g.fillStyle(0x719e57,0.35).fillRect(p.x,p.y,3,2);
+      }
+    }
+    if(this.floor.id==="refeitorio") {
+      for(let x=1;x<17;x+=2) this.diamond(g,x,0.8,1,0.6,0x5e396d);
+    }
+  }
+  private paintArchitecture() {
+    const [w,h]=this.floor.size;
+    const g=this.add.graphics().setDepth(-90000);
+    const indoor=this.floor.id!=="terraco";
+    if(indoor){
+      this.box(g,{type:"wall",x:0,y:0,w,d:0.25},115,this.floor.id==="refeitorio"?0x4c2b63:0x241c36);
+      this.box(g,{type:"wall",x:0,y:0,w:0.25,d:h},115,0x29203b);
+    } else {
+      for(let x=0;x<w;x+=2) this.box(g,{type:"fence",x,y:0,w:1.9,d:0.14},19,0x677986);
+      for(let y=0;y<h;y+=2) this.box(g,{type:"fence",x:0,y,w:0.14,d:1.9},19,0x657a83);
+      const sky=this.add.text(iso(10,0).x,iso(10,0).y-100,"TERRAÇO · O AR É GRÁTIS",{
+        fontFamily:"'Press Start 2P'",fontSize:"9px",color:"#ade9f9",
+      }).setOrigin(0.5).setDepth(-89000);
+      sky.setStroke("#1b1830",4);
+    }
+    const sign = this.floor.id==="refeitorio"?"REFEITÓRIO · NUTRIR PARA PRODUZIR":
+      this.floor.id==="studio11"?"11º · LOUVOR & YAH CAFÉ":"ÁREA DE DESCOMPRESSÃO";
+    const p=iso(w/2,0);
+    this.add.text(p.x,p.y-130,sign,{fontFamily:"'Press Start 2P'",fontSize:"8px",
+      color:this.floor.id==="terraco"?"#b9e0dc":"#f2d8ff"}).setOrigin(0.5).setDepth(-88500).setStroke("#160b24",3);
+  }
+  private paintObject(o: AnnexObject) {
+    const g=this.add.graphics().setDepth(iso(o.x+o.w/2,o.y+o.d/2).y);
+    const p=iso(o.x+o.w/2,o.y+o.d/2);
+    let h=18, c=0x514866;
+    switch(o.type){
+      case "elevator": h=55;c=0x7f5ac6;break;
+      case "counter": h=28;c=this.floor.id==="studio11"?0x141319:0x583b62;break;
+      case "fridge": h=65;c=0xafa5ba;break;
+      case "table": h=19;c=this.floor.id==="refeitorio"?0xcebcd4:0x5d4b67;break;
+      case "sofa": h=20;c=this.floor.id==="terraco"?0x2d3040:0x9a4ab1;break;
+      case "stage": h=12;c=0x25172e;break;
+      case "seat": h=24;c=0x4b354f;break;
+      case "speaker": h=44;c=0x7e2d98;break;
+      case "podium": h=34;c=0x51304b;break;
+      case "coffee": h=32;c=0x20202e;break;
+      case "water": h=38;c=0x5493b8;break;
+      case "beanbag": h=9;c=0x984abb;break;
+      case "plant": h=30;c=0x48734d;break;
+      case "glass": h=70;c=0x739bb4;break;
+    }
+    this.box(g,o,h,c);
+    if(o.type==="glass")g.setAlpha(0.27);
+    if(o.type==="speaker") {
+      this.add.text(p.x,p.y-57,"♪  MUMUZINHO", {fontFamily:"'Press Start 2P'",fontSize:"7px",color:"#ffd67e"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1).setStroke("#1b1229",3);
+    }
+    if(o.type==="elevator")this.add.text(p.x,p.y-52,"⇵", {fontFamily:"monospace",fontSize:"22px",color:"#ecdbff"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1);
+    if(o.type==="counter" && this.floor.id==="studio11")this.add.text(p.x,p.y-35,"YAH CAFÉ", {fontFamily:"'Press Start 2P'",fontSize:"7px",color:"#f7e4ff"}).setOrigin(0.5).setDepth(iso(o.x+o.w,o.y+o.d).y+1);
+    if(o.type==="plant") {
+      this.add.ellipse(p.x,p.y-40,23,27,0x4d9e60).setDepth(iso(o.x+o.w,o.y+o.d).y+1);
+    }
+  }
+
+  private repositionPlayer() {
+    if (!this.player) return;
+    const p=iso(this.px,this.py);
+    this.player.setPosition(p.x,p.y);
+    this.player.setDepth(p.y+1);
+  }
+  override update(_t:number, dtMs:number) {
+    if (!this.player || !this.floor) return;
+    const dt=Math.min(dtMs,50)/1000;
+    const ui=game.get().ui;
+    if(!ui.modal){
+      const k=this.keys;
+      const sx=Number(k.D.isDown||k.RIGHT.isDown)-Number(k.A.isDown||k.LEFT.isDown);
+      const sy=Number(k.S.isDown||k.DOWN.isDown)-Number(k.W.isDown||k.UP.isDown);
+      const dir=screenToTileDir(sx,sy);
+      if(dir.dx||dir.dy){
+        const sp=BALANCE.playerSpeed*dt;
+        if(!blocked(this.px+dir.dx*sp,this.py,this.solids,0.22,...this.floor.size))this.px+=dir.dx*sp;
+        if(!blocked(this.px,this.py+dir.dy*sp,this.solids,0.22,...this.floor.size))this.py+=dir.dy*sp;
+        this.walk+=dt;
+        if(sx)this.player.setFlipX(sx<0);
+      } else this.walk=0;
+      game.tick(dt);
+    }
+    this.repositionPlayer();
+    if(this.walk) this.player.y-=Math.abs(Math.sin(this.walk*10))*3;
+    let nearest:typeof this.points[number] | null=null;
+    let dMin=BALANCE.interactRadius;
+    for(const point of this.points){
+      const d=Math.hypot(point.x-this.px,point.y-this.py);
+      if(d<dMin){dMin=d;nearest=point;}
+    }
+    if((ui.prompt?.id??null)!==(nearest?.id??null))game.setUI({prompt:nearest?{id:nearest.id,label:nearest.label}:null});
+    this.posAcc+=dt;
+    if(this.posAcc>=0.15){
+      this.posAcc=0;
+      game.setPositions({player:{x:+this.px.toFixed(2),y:+this.py.toFixed(2)},npcs:{}});
+    }
+  }
+}

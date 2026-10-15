@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { applyEffects, isCollapsed, newGame, sickLeave, tickClock } from "./logic";
 import { blocked } from "./world";
+import { canVisit, arrivalPoint } from "./floors";
 import { RANKS, performPyramidAction, rewardQuestInfluence } from "./pyramid";
 
 describe("stat rules", () => {
@@ -109,5 +110,39 @@ describe("progresso narrativo", () => {
     rewardQuestInfluence(s, "pitch", []);
     expect(s.pyramid.rank).toBe(5);
     expect(s.pyramid.influence).toBe(255);
+  });
+});
+
+describe("novos andares e elevador", () => {
+  it("mantém o escritório e o refeitório acessíveis desde o início", () => {
+    const s = newGame();
+    expect(canVisit(s, "office")).toBe(true);
+    expect(canVisit(s, "refeitorio")).toBe(true);
+    expect(canVisit(s, "terraco")).toBe(false);
+    expect(arrivalPoint("terraco")).toEqual({ x: 10, y: 3 });
+  });
+  it("libera o auditório excepcionalmente durante a missão do baú", () => {
+    let s = newGame();
+    expect(canVisit(s, "studio11")).toBe(false);
+    s = applyEffects(s, { startQuest: "bau" }).state;
+    for (const objective of ["talk_founder", "get_chest", "deliver_elevator"]) {
+      s = applyEffects(s, { advance: [{ quest: "bau", objective }] }).state;
+    }
+    expect(canVisit(s, "studio11")).toBe(true);
+  });
+  it("permite acessar terraço somente a partir de Ouro", () => {
+    const s = newGame();
+    s.pyramid.rank = 2;
+    expect(canVisit(s, "terraco")).toBe(true);
+  });
+  it("conclui novas missões em ordem e concede influência", () => {
+    let s = newGame();
+    s = applyEffects(s, { startQuest: "refeicao" }).state;
+    s = applyEffects(s, { advance: [{ quest: "refeicao", objective: "eat" }] }).state;
+    expect(s.quests.refeicao.step).toBe(0);
+    s = applyEffects(s, { advance: [{ quest: "refeicao", objective: "water" }] }).state;
+    s = applyEffects(s, { advance: [{ quest: "refeicao", objective: "eat" }] }).state;
+    expect(s.quests.refeicao.status).toBe("completed");
+    expect(s.pyramid.influence).toBe(12);
   });
 });
