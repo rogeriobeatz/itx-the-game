@@ -1,6 +1,6 @@
 export type StatKey = "vida" | "fe" | "burnout" | "reputacao" | "limpo" | "sujo";
-export type QuestId = "bau" | "aquario" | "pitch" | "refeicao" | "louvor" | "respiro";
-export type FloorId = "office" | "refeitorio" | "studio11" | "terraco";
+export type QuestId = "bau" | "aquario" | "pitch" | "refeicao" | "louvor" | "respiro" | "credencial" | "campanha" | "auditoria" | "conselho" | "tesouro";
+export type FloorId = "office" | "refeitorio" | "studio11" | "terraco" | "portaria" | "criativo" | "compliance" | "diretoria" | "tesouraria";
 export type PyramidOutcome = "farao" | "early_exit" | "raided" | "bankrupt" | null;
 export interface PyramidProgress { rank: number; influence: number; heat: number; instability: number; btc: number; withdrawn: number; outcome: PyramidOutcome; }
 export type Palette = Record<"skin" | "hair" | "top" | "bottom" | "accent", string>;
@@ -49,6 +49,7 @@ export interface GameState {
   clock: { day: number; minutes: number };
   pos: { x: number; y: number };
   floor: FloorId;
+  visitedFloors: FloorId[];
 }
 
 export interface DialogueChoice {

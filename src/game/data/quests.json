@@ -129,5 +129,116 @@
         "fe": 5
       }
     }
+  },
+  {
+    "id": "credencial",
+    "title": "Crachá Provisório",
+    "description": "No térreo, cumpra o ritual de entrada e consiga um crachá sem nome.",
+    "npc": "portaria",
+    "objectives": [
+      {
+        "id": "register",
+        "text": "Registrar entrada no totem da portaria"
+      },
+      {
+        "id": "badge",
+        "text": "Retirar crachá no balcão"
+      }
+    ],
+    "rewards": {
+      "give": [
+        "cracha"
+      ],
+      "stats": {
+        "limpo": 30,
+        "reputacao": 4
+      }
+    }
+  },
+  {
+    "id": "campanha",
+    "title": "Campanha do Nada",
+    "description": "Leia um briefing absurdo e imprima o material para aprovar o impossível.",
+    "npc": "criativo",
+    "objectives": [
+      {
+        "id": "read",
+        "text": "Ler briefing no mural"
+      },
+      {
+        "id": "print",
+        "text": "Imprimir prova fictícia da campanha"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "limpo": 60,
+        "reputacao": 8,
+        "burnout": 8
+      }
+    }
+  },
+  {
+    "id": "auditoria",
+    "title": "A Planilha Infinita",
+    "description": "Conferir o painel de risco e protocolar três páginas de justificativas imaginárias.",
+    "npc": "compliance",
+    "objectives": [
+      {
+        "id": "review",
+        "text": "Conferir painel de alertas"
+      },
+      {
+        "id": "file",
+        "text": "Protocolar relatório de compliance"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "limpo": 80,
+        "fe": -5,
+        "reputacao": 9
+      }
+    }
+  },
+  {
+    "id": "conselho",
+    "title": "Aprovação do Conselho",
+    "description": "Sobreviver à mesa panorâmica e conferir a ata que ninguém leu.",
+    "npc": "diretoria",
+    "objectives": [
+      {
+        "id": "meet",
+        "text": "Participar da reunião da diretoria"
+      },
+      {
+        "id": "sign",
+        "text": "Consultar ata de promoção"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "reputacao": 12,
+        "limpo": 100,
+        "burnout": 10
+      }
+    }
+  },
+  {
+    "id": "tesouro",
+    "title": "Porta do Último Saque",
+    "description": "Na cobertura, examine o painel da tesouraria e entenda o que precisa para sair com seus BTC fictícios.",
+    "npc": "tesouraria",
+    "objectives": [
+      {
+        "id": "check",
+        "text": "Conferir o terminal do cofre"
+      }
+    ],
+    "rewards": {
+      "stats": {
+        "reputacao": 4
+      }
+    }
   }
 ]

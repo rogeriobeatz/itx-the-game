@@ -1,7 +1,7 @@
 import { BALANCE } from "../config/balance";
 import { newPyramid, performPyramidAction, type PyramidAction } from "./pyramid";
 import { applyEffects, isCollapsed, newGame, tickClock } from "./logic";
-import { canVisit, arrivalPoint } from "./floors";
+import { canVisit, arrivalPoint, FLOORS } from "./floors";
 import type { Effects, GameState, FloorId } from "./types";
 
 export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover" | "pyramid" | "ending" | "elevator";
@@ -87,7 +87,8 @@ export const game = {
   travelTo(id: FloorId): boolean {
     if (!canVisit(snap.state, id) || snap.state.pyramid.outcome) return false;
     const position = arrivalPoint(id);
-    const moved = { ...snap.state, floor: id, pos: position };
+    const moved = { ...snap.state, floor: id, pos: position,
+      visitedFloors: snap.state.visitedFloors.includes(id) ? [...snap.state.visitedFloors] : [...snap.state.visitedFloors, id] };
     const { state, log } = tickClock(moved, 5);
     snap = { ...snap, state, ui: { ...snap.ui, modal: null, dialogue: null, prompt: null, watch: null,
       positions: { player: position, npcs: {} } } };
@@ -170,7 +171,8 @@ export const game = {
       const saved = JSON.parse(raw) as GameState;
       snap = {
         ...snap,
-        state: { ...base, ...saved, floor: saved.floor && ["office", "refeitorio", "studio11", "terraco"].includes(saved.floor) ? saved.floor : "office", pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...saved.quests } },
+        state: { ...base, ...saved, floor: saved.floor && FLOORS.some((f) => f.id === saved.floor) ? saved.floor : "office",
+          visitedFloors: Array.isArray(saved.visitedFloors) ? [...new Set(["office" as const, ...saved.visitedFloors.filter((id) => FLOORS.some((f) => f.id === id))])] : ["office"], pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...(saved.quests ?? {}) } },
       };
       emit();
       return true;

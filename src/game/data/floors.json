@@ -344,5 +344,474 @@
         "d": 1
       }
     ]
+  },
+  {
+    "id": "portaria",
+    "name": "Portaria & Credenciamento",
+    "level": "Térreo · ficção",
+    "minRank": 0,
+    "size": [
+      20,
+      15
+    ],
+    "spawn": [
+      10,
+      3
+    ],
+    "floorColor": "#3e3b50",
+    "decor": [
+      {
+        "type": "elevator",
+        "x": 9.3,
+        "y": 0.5,
+        "w": 1.4,
+        "d": 0.9,
+        "id": "elevator",
+        "label": "Usar elevador",
+        "ix": 10,
+        "iy": 2.35
+      },
+      {
+        "type": "counter",
+        "x": 13.5,
+        "y": 3.2,
+        "w": 3.9,
+        "d": 1.2,
+        "id": "badge_desk",
+        "label": "Retirar crachá temporário",
+        "ix": 15.2,
+        "iy": 5.1
+      },
+      {
+        "type": "kiosk",
+        "x": 2.3,
+        "y": 4,
+        "w": 1.2,
+        "d": 1.2,
+        "id": "security_check",
+        "label": "Registrar entrada na portaria",
+        "ix": 3.2,
+        "iy": 5.7
+      },
+      {
+        "type": "board",
+        "x": 4.6,
+        "y": 3,
+        "w": 2.3,
+        "d": 0.5,
+        "id": "notice_board",
+        "label": "Ler mural de boas-vindas",
+        "ix": 5.8,
+        "iy": 4.6
+      },
+      {
+        "type": "sofa",
+        "x": 3,
+        "y": 10,
+        "w": 3.2,
+        "d": 1.1
+      },
+      {
+        "type": "sofa",
+        "x": 13.2,
+        "y": 10,
+        "w": 3.2,
+        "d": 1.1
+      },
+      {
+        "type": "plant",
+        "x": 1.5,
+        "y": 2.5,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "plant",
+        "x": 17.3,
+        "y": 2.5,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "table",
+        "x": 8,
+        "y": 8,
+        "w": 2.1,
+        "d": 1.3
+      }
+    ]
+  },
+  {
+    "id": "criativo",
+    "name": "Estúdio Criativo",
+    "level": "Andar 8 · ficção",
+    "minRank": 1,
+    "size": [
+      22,
+      16
+    ],
+    "spawn": [
+      11,
+      3
+    ],
+    "floorColor": "#34334f",
+    "decor": [
+      {
+        "type": "elevator",
+        "x": 10.3,
+        "y": 0.5,
+        "w": 1.4,
+        "d": 0.9,
+        "id": "elevator",
+        "label": "Usar elevador",
+        "ix": 11,
+        "iy": 2.35
+      },
+      {
+        "type": "desk",
+        "x": 2.5,
+        "y": 5,
+        "w": 3.8,
+        "d": 1.2
+      },
+      {
+        "type": "desk",
+        "x": 2.5,
+        "y": 9,
+        "w": 3.8,
+        "d": 1.2
+      },
+      {
+        "type": "desk",
+        "x": 14.5,
+        "y": 6,
+        "w": 4,
+        "d": 1.2
+      },
+      {
+        "type": "board",
+        "x": 8,
+        "y": 5,
+        "w": 2.2,
+        "d": 0.45,
+        "id": "briefing",
+        "label": "Ler o briefing de metas impossíveis",
+        "ix": 8.9,
+        "iy": 6.45
+      },
+      {
+        "type": "printer",
+        "x": 17.1,
+        "y": 11,
+        "w": 1.2,
+        "d": 1.1,
+        "id": "proof",
+        "label": "Imprimir prova de campanha",
+        "ix": 16.9,
+        "iy": 12.7
+      },
+      {
+        "type": "table",
+        "x": 9.5,
+        "y": 10,
+        "w": 2.4,
+        "d": 1.6
+      },
+      {
+        "type": "plant",
+        "x": 1.5,
+        "y": 2,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "cabinet",
+        "x": 19.8,
+        "y": 2,
+        "w": 1,
+        "d": 1.7
+      },
+      {
+        "type": "screen",
+        "x": 16,
+        "y": 3,
+        "w": 2.3,
+        "d": 0.5,
+        "id": "design_wall",
+        "label": "Examinar mural de criação",
+        "ix": 16.9,
+        "iy": 4.5
+      }
+    ]
+  },
+  {
+    "id": "compliance",
+    "name": "Sala de Compliance",
+    "level": "Andar 9 · ficção",
+    "minRank": 2,
+    "size": [
+      20,
+      15
+    ],
+    "spawn": [
+      10,
+      3
+    ],
+    "floorColor": "#3d3545",
+    "decor": [
+      {
+        "type": "elevator",
+        "x": 9.3,
+        "y": 0.5,
+        "w": 1.4,
+        "d": 0.9,
+        "id": "elevator",
+        "label": "Usar elevador",
+        "ix": 10,
+        "iy": 2.35
+      },
+      {
+        "type": "board",
+        "x": 3.1,
+        "y": 4.1,
+        "w": 2.6,
+        "d": 0.5,
+        "id": "risk_board",
+        "label": "Conferir painel de alerta",
+        "ix": 4.7,
+        "iy": 5.75
+      },
+      {
+        "type": "counter",
+        "x": 13.5,
+        "y": 4.1,
+        "w": 3.2,
+        "d": 1.1,
+        "id": "compliance_review",
+        "label": "Participar de revisão burocrática",
+        "ix": 14.6,
+        "iy": 5.8
+      },
+      {
+        "type": "archive",
+        "x": 3,
+        "y": 9.3,
+        "w": 2,
+        "d": 1.2,
+        "id": "archive_search",
+        "label": "Investigar pilha de memorandos",
+        "ix": 4,
+        "iy": 11
+      },
+      {
+        "type": "table",
+        "x": 8,
+        "y": 7,
+        "w": 3.2,
+        "d": 1.8
+      },
+      {
+        "type": "cabinet",
+        "x": 17.5,
+        "y": 9,
+        "w": 1.3,
+        "d": 2.1
+      },
+      {
+        "type": "plant",
+        "x": 17,
+        "y": 2,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "screen",
+        "x": 8,
+        "y": 12,
+        "w": 3,
+        "d": 0.4
+      }
+    ]
+  },
+  {
+    "id": "diretoria",
+    "name": "Diretoria Panorâmica",
+    "level": "Andar 12 · ficção",
+    "minRank": 3,
+    "size": [
+      22,
+      15
+    ],
+    "spawn": [
+      11,
+      3
+    ],
+    "floorColor": "#2c2b42",
+    "decor": [
+      {
+        "type": "elevator",
+        "x": 10.3,
+        "y": 0.5,
+        "w": 1.4,
+        "d": 0.9,
+        "id": "elevator",
+        "label": "Usar elevador",
+        "ix": 11,
+        "iy": 2.35
+      },
+      {
+        "type": "table",
+        "x": 6,
+        "y": 7,
+        "w": 8,
+        "d": 2.4,
+        "id": "meeting_table",
+        "label": "Iniciar reunião da diretoria",
+        "ix": 10,
+        "iy": 10.3
+      },
+      {
+        "type": "board",
+        "x": 16.7,
+        "y": 4,
+        "w": 3,
+        "d": 0.5,
+        "id": "board_vote",
+        "label": "Consultar ata de promoção",
+        "ix": 18,
+        "iy": 5.6
+      },
+      {
+        "type": "sofa",
+        "x": 2.4,
+        "y": 10,
+        "w": 2.7,
+        "d": 1.1
+      },
+      {
+        "type": "desk",
+        "x": 15,
+        "y": 9,
+        "w": 3.4,
+        "d": 1.3
+      },
+      {
+        "type": "plant",
+        "x": 2,
+        "y": 2,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "plant",
+        "x": 19,
+        "y": 2,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "glass",
+        "x": 4,
+        "y": 2,
+        "w": 0.15,
+        "d": 6
+      },
+      {
+        "type": "cabinet",
+        "x": 19,
+        "y": 9.5,
+        "w": 1,
+        "d": 1.5
+      }
+    ]
+  },
+  {
+    "id": "tesouraria",
+    "name": "Tesouraria Cósmica",
+    "level": "Cobertura · ficção",
+    "minRank": 5,
+    "size": [
+      20,
+      14
+    ],
+    "spawn": [
+      10,
+      3
+    ],
+    "floorColor": "#302843",
+    "decor": [
+      {
+        "type": "elevator",
+        "x": 9.3,
+        "y": 0.5,
+        "w": 1.4,
+        "d": 0.9,
+        "id": "elevator",
+        "label": "Usar elevador",
+        "ix": 10,
+        "iy": 2.35
+      },
+      {
+        "type": "vault",
+        "x": 7.7,
+        "y": 6.6,
+        "w": 3.4,
+        "d": 1.3,
+        "id": "btc_vault",
+        "label": "Iniciar protocolo de saque fictício",
+        "ix": 9.4,
+        "iy": 8.65
+      },
+      {
+        "type": "kiosk",
+        "x": 4.2,
+        "y": 4,
+        "w": 1.2,
+        "d": 1.2,
+        "id": "vault_status",
+        "label": "Verificar saldo da tesouraria",
+        "ix": 5.2,
+        "iy": 5.7
+      },
+      {
+        "type": "board",
+        "x": 13,
+        "y": 4,
+        "w": 3.1,
+        "d": 0.5,
+        "id": "vault_rules",
+        "label": "Ler protocolo de encerramento",
+        "ix": 14.4,
+        "iy": 5.55
+      },
+      {
+        "type": "glass",
+        "x": 2,
+        "y": 8,
+        "w": 0.14,
+        "d": 4
+      },
+      {
+        "type": "plant",
+        "x": 2,
+        "y": 2,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "plant",
+        "x": 16.8,
+        "y": 2,
+        "w": 1,
+        "d": 1
+      },
+      {
+        "type": "sofa",
+        "x": 12.2,
+        "y": 9.5,
+        "w": 3,
+        "d": 1.1
+      }
+    ]
   }
 ]

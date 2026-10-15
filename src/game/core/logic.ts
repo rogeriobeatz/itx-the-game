@@ -28,6 +28,7 @@ export function newGame(): GameState {
     clock: { day: 1, minutes: BALANCE.workStart },
     pos: { ...BALANCE.startPos },
     floor: "office",
+    visitedFloors: ["office"],
   };
 }
 
@@ -47,24 +48,29 @@ function addStat(s: GameState, k: StatKey, v: number, log: string[]) {
 }
 
 function advanceClock(s: GameState, minutes: number, log: string[]) {
-  const before = s.clock.minutes;
-  const after = before + minutes;
-  const drains = Math.floor(after / BALANCE.drainEvery) - Math.floor(before / BALANCE.drainEvery);
-  if (drains > 0) {
-    s.stats.fe = clampStat("fe", s.stats.fe - drains * BALANCE.feDrain);
-    s.stats.burnout = clampStat("burnout", s.stats.burnout + drains * BALANCE.burnoutGain);
-  }
-  s.clock.minutes = after;
-  if (after >= BALANCE.workEnd) {
-    s.clock.day += 1;
-    s.clock.minutes = BALANCE.workStart;
-    s.stats.limpo += BALANCE.salary;
-    s.stats.burnout = clampStat("burnout", s.stats.burnout - BALANCE.dayEndBurnoutRelief);
-    log.push(`Fim do expediente! Salário: +${BALANCE.salary} R$ limpo`);
-    pyramidNewDay(s, log);
+  if (!Number.isFinite(minutes) || minutes <= 0 || s.pyramid.outcome) return;
+  let remaining = Math.floor(minutes);
+  while (remaining > 0 && !s.pyramid.outcome) {
+    const available = BALANCE.workEnd - s.clock.minutes;
+    const segment = Math.min(remaining, Math.max(0, available));
+    const old = s.clock.minutes;
+    s.clock.minutes += segment;
+    remaining -= segment;
+    const drain = Math.floor(s.clock.minutes / BALANCE.drainEvery) - Math.floor(old / BALANCE.drainEvery);
+    if (drain > 0) {
+      s.stats.fe = clampStat("fe", s.stats.fe - drain * BALANCE.feDrain);
+      s.stats.burnout = clampStat("burnout", s.stats.burnout + drain * BALANCE.burnoutGain);
+    }
+    if (s.clock.minutes >= BALANCE.workEnd) {
+      s.clock.day++;
+      s.clock.minutes = BALANCE.workStart;
+      s.stats.limpo += BALANCE.salary;
+      s.stats.burnout = clampStat("burnout", s.stats.burnout - BALANCE.dayEndBurnoutRelief);
+      log.push(`Fim do expediente! Salário: +${BALANCE.salary} R$ limpo`);
+      pyramidNewDay(s, log);
+    } else if (segment === 0) break;
   }
 }
-
 function mutate(s: GameState, e: Effects, log: string[]) {
   if (e.stats) for (const [k, v] of Object.entries(e.stats)) if (v) addStat(s, k as StatKey, v, log);
   for (const it of e.give ?? []) {
@@ -130,6 +136,7 @@ export function sickLeave(s0: GameState) {
   s.clock.minutes = BALANCE.workStart;
   s.pos = { ...BALANCE.startPos };
   s.floor = "office";
+  if (!s.visitedFloors.includes("office")) s.visitedFloors.push("office");
   if (s.quests.pitch?.status === "active") s.quests.pitch.status = "failed";
   return s;
 }

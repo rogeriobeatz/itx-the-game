@@ -51,6 +51,58 @@ export function interact(id: string) {
     return game.run({ stats: { limpo: 20, burnout: 6, reputacao: 1 }, minutes: 30 });
   }
   switch (id) {
+    case "security_check":
+      if (s.quests.credencial?.status === "completed") return game.toast("Seu ponto está registrado. O sistema lembra de você.");
+      if (s.quests.credencial?.status === "available") game.run({ startQuest: "credencial" });
+      if (currentObjective(game.get().state,"credencial")?.id === "register")
+        return game.run({ advance: [{ quest: "credencial", objective: "register" }], minutes: 5 });
+      return game.toast("Cadastro confirmado. Busque seu crachá no balcão.");
+    case "badge_desk":
+      if (currentObjective(s,"credencial")?.id === "badge")
+        return game.run({ advance: [{ quest: "credencial", objective: "badge" }], minutes: 3 });
+      return game.toast("Documento aprovado somente após registro na portaria.");
+    case "notice_board":
+      return game.toast("Aviso: aqui todo mundo é sócio de sonhos. Crachás à direita.");
+    case "briefing":
+      if (s.quests.campanha?.status === "available") game.run({ startQuest: "campanha" });
+      if (currentObjective(game.get().state,"campanha")?.id === "read")
+        return game.run({ advance: [{ quest: "campanha", objective: "read" }], minutes: 12 });
+      return game.toast("O briefing continua dizendo 'disruptar a disrupção'.");
+    case "proof":
+      if (currentObjective(s,"campanha")?.id === "print")
+        return game.run({ advance: [{ quest: "campanha", objective: "print" }], minutes: 15 });
+      return game.toast("Sem briefing, a impressora se recusa a imprimir.");
+    case "design_wall":
+      return game.toast("Campanhas 100% inspiração, 0% produto. Performance máxima.");
+    case "risk_board":
+      if (s.quests.auditoria?.status === "available") game.run({ startQuest: "auditoria" });
+      if (currentObjective(game.get().state,"auditoria")?.id === "review")
+        return game.run({ advance: [{ quest: "auditoria", objective: "review" }], minutes: 8 });
+      return game.toast("O gráfico de compliance segue misteriosamente sempre verde.");
+    case "compliance_review":
+      if (currentObjective(s,"auditoria")?.id === "file")
+        return game.run({ advance: [{ quest: "auditoria", objective: "file" }], minutes: 20 });
+      return game.toast("Primeiro revise o painel de alertas.");
+    case "archive_search":
+      return game.toast("Arquivo: 72 relatórios de ética e um post-it dizendo 'alinhado'.");
+    case "meeting_table":
+      if (s.quests.conselho?.status === "available") game.run({ startQuest: "conselho" });
+      if (currentObjective(game.get().state,"conselho")?.id === "meet")
+        return game.run({ advance: [{ quest: "conselho", objective: "meet" }], minutes: 25 });
+      return game.toast("O conselho permanece em reunião desde o trimestre passado.");
+    case "board_vote":
+      if (currentObjective(s,"conselho")?.id === "sign")
+        return game.run({ advance: [{ quest: "conselho", objective: "sign" }], minutes: 10 });
+      return game.toast("A ata ainda aguarda a reunião.");
+    case "vault_rules":
+      return game.toast("Protocolo cósmico: nenhum saque é real. A corporação é uma ficção.");
+    case "vault_status":
+      if (s.quests.tesouro?.status === "available") game.run({ startQuest: "tesouro" });
+      if (currentObjective(game.get().state,"tesouro")?.id === "check")
+        game.run({ advance: [{ quest: "tesouro", objective: "check" }], minutes: 5 });
+      return game.setUI({ modal: "pyramid" });
+    case "btc_vault":
+      return game.setUI({ modal: "pyramid" });
     case "water":
       if (s.quests.refeicao.status === "completed") return game.toast("Garrafinha cheia. Seu KPI de hidratação já bateu.");
       if (s.quests.refeicao.status === "available") game.run({ startQuest: "refeicao" });
