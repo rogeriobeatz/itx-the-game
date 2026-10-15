@@ -1,5 +1,7 @@
 export type StatKey = "vida" | "fe" | "burnout" | "reputacao" | "limpo" | "sujo";
 export type QuestId = "bau" | "aquario" | "pitch";
+export type PyramidOutcome = "farao" | "early_exit" | "raided" | "bankrupt" | null;
+export interface PyramidProgress { rank: number; influence: number; heat: number; instability: number; btc: number; withdrawn: number; outcome: PyramidOutcome; }
 export type Palette = Record<"skin" | "hair" | "top" | "bottom" | "accent", string>;
 export type QuestStatus = "available" | "active" | "completed" | "failed";
 
@@ -39,6 +41,7 @@ export interface ItemDef {
 
 export interface GameState {
   stats: Record<StatKey, number>;
+  pyramid: PyramidProgress;
   inventory: string[];
   quests: Record<QuestId, { status: QuestStatus; step: number }>;
   flags: Record<string, boolean>;

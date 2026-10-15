@@ -4,6 +4,7 @@ import { game } from "./core/store";
 import { choose, DIALOGUES, interact, useItem, visibleChoices } from "./core/interactions";
 import { applyEffects, currentObjective, fmtClock, ITEMS, QUESTS, sickLeave } from "./core/logic";
 import { MAP } from "./core/world";
+import { CRISIS_DAY, RANKS, VICTORY_BTC } from "./core/pyramid";
 import { BALANCE } from "./config/balance";
 import { LOGO_URL, PORTRAITS, TITLE_BG } from "./assets";
 import charactersData from "./data/characters.json";
@@ -55,7 +56,7 @@ export default function GameRoot() {
     const onKey = (e: KeyboardEvent) => {
       const { ui } = game.get();
       const k = e.key.toLowerCase();
-      if (ui.modal === "title" || ui.modal === "gameover" || ui.modal === "pitch") return;
+      if (ui.modal === "title" || ui.modal === "gameover" || ui.modal === "pitch" || ui.modal === "ending") return;
       if (ui.modal === "dialogue") {
         const n = parseInt(k, 10);
         if (n >= 1 && n <= 9) choose(n - 1);
@@ -65,6 +66,7 @@ export default function GameRoot() {
       if (k === "escape") return game.setUI({ modal: ui.modal ? null : "pause" });
       if (k === "i") return game.setUI({ modal: ui.modal === "inventory" ? null : "inventory" });
       if (k === "j") return game.setUI({ modal: ui.modal === "journal" ? null : "journal" });
+      if (k === "p") return game.setUI({ modal: ui.modal === "pyramid" ? null : "pyramid" });
       if (k === "e" && !ui.modal && ui.prompt) interact(ui.prompt.id);
     };
     window.addEventListener("keydown", onKey);
@@ -90,6 +92,8 @@ export default function GameRoot() {
       {ui.modal === "journal" && <Journal />}
       {ui.modal === "pause" && <Pause onRestart={teleport} />}
       {ui.modal === "pitch" && <Pitch />}
+      {ui.modal === "pyramid" && <PyramidPanel />}
+      {ui.modal === "ending" && <PyramidEnding onRestart={teleport} />}
       {ui.modal === "gameover" && <GameOver onBack={teleport} />}
     </div>
   );
@@ -115,6 +119,7 @@ function Bar({ label, value, kind }: { label: string; value: number; kind: "vida
 function Hud() {
   const { state } = useGame();
   const s = state.stats;
+  const p = state.pyramid;
   const active = QUESTS.filter((q) => state.quests[q.id as keyof typeof state.quests]?.status === "active");
   const alert = s.burnout >= 75 ? "ALERTA: BURNOUT CRÍTICO" : s.fe <= 25 ? "FÉ EM QUEDA LIVRE" : s.vida <= 25 ? "VIDA BAIXA" : null;
   return (
@@ -145,6 +150,11 @@ function Hud() {
           <span className="text-rep hud-val">★ {s.reputacao}</span>
         </div>
       </div>
+      <button className="pixel-panel" style={{ position: "absolute", top: 146, left: 12, zIndex: 20, textAlign: "left", fontSize: 10, padding: 10, color: "#e4c8ff", cursor: "pointer" }} onClick={() => game.setUI({ modal: "pyramid" })}>
+        <b>▲ {RANKS[p.rank].name.toUpperCase()}</b> · ₿ {p.btc.toFixed(4)}<br />
+        <span style={{ color: "#fbbf69" }}>PF {p.heat}%</span> · <span style={{ color: "#ff7799" }}>FALÊNCIA {p.instability}%</span><br />
+        <small>P: ABRIR PIRÂMIDE</small>
+      </button>
       <div className="pixel-panel hud-bl">
         <div className="hud-tag">MISSÃO ATUAL</div>
         {active.length === 0 ? (
@@ -250,7 +260,7 @@ function Title({ onStart }: { onStart: () => void }) {
   const start = (load: boolean) => {
     if (load) game.load();
     else game.reset();
-    game.setUI({ modal: null });
+    game.setUI({ modal: game.get().state.pyramid.outcome ? "ending" : null });
     onStart();
   };
   return (
@@ -526,6 +536,60 @@ function Pitch() {
       </div>
     </div>
   );
+}
+
+
+function PyramidPanel() {
+  const { state } = useGame();
+  const p = state.pyramid;
+  const next = RANKS[p.rank + 1];
+  const pct = next ? Math.max(0, Math.min(100, 100 * (p.influence - RANKS[p.rank].influence) / (next.influence - RANKS[p.rank].influence))) : 100;
+  return (
+    <Modal title="A PIRÂMIDE CORPORATIVA" hint="Ficção satírica: nenhum bitcoin real é negociado. P para fechar." onClose={() => game.setUI({ modal: null })}>
+      <div style={{ maxWidth: 520 }}>
+        <div className="section-label">NÍVEL {p.rank + 1}/6: {RANKS[p.rank].name.toUpperCase()}</div>
+        <p className="dlg-text mt-2">Chegue a Faraó e saque antes da fiscalização ou falência.</p>
+        <div className="flex flex-wrap gap-2 mt-4">
+          {RANKS.map((x, i) => <span key={x.name} style={{ fontSize: 9, padding: 6, border: "1px solid #7659a0", color: i <= p.rank ? "#f4d5ff" : "#777", background: i === p.rank ? "#462363" : "#1a1424" }}>{x.name}</span>)}
+        </div>
+        <div className="quest-title mt-4">{next ? "Próxima promoção: " + p.influence + "/" + next.influence + " influência" : "PATAMAR MÁXIMO"}</div>
+        <div className="stat-track mt-2"><div className="stat-fill stat-fe" style={{ width: pct + "%" }} /></div>
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          <div className="inv-item"><div><span className="hud-dim">BTC NA CARTEIRA</span><div className="quest-title mt-2">₿ {p.btc.toFixed(4)}</div></div></div>
+          <div className="inv-item"><div><span className="hud-dim">BTC SACADOS</span><div className="quest-title mt-2">₿ {p.withdrawn.toFixed(4)}</div></div></div>
+        </div>
+        <div className="mt-4">⚠ ATENÇÃO DA PF FICTÍCIA: {p.heat}%</div>
+        <div className="stat-track mt-2"><div className="stat-fill stat-burnout" style={{ width: p.heat + "%" }} /></div>
+        <div className="mt-3">⌛ RISCO DE FALÊNCIA: {p.instability}%</div>
+        <div className="stat-track mt-2"><div className="stat-fill stat-vida" style={{ width: p.instability + "%" }} /></div>
+        <p className="hud-dim mt-3">Prazo: dia {CRISIS_DAY}. Hoje: dia {state.clock.day}. Vitória máxima: Faraó com pelo menos ₿ {VICTORY_BTC.toFixed(2)} sacados.</p>
+        <div className="flex flex-col gap-3 mt-4">
+          <button className="pixel-btn pixel-btn-primary" onClick={() => game.pyramidAction("pitch")}>FAZER PITCH · +BTC +INFLUÊNCIA +RISCO</button>
+          <button className="pixel-btn" disabled={state.stats.limpo < 40} onClick={() => game.pyramidAction("compliance")}>REUNIÃO DE COMPLIANCE TEATRAL · R$40 · -RISCO PF</button>
+          <button className="pixel-btn" disabled={p.btc <= 0} onClick={() => game.pyramidAction("withdraw")}>SACAR BTC E ENCERRAR PARTIDA</button>
+        </div>
+        <p className="hud-dim mt-3">Trabalhe nos computadores para ganhar R$ limpos. Cada pitch custa 45 minutos e aumenta o risco.</p>
+      </div>
+    </Modal>
+  );
+}
+
+function PyramidEnding({ onRestart }: { onRestart: () => void }) {
+  const { state } = useGame();
+  const p = state.pyramid;
+  const outcomes = {
+    farao: ["FINAL FARAÓ", "Você chegou ao topo e sacou antes do fim da pirâmide fictícia. Parabéns, sua PLR é imaginária!"],
+    early_exit: ["SAQUE ANTECIPADO", "Você saiu enquanto ainda dava. Não virou Faraó, mas salvou os bitcoins fictícios."],
+    raided: ["OPERAÇÃO PF", "A fiscalização fictícia chegou antes do saque. A pirâmide virou uma apresentação no PowerPoint."],
+    bankrupt: ["FALÊNCIA", "A empresa fictícia quebrou e a carteira não sacada virou fumaça de PowerPoint."],
+  };
+  const info = outcomes[p.outcome ?? "bankrupt"];
+  return <div className="modal-backdrop"><div className="pixel-panel modal-box text-center">
+    <h2 className="gameover-title">{info[0]}</h2>
+    <p className="dlg-text mt-4">{info[1]}</p>
+    <p className="quest-title mt-4">{RANKS[p.rank].name} · Sacado: ₿ {p.withdrawn.toFixed(4)}</p>
+    <button className="pixel-btn pixel-btn-primary mt-6" onClick={() => { game.reset(); game.setUI({ modal: null, dialogue: null, watch: null }); onRestart(); }}>JOGAR NOVAMENTE</button>
+  </div></div>;
 }
 
 function GameOver({ onBack }: { onBack: () => void }) {

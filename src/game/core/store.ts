@@ -1,8 +1,9 @@
 import { BALANCE } from "../config/balance";
+import { newPyramid, performPyramidAction, type PyramidAction } from "./pyramid";
 import { applyEffects, isCollapsed, newGame, tickClock } from "./logic";
 import type { Effects, GameState } from "./types";
 
-export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover";
+export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover" | "pyramid" | "ending";
 
 export interface UIState {
   modal: Modal;
@@ -41,6 +42,10 @@ function emit() {
 }
 
 function checkCollapse() {
+  if (snap.state.pyramid.outcome) {
+    snap = { ...snap, ui: { ...snap.ui, modal: "ending", dialogue: null, watch: null } };
+    return;
+  }
   if (isCollapsed(snap.state) && snap.ui.modal !== "gameover" && snap.ui.modal !== "title") {
     snap = { ...snap, ui: { ...snap.ui, modal: "gameover", dialogue: null, watch: null } };
   }
@@ -74,6 +79,17 @@ export const game = {
     const { state, log } = applyEffects(snap.state, e);
     snap = { ...snap, state };
     log.forEach((t) => game.toast(t));
+    checkCollapse();
+    game.save();
+    emit();
+  },
+  pyramidAction(action: PyramidAction) {
+    const result = performPyramidAction(snap.state, action);
+    result.log.forEach((message) => game.toast(message));
+    if (!result.ok) return;
+    const advanced = result.minutes ? tickClock(result.state, result.minutes) : { state: result.state, log: [] as string[] };
+    snap = { ...snap, state: advanced.state };
+    advanced.log.forEach((message) => game.toast(message));
     checkCollapse();
     game.save();
     emit();
@@ -140,7 +156,7 @@ export const game = {
       const saved = JSON.parse(raw) as GameState;
       snap = {
         ...snap,
-        state: { ...base, ...saved, quests: { ...base.quests, ...saved.quests } },
+        state: { ...base, ...saved, pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...saved.quests } },
       };
       emit();
       return true;

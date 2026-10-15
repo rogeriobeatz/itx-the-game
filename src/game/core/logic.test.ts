@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { applyEffects, isCollapsed, newGame, sickLeave, tickClock } from "./logic";
 import { blocked } from "./world";
+import { RANKS, performPyramidAction } from "./pyramid";
 
 describe("stat rules", () => {
   it("clamps bounded stats between 0 and 100", () => {
@@ -56,5 +57,36 @@ describe("collision", () => {
     expect(blocked(2.5, 2.5, rects)).toBe(true);
     expect(blocked(5, 5, rects)).toBe(false);
     expect(blocked(0.1, 5, rects)).toBe(true);
+  });
+});
+
+describe("pirâmide fictícia", () => {
+  it("permite subir até Faraó com controle do risco", () => {
+    let s = newGame();
+    s.stats.limpo = 100;
+    for (let i = 0; i < 5; i++) s = performPyramidAction(s, "pitch").state;
+    s = performPyramidAction(s, "compliance").state;
+    s = performPyramidAction(s, "pitch").state;
+    expect(RANKS[s.pyramid.rank].name).toBe("Faraó");
+    expect(s.pyramid.outcome).toBeNull();
+  });
+  it("permite o final Faraó com saque", () => {
+    const s = newGame();
+    s.pyramid.rank = 5;
+    s.pyramid.btc = 1;
+    const result = performPyramidAction(s, "withdraw");
+    expect(result.state.pyramid.outcome).toBe("farao");
+    expect(result.state.pyramid.withdrawn).toBe(1);
+  });
+  it("distingue saída antecipada e carteira vazia", () => {
+    const s = newGame();
+    expect(performPyramidAction(s, "withdraw").ok).toBe(false);
+    s.pyramid.btc = 0.2;
+    expect(performPyramidAction(s, "withdraw").state.pyramid.outcome).toBe("early_exit");
+  });
+  it("a fiscalização fictícia pode interromper a ascensão", () => {
+    const s = newGame();
+    s.pyramid.heat = 95;
+    expect(performPyramidAction(s, "pitch").state.pyramid.outcome).toBe("raided");
   });
 });

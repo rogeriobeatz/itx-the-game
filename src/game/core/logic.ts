@@ -1,4 +1,5 @@
 import questsData from "../data/quests.json";
+import { newPyramid, pyramidNewDay } from "./pyramid";
 import itemsData from "../data/items.json";
 import { BALANCE } from "../config/balance";
 import type { Cond, Effects, GameState, ItemDef, QuestDef, QuestId, StatKey } from "./types";
@@ -20,6 +21,7 @@ export const STAT_LABEL: Record<StatKey, string> = {
 export function newGame(): GameState {
   return {
     stats: { vida: 100, fe: 70, burnout: 10, reputacao: 20, limpo: 0, sujo: 0 },
+    pyramid: newPyramid(),
     inventory: [],
     quests: Object.fromEntries(QUESTS.map((q) => [q.id, { status: "available" as const, step: 0 }])) as GameState["quests"],
     flags: {},
@@ -58,6 +60,7 @@ function advanceClock(s: GameState, minutes: number, log: string[]) {
     s.stats.limpo += BALANCE.salary;
     s.stats.burnout = clampStat("burnout", s.stats.burnout - BALANCE.dayEndBurnoutRelief);
     log.push(`Fim do expediente! Salário: +${BALANCE.salary} R$ limpo`);
+    pyramidNewDay(s, log);
   }
 }
 
