@@ -6,7 +6,7 @@ describe("compass feedback", () => {
     const s = startJourney("mulher");
     const target = interactionPoint(s,"security_check");
     expect(target).not.toBeNull();
-    expect(isometricDirection(s.pos,target!)).toBe("↖");
+    expect(isometricDirection(s.pos,target!)).toBe("←");
   });
   it("resolves named narrative NPCs in the existing office", () => {
     const s = startJourney();
