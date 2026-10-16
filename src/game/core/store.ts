@@ -12,6 +12,7 @@ export interface UIState {
   prompt: { id: string; label: string } | null;
   toasts: { id: number; text: string }[];
   watch: { elapsed: number } | null;
+  stealth?: { meter: number; hidden: boolean; running: boolean };
   positions: { player: { x: number; y: number }; npcs: Record<string, { x: number; y: number }> };
 }
 

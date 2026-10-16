@@ -6,6 +6,7 @@ import { navigationTarget } from "../core/wayfinding";
 import { playerMovement, type InputVector } from "../core/touch";
 import { game } from "../core/store";
 import type { Palette } from "../core/types";
+import { PATROLS, STEALTH, exposure, isHidden, stepMeter } from "../core/stealth";
 import { INTERACTABLES, MAP, SOLIDS, blocked, type MapObject, type Rect } from "../core/world";
 
 const TW = 64;
@@ -51,6 +52,11 @@ export class OfficeScene extends Phaser.Scene {
   keys!: Record<"W" | "A" | "S" | "D" | "UP" | "DOWN" | "LEFT" | "RIGHT", Phaser.Input.Keyboard.Key>;
   private posAcc = 0;
   private virtualDir: InputVector = { sx: 0, sy: 0 };
+  private patrols: { a: Actor; route: [number, number][]; leg: number; speed: number; facing: number; cooldown: number }[] = [];
+  private cone!: Phaser.GameObjects.Graphics;
+  private meter = 0;
+  private stealthAcc = 0;
+  private shift!: Phaser.Input.Keyboard.Key;
   private aquariumPoint = INTERACTABLES.find((i) => i.id === "aquarium")!;
 
   constructor() {
@@ -88,6 +94,17 @@ export class OfficeScene extends Phaser.Scene {
       this.npcs.push(a);
     }
 
+    this.patrols = [];
+    this.meter = 0;
+    this.cone = this.add.graphics().setDepth(1);
+    for (const d of PATROLS) {
+      this.makeCharTexture(`char-${d.id}`, d.palette);
+      const [x, y] = d.route[0]!;
+      const a = this.makeActor(d.id, d.name, x, y, `char-${d.id}`);
+      a.mark = this.add.text(0, 0, "", { fontFamily: "'Press Start 2P'", fontSize: "14px", color: "#ff4d4d" }).setOrigin(0.5, 1).setStroke("#2a0a3a", 4);
+      this.patrols.push({ a, route: d.route, leg: 1, speed: d.speed, facing: 0, cooldown: 0 });
+    }
+
     const cam = this.cameras.main;
     const p = iso(this.player.x, this.player.y);
     cam.centerOn(p.x, p.y);
@@ -96,6 +113,7 @@ export class OfficeScene extends Phaser.Scene {
 
     const kb = this.input.keyboard!;
     this.keys = kb.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as OfficeScene["keys"];
+    this.shift = kb.addKey("SHIFT");
     kb.disableGlobalCapture();
 
     // Allow restoring position from a reloaded save.
@@ -440,6 +458,75 @@ export class OfficeScene extends Phaser.Scene {
     }
   }
 
+  private running = false;
+  private moving = false;
+
+  private updatePatrols(dt: number, paused: boolean) {
+    const p = this.player;
+    const g = this.cone;
+    g.clear();
+    const hidden = isHidden(p.x, p.y, this.moving);
+    let exp = 0;
+    let catcher: (typeof this.patrols)[number] | null = null;
+    for (const pt of this.patrols) {
+      const a = pt.a;
+      if (!paused) {
+        pt.cooldown = Math.max(0, pt.cooldown - dt);
+        const [tx, ty] = pt.route[pt.leg]!;
+        const ddx = tx - a.x, ddy = ty - a.y, dist = Math.hypot(ddx, ddy);
+        if (dist < 0.05) {
+          pt.leg = (pt.leg + 1) % pt.route.length;
+          a.walk = 0;
+        } else {
+          const step = Math.min(dist, pt.speed * dt);
+          a.x += (ddx / dist) * step;
+          a.y += (ddy / dist) * step;
+          a.walk += dt;
+          const target = Math.atan2(ddy, ddx);
+          let diff = target - pt.facing;
+          diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+          pt.facing += diff * Math.min(1, dt * 6);
+          a.sprite.setFlipX(ddx - ddy < 0);
+        }
+      }
+      const e = pt.cooldown > 0 ? 0 : exposure({ x: a.x, y: a.y, facing: pt.facing }, p.x, p.y, { hidden, running: this.running });
+      if (e > exp) { exp = e; catcher = pt; }
+      // vision cone
+      const color = pt.cooldown > 0 ? 0x888888 : this.meter > 60 && e > 0 ? 0xff3b3b : this.meter > 0 && e > 0 ? 0xffd23f : 0xbfa8ff;
+      const pts = [iso(a.x, a.y)];
+      for (let i = 0; i <= 10; i++) {
+        const ang = pt.facing - STEALTH.halfAngle + (i / 10) * STEALTH.halfAngle * 2;
+        pts.push(iso(a.x + Math.cos(ang) * STEALTH.viewRange, a.y + Math.sin(ang) * STEALTH.viewRange));
+      }
+      g.fillStyle(color, 0.18);
+      g.fillPoints(pts.map((q) => new Phaser.Geom.Point(q.x, q.y)), true);
+      g.lineStyle(1, color, 0.5);
+      g.strokePoints(pts.map((q) => new Phaser.Geom.Point(q.x, q.y)), true);
+      a.mark?.setText(e > 0 && pt === catcher ? (this.meter > 60 ? "!" : "?") : "");
+      this.place(a);
+    }
+    if (this.running && !paused) {
+      const c = iso(p.x, p.y);
+      g.lineStyle(2, 0xffd23f, 0.35);
+      g.strokeEllipse(c.x, c.y, STEALTH.noiseRadius * 64, STEALTH.noiseRadius * 32);
+    }
+    if (paused) return;
+    const r = stepMeter(this.meter, exp, dt);
+    this.meter = r.meter;
+    if (r.caught && catcher) {
+      catcher.cooldown = STEALTH.caughtCooldown;
+      this.cameras.main.shake(250, 0.006);
+      game.toast(`${catcher.a.name} te pegou: "Rapidinho, só uma call de alinhamento..."`);
+      game.run({ stats: { ...STEALTH.caughtPenalty }, minutes: STEALTH.caughtMinutes });
+    }
+    this.stealthAcc += dt;
+    const prev = game.get().ui.stealth;
+    if (this.stealthAcc > 0.1 || !prev || prev.hidden !== hidden || prev.running !== this.running) {
+      this.stealthAcc = 0;
+      game.setUI({ stealth: { meter: Math.round(this.meter), hidden, running: this.running } });
+    }
+  }
+
   private actorRect(a: Actor): Rect {
     return { x: a.x - 0.25, y: a.y - 0.25, w: 0.5, d: 0.5 };
   }
@@ -470,8 +557,10 @@ export class OfficeScene extends Phaser.Scene {
       const keyX = Number(k.D.isDown || k.RIGHT.isDown) - Number(k.A.isDown || k.LEFT.isDown);
       const keyY = Number(k.S.isDown || k.DOWN.isDown) - Number(k.W.isDown || k.UP.isDown);
       const { dx, dy, amount } = playerMovement(keyX, keyY, this.virtualDir);
+      this.running = !!amount && this.shift.isDown;
+      this.moving = !!amount;
       if (amount) {
-        const sp = BALANCE.playerSpeed * dt * amount;
+        const sp = BALANCE.playerSpeed * dt * amount * (this.running ? STEALTH.runMultiplier : 1);
         const rects = [...SOLIDS, ...this.npcs.map((n) => this.actorRect(n))];
         if (!blocked(p.x + dx * sp, p.y, rects)) p.x += dx * sp;
         if (!blocked(p.x, p.y + dy * sp, rects)) p.y += dy * sp;
@@ -512,6 +601,7 @@ export class OfficeScene extends Phaser.Scene {
       this.place(n);
     }
     this.place(p);
+    this.updatePatrols(dt, paused);
 
     // nearest interactable
     let best: { id: string; label: string; d: number } | null = null;
