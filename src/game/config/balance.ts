@@ -17,5 +17,8 @@ export const BALANCE = {
   startPos: { x: 11.75, y: 20.2 },
   playerSpeed: 3.4,
   interactRadius: 1.5,
+  /** Show obstruction feedback only after sustained movement against a solid. */
+  blockedFeedbackSeconds: 0.75,
+  blockedFeedbackCooldownSeconds: 5,
   pitch: { secondsPerSlide: 8, baseBurnout: 4, wrongBurnout: 14, timeoutBurnout: 18 },
 } as const;

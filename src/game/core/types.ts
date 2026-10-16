@@ -42,6 +42,8 @@ export interface ItemDef {
 }
 
 export interface GameState {
+  /** Tutorial without passive time pressure; ends after the first badge quest. */
+  isGracePeriod: boolean;
   avatar: AvatarStyle;
   stats: Record<StatKey, number>;
   pyramid: PyramidProgress;

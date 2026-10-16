@@ -20,6 +20,7 @@ export const STAT_LABEL: Record<StatKey, string> = {
 
 export function newGame(avatar: AvatarStyle = "homem"): GameState {
   return {
+    isGracePeriod: false,
     avatar,
     stats: { vida: 100, fe: 70, burnout: 10, reputacao: 20, limpo: 0, sujo: 0 },
     pyramid: newPyramid(),
@@ -40,6 +41,7 @@ export function startJourney(avatar: AvatarStyle = "homem"): GameState {
   s.pos = { x: 10, y: 3 };
   s.visitedFloors = ["portaria"];
   s.quests.credencial.status = "active";
+  s.isGracePeriod = true;
   return s;
 }
 
@@ -59,6 +61,7 @@ function addStat(s: GameState, k: StatKey, v: number, log: string[]) {
 }
 
 function advanceClock(s: GameState, minutes: number, log: string[]) {
+  if (s.isGracePeriod) return;
   if (!Number.isFinite(minutes) || minutes <= 0 || s.pyramid.outcome) return;
   let remaining = Math.floor(minutes);
   while (remaining > 0 && !s.pyramid.outcome) {
@@ -83,6 +86,7 @@ function advanceClock(s: GameState, minutes: number, log: string[]) {
   }
 }
 function mutate(s: GameState, e: Effects, log: string[]) {
+  const startedInGracePeriod = s.isGracePeriod;
   if (e.stats) for (const [k, v] of Object.entries(e.stats)) if (v) addStat(s, k as StatKey, v, log);
   for (const it of e.give ?? []) {
     s.inventory.push(it);
@@ -107,14 +111,22 @@ function mutate(s: GameState, e: Effects, log: string[]) {
     if (!def || !q || q.status !== "active") continue;
     if (def.objectives[q.step]?.id !== a.objective) continue;
     q.step += 1;
+    if (q.step < def.objectives.length) {
+      log.push(`✓ Passo ${q.step}/${def.objectives.length} concluído. Próximo: Passo ${q.step + 1}/${def.objectives.length}: ${def.objectives[q.step]?.text}`);
+    }
     if (q.step >= def.objectives.length) {
       q.status = "completed";
+      if (a.quest === "credencial" && s.isGracePeriod) {
+        s.isGracePeriod = false;
+        log.push("Crachá liberado! O expediente começa agora. Sua próxima missão está no escritório.");
+      }
       log.push(`Missão concluída: ${def.title}`);
       mutate(s, def.rewards, log);
       rewardQuestInfluence(s, a.quest, log);
     }
   }
-  if (e.minutes) advanceClock(s, e.minutes, log);
+  // The action that finishes the tutorial is free too; pressure starts afterwards.
+  if (e.minutes && !startedInGracePeriod) advanceClock(s, e.minutes, log);
 }
 
 export function applyEffects(s0: GameState, e: Effects) {
@@ -151,6 +163,14 @@ export function sickLeave(s0: GameState) {
   if (!s.visitedFloors.includes("office")) s.visitedFloors.push("office");
   if (s.quests.pitch?.status === "active") s.quests.pitch.status = "failed";
   return s;
+}
+
+/** User-facing step number, derived from the same quest data and saved progress. */
+export function objectiveProgress(s: GameState, questId: string): string | null {
+  const q = s.quests[questId as QuestId];
+  const def = questDef(questId);
+  if (!q || !def || q.status !== "active" || !def.objectives[q.step]) return null;
+  return `Passo ${q.step + 1}/${def.objectives.length}: ${def.objectives[q.step]!.text}`;
 }
 
 export function currentObjective(s: GameState, questId: string) {

@@ -133,16 +133,16 @@
   {
     "id": "credencial",
     "title": "Crachá Provisório",
-    "description": "No térreo, cumpra o ritual de entrada e consiga um crachá sem nome.",
+    "description": "Primeiro dia: encontre a recepção, registre a entrada e retire seu crachá. Durante o treinamento, o relógio e o desgaste ficam pausados.",
     "npc": "portaria",
     "objectives": [
       {
         "id": "register",
-        "text": "Registrar entrada no totem da portaria"
+        "text": "Fale com a recepção e registre sua entrada no totem"
       },
       {
         "id": "badge",
-        "text": "Retirar crachá no balcão"
+        "text": "Retire o crachá no balcão de segurança"
       }
     ],
     "rewards": {

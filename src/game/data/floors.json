@@ -378,7 +378,7 @@
         "w": 3.9,
         "d": 1.2,
         "id": "badge_desk",
-        "label": "Retirar crachá temporário",
+        "label": "Retirar crachá (Passo 2/2)",
         "ix": 15.2,
         "iy": 5.1
       },
@@ -389,7 +389,7 @@
         "w": 1.2,
         "d": 1.2,
         "id": "security_check",
-        "label": "Registrar entrada na portaria",
+        "label": "Falar com a recepção (Passo 1/2)",
         "ix": 3.2,
         "iy": 5.7
       },

@@ -114,7 +114,8 @@ export const game = {
   /** Called every frame by the world while the game is unpaused. */
   tick(sec: number) {
     if (snap.state.pyramid.outcome) return;
-    clockAcc += sec * BALANCE.minutesPerSecond;
+    // The first mission is a safe onboarding space; only autosave advances.
+    if (!snap.state.isGracePeriod) clockAcc += sec * BALANCE.minutesPerSecond;
     saveAcc += sec;
     if (clockAcc >= 1) {
       const whole = Math.floor(clockAcc);
@@ -175,7 +176,7 @@ export const game = {
       if (!saved || typeof saved !== "object" || !saved.stats || !saved.clock) return false;
       snap = {
         ...snap,
-        state: { ...base, ...saved, avatar: saved.avatar === "mulher" ? "mulher" : "homem", floor: saved.floor && FLOORS.some((f) => f.id === saved.floor) ? saved.floor : "office",
+        state: { ...base, ...saved, isGracePeriod: typeof saved.isGracePeriod === "boolean" ? saved.isGracePeriod && saved.quests?.credencial?.status !== "completed" : saved.floor === "portaria" && saved.quests?.credencial?.status !== "completed", avatar: saved.avatar === "mulher" ? "mulher" : "homem", floor: saved.floor && FLOORS.some((f) => f.id === saved.floor) ? saved.floor : "office",
           visitedFloors: Array.isArray(saved.visitedFloors) ? [...new Set(["office" as const, ...saved.visitedFloors.filter((id) => FLOORS.some((f) => f.id === id))])] : ["office"], pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...(saved.quests ?? {}) } },
       };
       game.save(); // migrate legacy save to the new title without losing progress
