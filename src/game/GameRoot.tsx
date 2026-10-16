@@ -62,7 +62,7 @@ export default function GameRoot() {
       g.events.once(Phaser.Core.Events.READY, () => {
         const target = game.get().state.floor === "office" ? "office" : "annex";
         if (g && !g.scene.isActive(target)) g.scene.start(target);
-        focusGameCanvas(g.canvas);
+        if (g) focusGameCanvas(g.canvas);
       });
     })();
     return () => {
