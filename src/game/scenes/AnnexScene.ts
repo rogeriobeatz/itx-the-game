@@ -29,6 +29,11 @@ export class AnnexScene extends Phaser.Scene {
   constructor() { super("annex"); }
 
   create() {
+    // Reset cached markers when returning to this scene from another floor.
+    this.questMarkers = [];
+    this.points = [];
+    this.virtualDir = { sx: 0, sy: 0 };
+    this.walk = 0;
     const floor = floorDefinition(game.get().state.floor);
     if (!floor) return;
     this.floor = floor;

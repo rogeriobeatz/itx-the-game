@@ -32,10 +32,14 @@ export function navigationTarget(s: GameState): (Destination & { quest: string; 
     const target = TARGETS[quest.id + ":" + obj.id];
     if (target) return { ...target, quest: quest.title, text: obj.text };
   }
+  if (s.quests.bau?.status === "available") {
+    return { floor: "office", interaction: "npc:patriarca",
+      quest: "O Baú Roxo", text: "Vá ao escritório e converse com o fundador" };
+  }
   return null;
 }
 export function floorHasMission(s: GameState, floor: FloorId): boolean {
-  return QUESTS.some(q => {
+  return navigationTarget(s)?.floor === floor || QUESTS.some(q => {
     const obj = currentObjective(s, q.id);
     return obj ? TARGETS[q.id + ":" + obj.id]?.floor === floor : false;
   });

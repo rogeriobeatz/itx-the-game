@@ -63,6 +63,10 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   create() {
+    // Phaser scene instances survive floor changes; never retain actors from prior runs.
+    this.npcs = [];
+    this.posAcc = 0;
+    this.virtualDir = { sx: 0, sy: 0 };
     this.cameras.main.setBackgroundColor("#07040d");
     this.drawFloor();
     this.drawWalls();

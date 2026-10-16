@@ -20,3 +20,17 @@ describe("RPG onboarding", () => {
     expect(newGame().avatar).toBe("homem");
   });
 });
+
+describe("first mission continuity", () => {
+  it("guides the player from the lobby to the next narrative quest", async () => {
+    const { applyEffects } = await import("./logic");
+    const { navigationTarget } = await import("./wayfinding");
+    let s = startJourney("homem");
+    expect(navigationTarget(s)?.floor).toBe("portaria");
+    s = applyEffects(s, {advance:[{quest:"credencial",objective:"register"}]}).state;
+    s = applyEffects(s, {advance:[{quest:"credencial",objective:"badge"}]}).state;
+    expect(s.quests.credencial.status).toBe("completed");
+    expect(navigationTarget(s)?.floor).toBe("office");
+    expect(navigationTarget(s)?.interaction).toBe("npc:patriarca");
+  });
+});

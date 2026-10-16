@@ -97,8 +97,8 @@ export default function GameRoot() {
     const instance = phaser.current;
     if (!instance) return;
     const target = game.get().state.floor === "office" ? "office" : "annex";
-    if (!instance.scene.isActive(target)) instance.scene.start(target);
-    else instance.events.emit("teleport", game.get().state.pos);
+    // A new run must also recreate the selected avatar texture if this scene was already active.
+    instance.scene.start(target);
   };
 
   return (
