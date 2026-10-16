@@ -86,6 +86,7 @@ export default function GameRoot() {
       if (k === "p") return game.setUI({ modal: ui.modal === "pyramid" ? null : "pyramid" });
       if (k === "l") return game.setUI({ modal: ui.modal === "elevator" ? null : "elevator" });
       if (k === "h") return game.setUI({ modal: ui.modal === "help" ? null : "help" });
+      if (k === "m") return game.setUI({ modal: ui.modal === "mobile_menu" ? null : "mobile_menu" });
       if (k === "e" && !ui.modal && ui.prompt) interact(ui.prompt.id);
     };
     window.addEventListener("keydown", onKey);
@@ -104,6 +105,7 @@ export default function GameRoot() {
     <div className="game-root">
       <div ref={host} className="absolute inset-0" />
       {ui.modal !== "title" && <Hud />}
+      {ui.modal !== "title" && <MobileHud />}
       {ui.modal === null && <TouchControls emitMove={(dir) => phaser.current?.events.emit("virtual-move", dir)} />}
       {ui.prompt && !ui.modal && (
         <div className="prompt-hint">
@@ -120,6 +122,7 @@ export default function GameRoot() {
       {ui.modal === "pitch" && <Pitch />}
       {ui.modal === "pyramid" && <PyramidPanel />}
       {ui.modal === "elevator" && <ElevatorPanel />}
+      {ui.modal === "mobile_menu" && <MobileMenu />}
       {ui.modal === "help" && <HelpPanel />}
       {ui.modal === "ending" && <PyramidEnding onRestart={teleport} />}
       {ui.modal === "gameover" && <GameOver onBack={teleport} />}
@@ -178,7 +181,7 @@ function Hud() {
           <span className="text-rep hud-val">★ {s.reputacao}</span>
         </div>
       </div>
-      <button className="pixel-panel" style={{ position: "absolute", top: 146, left: 12, zIndex: 20, textAlign: "left", fontSize: 10, padding: 10, color: "#e4c8ff", cursor: "pointer" }} onClick={() => game.setUI({ modal: "pyramid" })}>
+      <button className="pixel-panel hud-pyramid-quick" style={{ position: "absolute", top: 146, left: 12, zIndex: 20, textAlign: "left", fontSize: 10, padding: 10, color: "#e4c8ff", cursor: "pointer" }} onClick={() => game.setUI({ modal: "pyramid" })}>
         <b>▲ {RANKS[p.rank]!.name.toUpperCase()}</b> · ₿ {p.btc.toFixed(4)}<br />
         <span style={{ color: "#fbbf69" }}>PF {p.heat}%</span> · <span style={{ color: "#ff7799" }}>FALÊNCIA {p.instability}%</span><br />
         <small>P: ABRIR PIRÂMIDE</small>
@@ -203,6 +206,41 @@ function Hud() {
       <Minimap />
     </>
   );
+}
+
+/** Only the essentials stay on screen when playing by touch. */
+function MobileHud() {
+  const { state } = useGame();
+  const target = navigationTarget(state);
+  const ongoing = QUESTS.find(q => state.quests[q.id as keyof typeof state.quests]?.status === "active");
+  const objective = target?.text ?? (ongoing ? currentObjective(state, ongoing.id)?.text : undefined);
+  return <div className="mobile-hud" aria-label="Status e objetivo atual">
+    <div className="mobile-hud-top">
+      <span className="mobile-hud-day">D{state.clock.day} · {fmtClock(state.clock.minutes)}</span>
+      <span className="mobile-hud-vitals">♥ {Math.round(state.stats.vida)} <span className={state.stats.burnout>=70?"is-critical":""}>▲ {Math.round(state.stats.burnout)}%</span></span>
+      <button type="button" className="mobile-hud-menu" onClick={() => game.setUI({ modal: "mobile_menu" })} aria-label="Abrir menu">☰ MENU</button>
+    </div>
+    <button type="button" className="mobile-hud-objective" onClick={() => game.setUI({ modal: "journal" })}>
+      <span className="mobile-hud-caption">◆ MISSÃO</span>
+      <span className="mobile-hud-objective-text">{objective ?? "Explore o prédio e converse com os personagens."}</span>
+      <span className="mobile-hud-chevron" aria-hidden="true">›</span>
+    </button>
+  </div>;
+}
+
+function MobileMenu() {
+  const { state } = useGame();
+  return <Modal title="MENU DO JOGO" hint="Toque fora para voltar ao jogo." onClose={() => game.setUI({ modal: null })}>
+    <p className="dlg-text">Dia {state.clock.day} · {FLOORS.find(x=>x.id===state.floor)?.name}</p>
+    <div className="mobile-menu-grid mt-4">
+      <button className="pixel-btn pixel-btn-primary" onClick={() => game.setUI({ modal: "elevator" })}>⇅ ANDARES</button>
+      <button className="pixel-btn" onClick={() => game.setUI({ modal: "journal" })}>◆ MISSÕES</button>
+      <button className="pixel-btn" onClick={() => game.setUI({ modal: "inventory" })}>▣ ITENS</button>
+      <button className="pixel-btn" onClick={() => game.setUI({ modal: "pyramid" })}>♛ CARREIRA</button>
+      <button className="pixel-btn" onClick={() => game.setUI({ modal: "help" })}>? COMO JOGAR</button>
+      <button className="pixel-btn" onClick={() => game.setUI({ modal: "pause" })}>Ⅱ PAUSAR/SALVAR</button>
+    </div>
+  </Modal>;
 }
 
 function Minimap() {
@@ -693,56 +731,50 @@ function TouchControls({ emitMove }: { emitMove: (dir: InputVector) => void }) {
       onPointerCancel={(e) => release(e.pointerId)}
       onLostPointerCapture={(e) => release(e.pointerId)}
       onContextMenu={(e) => e.preventDefault()}>
-      <div className={`touch-joystick-base ${stick.active ? "is-active" : ""}`}
+      {stick.active && <div className="touch-joystick-base is-active"
         style={stick.active ? { left: stick.origin.x, top: stick.origin.y } : undefined}>
         <div className="touch-joystick-inner" aria-hidden="true"/>
         <div className="touch-joystick-knob" style={{ transform: `translate(-50%, -50%) translate(${stick.offset.x}px, ${stick.offset.y}px)` }}>
           <span aria-hidden="true">✦</span>
         </div>
-      </div>
+      </div>}
       <span className="touch-joystick-hint">ARRASTE PARA MOVER</span>
     </div>
     <div className="touch-actions">
-      <button type="button" className="touch-action touch-primary touch-act" onClick={() => {
+      {game.get().ui.prompt && <button type="button" className="touch-action touch-primary touch-act" onClick={() => {
         const { ui } = game.get();
         if (ui.prompt && !ui.modal) interact(ui.prompt.id);
-        else game.toast("Aproxime-se de um personagem ou objeto para interagir.");
-      }} aria-label="Interagir com objeto ou personagem próximo">AGIR</button>
-      <div className="touch-action-secondary">
-        <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "elevator" })}>ANDARES</button>
-        <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "inventory" })}>ITENS</button>
-        <button type="button" className="touch-action" onClick={() => game.setUI({ modal: "journal" })}>MISSÕES</button>
-      </div>
+      }} aria-label="Interagir com objeto ou personagem próximo">AGIR</button>}
+      <button type="button" className="touch-action touch-floor" onClick={() => game.setUI({ modal: "elevator" })} aria-label="Escolher andar">⇅</button>
     </div>
   </div>;
 }
 
 function ElevatorPanel() {
   const { state } = useGame();
-  return (
-    <Modal title="ELEVADOR INTERGALÁCTICO" hint="Os espaços são recriações fictícias inspiradas nas fotos enviadas." onClose={() => game.setUI({ modal: null })}>
-      <div className="section-label">ESCOLHA O DESTINO · {state.visitedFloors.length}/{FLOORS.length} EXPLORADOS</div>
-      <p className="dlg-text mt-2">Suba na hierarquia para liberar novos ambientes. Algumas missões garantem acesso especial.</p>
-      <div className="flex flex-col gap-3 mt-4">
-        {FLOORS.map((floor) => {
-          const accessible = canVisit(state, floor.id);
-          const current = state.floor === floor.id;
-          return (
-            <button key={floor.id} className={`pixel-btn ${current ? "pixel-btn-primary" : ""}`}
-              disabled={!accessible || current}
-              onClick={() => game.travelTo(floor.id)}>
-              {current ? "● " : accessible ? "⇧ " : "🔒 "}{floor.name.toUpperCase()}
-              {" · "}{floor.level}
-              {!accessible && ` · requer ${RANKS[floor.minRank]!.name}`}
-              {current && " · VOCÊ ESTÁ AQUI"}
-              {state.visitedFloors.includes(floor.id) && !current && " · VISITADO"}
-              {floorHasMission(state, floor.id) && " · ◆ MISSÃO"}
-            </button>
-          );
-        })}
-      </div>
-    </Modal>
-  );
+  const accessible = FLOORS.filter(floor => canVisit(state, floor.id));
+  const locked = FLOORS.filter(floor => !canVisit(state, floor.id));
+  const target = navigationTarget(state);
+  const destination = target ? FLOORS.find(f => f.id === target.floor) : undefined;
+  return <Modal title="ESCOLHA O ANDAR" hint="Viagem rápida também funciona sem procurar fisicamente o elevador." onClose={() => game.setUI({ modal: null })}>
+    <p className="dlg-text">Você está em: <strong>{FLOORS.find(f => f.id === state.floor)?.name}</strong></p>
+    {destination && target?.floor !== state.floor && canVisit(state, target.floor) &&
+      <button className="pixel-btn pixel-btn-primary elevator-destination mt-3" onClick={() => game.travelTo(target.floor)}>
+        ◆ IR PARA A MISSÃO: {destination.name.toUpperCase()}
+      </button>}
+    <div className="section-label mt-3 mb-2">ANDARES DISPONÍVEIS</div>
+    <div className="elevator-floor-list">
+      {accessible.map(floor => <button key={floor.id} type="button" className={`elevator-floor ${state.floor===floor.id?"is-current":""}`} disabled={state.floor===floor.id}
+        onClick={() => game.travelTo(floor.id)}>
+        <span className="elevator-floor-number">{floor.level.split(" · ")[0]}</span>
+        <span className="elevator-floor-text"><strong>{floor.name}</strong><small>{state.floor===floor.id?"Você está aqui":floorHasMission(state,floor.id)?"◆ Missão neste andar":state.visitedFloors.includes(floor.id)?"Já visitado":"Novo local"}</small></span>
+        <span aria-hidden="true">›</span>
+      </button>)}
+    </div>
+    {locked.length>0 && <details className="elevator-locked mt-3"><summary>🔒 {locked.length} andares ainda bloqueados</summary>
+      {locked.map(floor => <div key={floor.id} className="elevator-locked-item">{floor.name} — requer patente {RANKS[floor.minRank]!.name}</div>)}
+    </details>}
+  </Modal>;
 }
 
 function PyramidPanel() {
