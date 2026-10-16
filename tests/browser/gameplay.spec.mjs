@@ -53,3 +53,47 @@ test("mobile: minimal HUD, fully hidden idle stick, drag and accessible elevator
   await page.screenshot({path:"test-results/mobile-elevator.png"});
   await ctx.close();
 });
+
+/**
+ * Exercise both interactions against the real Phaser scene and HUD. We reposition
+ * the saved avatar solely to avoid making the smoke test dependent on pathfinding
+ * or keyboard timing; movement is covered by separate input tests.
+ */
+test("first day: reception completes step one, badge finishes grace period", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await startNew(page, "MULHER");
+
+  const teleportSavedPlayer = async (x, y) => {
+    await page.evaluate(({ x, y }) => {
+      const raw = localStorage.getItem("intergalatic-save-v1");
+      if (!raw) throw new Error("No save was created");
+      const saved = JSON.parse(raw);
+      saved.floor = "portaria";
+      saved.pos = { x, y };
+      localStorage.setItem("intergalatic-save-v1", JSON.stringify(saved));
+    }, { x, y });
+    await page.reload();
+    await page.getByRole("button", { name: "CONTINUAR" }).click();
+    await expect(page.locator(".title-screen")).toHaveCount(0);
+  };
+
+  await teleportSavedPlayer(3.65, 5.95);
+  await expect(page.locator(".prompt-hint")).toContainText("recepção");
+  await page.keyboard.press("e");
+  await expect(page.locator(".quest-obj:visible").first()).toContainText("Passo 2/2: Retire o crachá no balcão de segurança");
+  const afterReception = await page.evaluate(() => JSON.parse(localStorage.getItem("intergalatic-save-v1")));
+  expect(afterReception.isGracePeriod).toBe(true);
+  expect(afterReception.clock.minutes).toBe(540);
+  expect(afterReception.stats.fe).toBe(70);
+  expect(afterReception.stats.burnout).toBe(10);
+
+  await teleportSavedPlayer(15.15, 5.4);
+  await expect(page.locator(".prompt-hint")).toContainText("crachá");
+  await page.keyboard.press("e");
+  await expect(page.locator(".quest-obj:visible").first()).not.toContainText("Passo 2/2: Retire o crachá");
+  const afterBadge = await page.evaluate(() => JSON.parse(localStorage.getItem("intergalatic-save-v1")));
+  expect(afterBadge.quests.credencial.status).toBe("completed");
+  expect(afterBadge.isGracePeriod).toBe(false);
+  expect(afterBadge.clock.minutes).toBe(540);
+  expect(afterBadge.inventory).toContain("cracha");
+});
