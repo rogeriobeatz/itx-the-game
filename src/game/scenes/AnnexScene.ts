@@ -51,15 +51,18 @@ export class AnnexScene extends Phaser.Scene {
       const mark = this.add.text(pos.x, pos.y - 55, "◆", { fontFamily: "monospace", fontSize: "24px", color: "#ffe27b" }).setOrigin(0.5).setDepth(pos.y + 150).setStroke("#20112f", 4).setVisible(false);
       this.questMarkers.push({ objectId: point.id, marker: mark });
     }
-    if (!this.textures.exists("char-player")) {
+    const feminine = game.get().state.avatar === "mulher";
+    const spriteKey = feminine ? "char-player-mulher" : "char-player-homem";
+    if (!this.textures.exists(spriteKey)) {
       const maker = this.make.graphics({ x: 0, y: 0 }, false);
-      maker.fillStyle(0xe5d5ff).fillRect(10, 0, 12, 18);
-      maker.fillStyle(0x7b4dff).fillRect(7, 18, 18, 24);
+      maker.fillStyle(feminine ? 0x42314e : 0x241c30).fillRect(7, 0, 18, feminine ? 28 : 14);
+      maker.fillStyle(0xe5c6a6).fillRect(10, 5, 12, 16);
+      maker.fillStyle(feminine ? 0xc185db : 0x7b4dff).fillRect(7, 22, 18, 20);
       maker.fillStyle(0x151020).fillRect(10, 42, 6, 8).fillRect(21, 42, 6, 8);
-      maker.generateTexture("char-player", 32, 52);
+      maker.generateTexture(spriteKey, 32, 52);
       maker.destroy();
     }
-    this.player = this.add.image(0, 0, "char-player").setOrigin(0.5, 1);
+    this.player = this.add.image(0, 0, spriteKey).setOrigin(0.5, 1);
     this.repositionPlayer();
     const cam = this.cameras.main;
     const pt = iso(this.px, this.py);

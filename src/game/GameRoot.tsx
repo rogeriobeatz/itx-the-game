@@ -9,6 +9,7 @@ import { navigationTarget, floorHasMission } from "./core/wayfinding";
 import { CRISIS_DAY, RANKS, VICTORY_BTC } from "./core/pyramid";
 import { BALANCE } from "./config/balance";
 import { joystickVector, knobOffset, type InputVector } from "./core/touch";
+import type { AvatarStyle } from "./core/types";
 import { LOGO_URL, PORTRAITS, TITLE_BG } from "./assets";
 import { GAME_TITLE, GAME_SUBTITLE } from "./brand";
 import charactersData from "./data/characters.json";
@@ -50,6 +51,10 @@ export default function GameRoot() {
         scene: [OfficeScene, AnnexScene],
       });
       phaser.current = g;
+      g.events.once(Phaser.Core.Events.READY, () => {
+        const target = game.get().state.floor === "office" ? "office" : "annex";
+        if (g && !g.scene.isActive(target)) g.scene.start(target);
+      });
     })();
     return () => {
       cancelled = true;
@@ -87,7 +92,13 @@ export default function GameRoot() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const teleport = () => phaser.current?.events.emit("teleport", game.get().state.pos);
+  const teleport = () => {
+    const instance = phaser.current;
+    if (!instance) return;
+    const target = game.get().state.floor === "office" ? "office" : "annex";
+    if (!instance.scene.isActive(target)) instance.scene.start(target);
+    else instance.events.emit("teleport", game.get().state.pos);
+  };
 
   return (
     <div className="game-root">
@@ -306,11 +317,14 @@ function Toasts() {
 
 function Title({ onStart }: { onStart: () => void }) {
   const [hasSave, setHasSave] = useState(false);
+  const [choosing, setChoosing] = useState(false);
+  const [avatar, setAvatar] = useState<AvatarStyle>("homem");
   useEffect(() => setHasSave(game.hasSave()), []);
   const start = (load: boolean) => {
     if (load) game.load();
-    else game.reset();
-    game.setUI({ modal: game.get().state.pyramid.outcome ? "ending" : load ? null : "help" });
+    else game.reset(avatar);
+    game.setUI({ modal: game.get().state.pyramid.outcome ? "ending" : null });
+    if (!load) game.toast("DIA 1 · Encontre o totem de entrada e retire seu crachá!");
     onStart();
   };
   return (
@@ -319,14 +333,22 @@ function Title({ onStart }: { onStart: () => void }) {
         <img src={LOGO_URL} alt="Logo Intergalatic" className="title-logo" width={96} height={96} />
         <h1 className="title-h1">{GAME_TITLE}</h1>
         <p className="title-sub">{GAME_SUBTITLE.toUpperCase()}</p>
+        {choosing && <div className="avatar-picker" role="group" aria-label="Escolha seu protagonista">
+          <p className="quest-title">QUEM COMEÇA O EXPEDIENTE?</p>
+          <div className="avatar-options">
+            <button className={`avatar-choice ${avatar === "homem" ? "selected" : ""}`} onClick={() => setAvatar("homem")} aria-pressed={avatar === "homem"}><span className="avatar-figure avatar-man" aria-hidden="true">◆</span>HOMEM</button>
+            <button className={`avatar-choice ${avatar === "mulher" ? "selected" : ""}`} onClick={() => setAvatar("mulher")} aria-pressed={avatar === "mulher"}><span className="avatar-figure avatar-woman" aria-hidden="true">◆</span>MULHER</button>
+          </div>
+          <p className="hud-dim">Escolha apenas visual, sem diferenças de atributos.</p>
+        </div>}
         <div className="flex flex-col gap-3 mt-8 w-64">
           {hasSave && (
             <button className="pixel-btn pixel-btn-primary" onClick={() => start(true)}>
               CONTINUAR
             </button>
           )}
-          <button className={`pixel-btn ${hasSave ? "" : "pixel-btn-primary"}`} onClick={() => start(false)}>
-            {hasSave ? "NOVO JOGO" : "JOGAR"}
+          <button className={`pixel-btn ${hasSave ? "" : "pixel-btn-primary"}`} onClick={() => choosing ? start(false) : setChoosing(true)}>
+            {choosing ? "COMEÇAR O EXPEDIENTE" : hasSave ? "NOVO JOGO" : "JOGAR"}
           </button>
         </div>
         <p className="title-foot">Um RPG de sobrevivência corporativa. Bata o ponto. Se puder.</p>
