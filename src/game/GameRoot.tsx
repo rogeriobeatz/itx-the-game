@@ -23,6 +23,13 @@ function useGame() {
   return useSyncExternalStore(game.subscribe, game.get, game.get);
 }
 
+function focusGameCanvas(canvas?: HTMLCanvasElement | null) {
+  if (!canvas || game.get().ui.modal !== null) return;
+  canvas.tabIndex = 0;
+  canvas.setAttribute("aria-label", "Mundo de INTERGALATIC; use WASD, setas e E para interagir");
+  canvas.focus({ preventScroll: true });
+}
+
 export default function GameRoot() {
   const host = useRef<HTMLDivElement>(null);
   const phaser = useRef<PhaserNS.Game | null>(null);
@@ -55,6 +62,7 @@ export default function GameRoot() {
       g.events.once(Phaser.Core.Events.READY, () => {
         const target = game.get().state.floor === "office" ? "office" : "annex";
         if (g && !g.scene.isActive(target)) g.scene.start(target);
+        focusGameCanvas(g.canvas);
       });
     })();
     return () => {
@@ -70,10 +78,21 @@ export default function GameRoot() {
     instance.scene.start(key);
   }, [snap.state.floor]);
 
+  // Closing any overlay (journal, inventory, pause, elevator, dialogue) restores
+  // keyboard navigation without an extra click into the Phaser canvas.
+  useEffect(() => {
+    if (ui.modal !== null) return;
+    const raf = requestAnimationFrame(() => focusGameCanvas(phaser.current?.canvas));
+    return () => cancelAnimationFrame(raf);
+  }, [ui.modal, snap.state.floor]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const { ui } = game.get();
       const k = e.key.toLowerCase();
+      const target = e.target;
+      if (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
+      if (!ui.modal && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
       if (ui.modal === "title" || ui.modal === "gameover" || ui.modal === "pitch" || ui.modal === "ending") return;
       if (ui.modal === "dialogue") {
         const n = parseInt(k, 10);

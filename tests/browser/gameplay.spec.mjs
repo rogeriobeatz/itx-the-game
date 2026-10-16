@@ -8,12 +8,14 @@ async function startNew(page, avatar) {
   await page.getByRole("button", { name: avatar }).click();
   await page.getByRole("button", { name: "COMEÇAR O EXPEDIENTE" }).click();
   await expect(page.locator(".title-screen")).toHaveCount(0);
-  await expect(page.locator(".mobile-hud-objective-text:visible, .quest-obj:visible").filter({ hasText: "Registrar entrada no totem da portaria" }).first()).toBeVisible();
+  await expect(page.locator("canvas").first()).toBeVisible();
+  await expect(page.locator(".mobile-hud-objective-text:visible, .quest-obj:visible").filter({ hasText: "Fale com a recepção e registre sua entrada no totem" }).first()).toBeVisible();
 }
 
 test("desktop: avatar, first objective and uncomplicated elevator", async ({page}) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await startNew(page, "MULHER");
+  await expect.poll(() => page.evaluate(() => document.activeElement?.tagName)).toBe("CANVAS");
   await page.keyboard.press("l");
   await expect(page.getByRole("heading", {name:"ESCOLHA O ANDAR"})).toBeVisible();
   await expect(page.getByText("ANDARES DISPONÍVEIS")).toBeVisible();

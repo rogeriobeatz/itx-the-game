@@ -412,3 +412,9 @@
  .toasts { top:101px; }
  .toast-item { max-width:80vw; padding:4px 8px; font-size:16px; border-radius:8px; background:rgba(27,15,46,.9); }
 }
+
+/* Sprint 1: first-day learning state, without a punitive clock. */
+.grace-period-label { color:#ffdb91; font:9px var(--font-pixel); padding:0 0 9px; line-height:1.5; }
+@media (hover:none) and (pointer:coarse), (max-width:700px) {
+ .mobile-hud-day { font-size:clamp(7px,2.15vw,10px); }
+}
