@@ -114,6 +114,7 @@ export default function GameRoot() {
         </div>
       )}
       {ui.watch && <WatchBar elapsed={ui.watch.elapsed} />}
+      {ui.stealth && state.floor === "office" && !ui.modal && <StealthMeter {...ui.stealth} />}
       <Toasts />
       {ui.modal === "title" && <Title onStart={teleport} />}
       {ui.modal === "dialogue" && <DialogueBox />}
@@ -300,6 +301,18 @@ function Minimap() {
       <button type="button" className="floor-shortcut" onClick={() => game.setUI({ modal: "elevator" })} title="Abrir seleção de andares (tecla L)">
         ⇵ ANDARES <span className="key-cap">L</span>
       </button>
+    </div>
+  );
+}
+
+function StealthMeter({ meter, hidden, running }: { meter: number; hidden: boolean; running: boolean }) {
+  const level = meter > 60 ? "danger" : meter > 0 ? "warn" : "calm";
+  const label = hidden ? "Em call de alinhamento (escondido)" : meter > 60 ? "Cobrança iminente!" : meter > 0 ? "Alguém te notou..." : running ? "Correndo — fazendo barulho" : "Fora do radar";
+  return (
+    <div className={`pixel-panel stealth-meter stealth-${level}`} role="status" aria-label="Detecção">
+      <div className="stealth-label">{hidden ? "🪴" : meter > 60 ? "‼" : meter > 0 ? "👀" : running ? "💨" : "🕶"} {label}</div>
+      <div className="stealth-track"><div className="stealth-fill" style={{ width: `${meter}%` }} /></div>
+      <div className="stealth-hint">Shift corre · pare perto de plantas/sofás para se esconder</div>
     </div>
   );
 }

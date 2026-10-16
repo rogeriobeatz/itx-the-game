@@ -92,7 +92,7 @@ export const game = {
     const moved = { ...snap.state, floor: id, pos: position,
       visitedFloors: snap.state.visitedFloors.includes(id) ? [...snap.state.visitedFloors] : [...snap.state.visitedFloors, id] };
     const { state, log } = tickClock(moved, 5);
-    snap = { ...snap, state, ui: { ...snap.ui, modal: null, dialogue: null, prompt: null, watch: null,
+    snap = { ...snap, state, ui: { ...snap.ui, modal: null, dialogue: null, prompt: null, watch: null, stealth: undefined,
       positions: { player: position, npcs: {} } } };
     log.forEach((msg) => game.toast(msg));
     checkCollapse();
