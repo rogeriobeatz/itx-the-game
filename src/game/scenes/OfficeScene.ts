@@ -4,6 +4,7 @@ import { BALANCE } from "../config/balance";
 import { currentObjective } from "../core/logic";
 import { navigationTarget } from "../core/wayfinding";
 import { playerMovement, type InputVector } from "../core/touch";
+import { obstructionFeedback } from "../core/movementFeedback";
 import { game } from "../core/store";
 import type { Palette } from "../core/types";
 import { PATROLS, STEALTH, exposure, isHidden, stepMeter } from "../core/stealth";
@@ -51,6 +52,9 @@ export class OfficeScene extends Phaser.Scene {
   private npcs: Actor[] = [];
   keys!: Record<"W" | "A" | "S" | "D" | "UP" | "DOWN" | "LEFT" | "RIGHT", Phaser.Input.Keyboard.Key>;
   private posAcc = 0;
+  private blockedHeld = 0;
+  private lastBlockedNotice = -Infinity;
+  private dustTimer = 0;
   private virtualDir: InputVector = { sx: 0, sy: 0 };
   private patrols: { a: Actor; route: [number, number][]; leg: number; speed: number; facing: number; cooldown: number }[] = [];
   private cone!: Phaser.GameObjects.Graphics;
@@ -72,6 +76,8 @@ export class OfficeScene extends Phaser.Scene {
     // Phaser scene instances survive floor changes; never retain actors from prior runs.
     this.npcs = [];
     this.posAcc = 0;
+    this.blockedHeld = 0;
+    this.dustTimer = 0;
     this.virtualDir = { sx: 0, sy: 0 };
     this.cameras.main.setBackgroundColor("#07040d");
     this.drawFloor();
@@ -557,6 +563,7 @@ export class OfficeScene extends Phaser.Scene {
       const keyX = Number(k.D.isDown || k.RIGHT.isDown) - Number(k.A.isDown || k.LEFT.isDown);
       const keyY = Number(k.S.isDown || k.DOWN.isDown) - Number(k.W.isDown || k.UP.isDown);
       const { dx, dy, amount } = playerMovement(keyX, keyY, this.virtualDir);
+      const initialX=p.x, initialY=p.y;
       this.running = !!amount && this.shift.isDown;
       this.moving = !!amount;
       if (amount) {
@@ -567,6 +574,25 @@ export class OfficeScene extends Phaser.Scene {
         p.walk += dt;
         if (keyX || this.virtualDir.sx) p.sprite.setFlipX(keyX + this.virtualDir.sx < 0);
       } else p.walk = 0;
+      const traveled=Math.hypot(p.x-initialX,p.y-initialY);
+      const feedback=obstructionFeedback({attempted:amount,travelled:traveled,
+        heldSeconds:this.blockedHeld,frameSeconds:dt,gameSeconds:this.time.now/1000,
+        lastNoticeSeconds:this.lastBlockedNotice});
+      this.blockedHeld=feedback.heldSeconds;
+      if(feedback.notify){
+        this.lastBlockedNotice=this.time.now/1000;
+        game.toast("Caminho obstruído. Contorne o obstáculo.");
+      }
+      if(traveled>0.0001){
+        this.dustTimer+=dt;
+        if(this.dustTimer>=0.26){
+          this.dustTimer=0;
+          const point=iso(p.x,p.y);
+          const dust=this.add.ellipse(point.x,point.y,10,4,0xcab2d8,0.28).setDepth(point.y);
+          this.tweens.add({targets:dust,alpha:0,scaleX:1.8,scaleY:1.3,duration:380,
+            onComplete:()=>dust.destroy()});
+        }
+      } else this.dustTimer=0;
       game.tick(dt);
     }
 

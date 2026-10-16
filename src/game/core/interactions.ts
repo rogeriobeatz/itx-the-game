@@ -52,15 +52,20 @@ export function interact(id: string) {
   }
   switch (id) {
     case "security_check":
-      if (s.quests.credencial?.status === "completed") return game.toast("Seu ponto está registrado. O sistema lembra de você.");
+      if (s.quests.credencial?.status === "completed")
+        return game.toast("✓ Recepção concluída. Seu próximo destino é o escritório.");
       if (s.quests.credencial?.status === "available") game.run({ startQuest: "credencial" });
-      if (currentObjective(game.get().state,"credencial")?.id === "register")
+      if (currentObjective(game.get().state, "credencial")?.id === "register") {
+        game.toast("Recepção: 'Seu crachá sai em 30 dias úteis. Bem-vindo à abundância!'");
         return game.run({ advance: [{ quest: "credencial", objective: "register" }], minutes: 5 });
-      return game.toast("Cadastro confirmado. Busque seu crachá no balcão.");
+      }
+      return game.toast("✓ Você já falou com a recepção. Passo 2/2: vá ao balcão destacado com ◆.");
     case "badge_desk":
-      if (currentObjective(s,"credencial")?.id === "badge")
+      if (currentObjective(s, "credencial")?.id === "badge")
         return game.run({ advance: [{ quest: "credencial", objective: "badge" }], minutes: 3 });
-      return game.toast("Documento aprovado somente após registro na portaria.");
+      if (s.quests.credencial?.status === "completed")
+        return game.toast("✓ Crachá entregue! Abra ANDARES e siga para o escritório.");
+      return game.toast("Primeiro fale com a recepção, no totem marcado com ◆.");
     case "notice_board":
       return game.toast("Aviso: aqui todo mundo é sócio de sonhos. Crachás à direita.");
     case "briefing":

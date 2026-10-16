@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type PhaserNS from "phaser";
 import { game } from "./core/store";
 import { choose, DIALOGUES, interact, useItem, visibleChoices } from "./core/interactions";
-import { applyEffects, currentObjective, fmtClock, ITEMS, QUESTS, sickLeave } from "./core/logic";
+import { applyEffects, currentObjective, objectiveProgress, fmtClock, ITEMS, QUESTS, sickLeave } from "./core/logic";
 import { MAP } from "./core/world";
 import { FLOORS, canVisit, floorDefinition } from "./core/floors";
 import { navigationTarget, floorHasMission } from "./core/wayfinding";
@@ -158,6 +158,7 @@ function Hud() {
   return (
     <>
       <div className="pixel-panel hud-tl">
+        {state.isGracePeriod && <div className="grace-period-label">TREINAMENTO · RELÓGIO PAUSADO</div>}
         <div className="hud-tag">FUNCIONÁRIO #0042 · {FLOORS.find((x) => x.id === state.floor)?.name ?? "Escritório"}</div>
         <Bar label="VIDA" value={s.vida} kind="vida" />
         <Bar label="FÉ" value={s.fe} kind="fe" />
@@ -196,7 +197,7 @@ function Hud() {
           active.map((q) => (
             <div key={q.id} className="mb-2 last:mb-0">
               <div className="quest-title">{q.title}</div>
-              <div className="quest-obj">▸ {currentObjective(state, q.id)?.text}</div>
+              <div className="quest-obj">▸ {objectiveProgress(state, q.id) ?? currentObjective(state, q.id)?.text}</div>
             </div>
           ))
         )}
@@ -215,12 +216,14 @@ function MobileHud() {
   const { state } = useGame();
   const target = navigationTarget(state);
   const ongoing = QUESTS.find(q => state.quests[q.id as keyof typeof state.quests]?.status === "active");
-  const objective = target?.text ?? (ongoing ? currentObjective(state, ongoing.id)?.text : undefined);
+  const objective = ongoing && target?.quest === ongoing.title
+    ? objectiveProgress(state, ongoing.id) ?? target.text
+    : target?.text ?? (ongoing ? objectiveProgress(state, ongoing.id) ?? currentObjective(state, ongoing.id)?.text : undefined);
   const point = target?.floor === state.floor ? interactionPoint(state,target.interaction) : null;
   const arrow = target && target.floor !== state.floor ? "⇅" : point ? isometricDirection(state.pos,point) : "◆";
   return <div className="mobile-hud" aria-label="Status e objetivo atual">
     <div className="mobile-hud-top">
-      <span className="mobile-hud-day">D{state.clock.day} · {fmtClock(state.clock.minutes)}</span>
+      <span className="mobile-hud-day">{state.isGracePeriod ? "TREINAMENTO · SEM PRESSÃO" : `D${state.clock.day} · ${fmtClock(state.clock.minutes)}`}</span>
       <span className="mobile-hud-vitals">♥ {Math.round(state.stats.vida)} <span className={state.stats.burnout>=70?"is-critical":""}>▲ {Math.round(state.stats.burnout)}%</span></span>
       <button type="button" className="mobile-hud-menu" onClick={() => game.setUI({ modal: "mobile_menu" })} aria-label="Abrir menu">☰ MENU</button>
     </div>
@@ -670,6 +673,7 @@ function HelpPanel() {
   return (
     <Modal title="MANUAL DE SOBREVIVÊNCIA" hint="H para fechar" onClose={() => game.setUI({ modal: null })}>
       <div className="flex flex-col gap-3 dlg-text">
+        <p><strong>Primeiro dia:</strong> fale com a recepção, retire o crachá e conclua o treinamento sem perder Fé ou ganhar Burnout.</p>
         <p><strong>WASD ou setas:</strong> mover pelo escritório. <strong>No celular:</strong> toque e arraste o joystick virtual no canto inferior esquerdo para caminhar, inclusive nas diagonais. Quanto mais longe do centro, mais rápido você anda.</p>
         <p><strong>E ou AGIR:</strong> falar com alguém ou ativar um objeto próximo.</p>
         <p><strong>L ou ANDARES:</strong> viajar de elevador. Alguns setores exigem uma patente maior.</p>

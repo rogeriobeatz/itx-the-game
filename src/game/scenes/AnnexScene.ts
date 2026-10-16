@@ -4,6 +4,7 @@ import { floorDefinition, type AnnexDef, type AnnexObject } from "../core/floors
 import { navigationTarget } from "../core/wayfinding";
 import { game } from "../core/store";
 import { playerMovement, type InputVector } from "../core/touch";
+import { obstructionFeedback } from "../core/movementFeedback";
 import { blocked, type Rect } from "../core/world";
 
 const TW = 64;
@@ -21,8 +22,11 @@ export class AnnexScene extends Phaser.Scene {
   private py = 3;
   private walk = 0;
   private posAcc = 0;
+  private blockedHeld = 0;
+  private lastBlockedNotice = -Infinity;
+  private dustTimer = 0;
   private virtualDir: InputVector = { sx: 0, sy: 0 };
-  private questMarkers: { objectId: string; marker: Phaser.GameObjects.Text }[] = [];
+  private questMarkers: { objectId: string; marker: Phaser.GameObjects.Text; ring?: Phaser.GameObjects.Ellipse }[] = [];
   private solids: Rect[] = [];
   private points: { id: string; label: string; x: number; y: number }[] = [];
 
@@ -34,6 +38,8 @@ export class AnnexScene extends Phaser.Scene {
     this.points = [];
     this.virtualDir = { sx: 0, sy: 0 };
     this.walk = 0;
+    this.dustTimer = 0;
+    this.blockedHeld = 0;
     const floor = floorDefinition(game.get().state.floor);
     if (!floor) return;
     this.floor = floor;
@@ -54,7 +60,14 @@ export class AnnexScene extends Phaser.Scene {
       if (point.id === "elevator") continue;
       const pos = iso(point.x, point.y);
       const mark = this.add.text(pos.x, pos.y - 55, "◆", { fontFamily: "monospace", fontSize: "24px", color: "#ffe27b" }).setOrigin(0.5).setDepth(pos.y + 150).setStroke("#20112f", 4).setVisible(false);
-      this.questMarkers.push({ objectId: point.id, marker: mark });
+      if(point.id==="badge_desk"){
+        this.tweens.add({targets:mark,scale:1.3,alpha:0.55,duration:560,yoyo:true,repeat:-1});
+        const ring=this.add.ellipse(pos.x,pos.y-5,62,26,0xf5d17c,0).setStrokeStyle(3,0xffde80)
+          .setDepth(pos.y+140).setVisible(false);
+        this.tweens.add({targets:ring,scaleX:1.35,scaleY:1.35,alpha:0.25,
+          duration:700,yoyo:true,repeat:-1});
+        this.questMarkers.push({ objectId: point.id, marker: mark, ring });
+      } else this.questMarkers.push({ objectId: point.id, marker: mark });
     }
     const feminine = game.get().state.avatar === "mulher";
     const spriteKey = feminine ? "char-player-mulher" : "char-player-homem";
@@ -199,6 +212,7 @@ export class AnnexScene extends Phaser.Scene {
       const keyX=Number(k.D.isDown||k.RIGHT.isDown)-Number(k.A.isDown||k.LEFT.isDown);
       const keyY=Number(k.S.isDown||k.DOWN.isDown)-Number(k.W.isDown||k.UP.isDown);
       const dir=playerMovement(keyX,keyY,this.virtualDir);
+      const initialX=this.px, initialY=this.py;
       if(dir.amount){
         const sp=BALANCE.playerSpeed*dt*dir.amount;
         if(!blocked(this.px+dir.dx*sp,this.py,this.solids,0.22,...this.floor.size))this.px+=dir.dx*sp;
@@ -206,12 +220,33 @@ export class AnnexScene extends Phaser.Scene {
         this.walk+=dt*dir.amount;
         if(keyX||this.virtualDir.sx)this.player.setFlipX(keyX+this.virtualDir.sx<0);
       } else this.walk=0;
+      const traveled=Math.hypot(this.px-initialX,this.py-initialY);
+      const feedback=obstructionFeedback({attempted:dir.amount,travelled:traveled,
+        heldSeconds:this.blockedHeld,frameSeconds:dt,gameSeconds:this.time.now/1000,
+        lastNoticeSeconds:this.lastBlockedNotice});
+      this.blockedHeld=feedback.heldSeconds;
+      if(feedback.notify){
+        this.lastBlockedNotice=this.time.now/1000;
+        game.toast("Caminho obstruído. Contorne o obstáculo.");
+      }
+      if(traveled>0.0001){
+        this.dustTimer+=dt;
+        if(this.dustTimer>=0.26){
+          this.dustTimer=0;
+          const point=iso(this.px,this.py);
+          const dust=this.add.ellipse(point.x,point.y,10,4,0xcab2d8,0.28).setDepth(point.y);
+          this.tweens.add({targets:dust,alpha:0,scaleX:1.8,scaleY:1.3,
+            duration:380,onComplete:()=>dust.destroy()});
+        }
+      } else this.dustTimer=0;
       game.tick(dt);
     }
     this.repositionPlayer();
     const target = navigationTarget(game.get().state);
-    for (const { objectId, marker } of this.questMarkers) {
-      marker.setVisible(target?.floor === this.floor.id && target.interaction === objectId);
+    for (const { objectId, marker, ring } of this.questMarkers) {
+      const visible=target?.floor===this.floor.id && target.interaction===objectId;
+      marker.setVisible(visible);
+      ring?.setVisible(visible);
     }
     if(this.walk) this.player.y-=Math.abs(Math.sin(this.walk*10))*3;
     let nearest:typeof this.points[number] | null=null;
