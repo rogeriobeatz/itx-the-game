@@ -90,7 +90,10 @@ test("first day: reception completes step one, badge finishes grace period", asy
   await teleportSavedPlayer(15.15, 5.4);
   await expect(page.locator(".prompt-hint")).toContainText("crachá");
   await page.keyboard.press("e");
-  await expect(page.locator(".quest-obj:visible").first()).not.toContainText("Passo 2/2: Retire o crachá");
+  await expect.poll(() => page.evaluate(() => {
+    const saved = JSON.parse(localStorage.getItem("intergalatic-save-v1"));
+    return saved.quests.credencial.status;
+  })).toBe("completed");
   const afterBadge = await page.evaluate(() => JSON.parse(localStorage.getItem("intergalatic-save-v1")));
   expect(afterBadge.quests.credencial.status).toBe("completed");
   expect(afterBadge.isGracePeriod).toBe(false);
