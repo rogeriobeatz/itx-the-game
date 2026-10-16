@@ -6,6 +6,7 @@ import { applyEffects, currentObjective, fmtClock, ITEMS, QUESTS, sickLeave } fr
 import { MAP } from "./core/world";
 import { FLOORS, canVisit, floorDefinition } from "./core/floors";
 import { navigationTarget, floorHasMission } from "./core/wayfinding";
+import { interactionPoint, isometricDirection } from "./core/navigationHints";
 import { CRISIS_DAY, RANKS, VICTORY_BTC } from "./core/pyramid";
 import { BALANCE } from "./config/balance";
 import { joystickVector, knobOffset, type InputVector } from "./core/touch";
@@ -214,6 +215,8 @@ function MobileHud() {
   const target = navigationTarget(state);
   const ongoing = QUESTS.find(q => state.quests[q.id as keyof typeof state.quests]?.status === "active");
   const objective = target?.text ?? (ongoing ? currentObjective(state, ongoing.id)?.text : undefined);
+  const point = target?.floor === state.floor ? interactionPoint(state,target.interaction) : null;
+  const arrow = target && target.floor !== state.floor ? "⇅" : point ? isometricDirection(state.pos,point) : "◆";
   return <div className="mobile-hud" aria-label="Status e objetivo atual">
     <div className="mobile-hud-top">
       <span className="mobile-hud-day">D{state.clock.day} · {fmtClock(state.clock.minutes)}</span>
@@ -223,7 +226,7 @@ function MobileHud() {
     <button type="button" className="mobile-hud-objective" onClick={() => game.setUI({ modal: "journal" })}>
       <span className="mobile-hud-caption">◆ MISSÃO</span>
       <span className="mobile-hud-objective-text">{objective ?? "Explore o prédio e converse com os personagens."}</span>
-      <span className="mobile-hud-chevron" aria-hidden="true">›</span>
+      <span className="mobile-hud-chevron" aria-label={arrow === "⇅" ? "Troque de andar" : "Direção do objetivo"}>{arrow}</span>
     </button>
   </div>;
 }
@@ -283,11 +286,7 @@ function Minimap() {
     }
     // Mission waypoint, distinct from the elevator marker.
     if (destination?.floor === state.floor) {
-      const item = (annex?.decor ?? MAP.objects).find((obj) => obj.id === destination.interaction);
-      const person = CHARS.find((npc) => "npc:" + npc.id === destination.interaction);
-      const point = item ? { x: item.ix ?? item.x + item.w/2, y: item.iy ?? item.y + item.d + .5 } :
-        person ? { x: person.id === "patriarca" ? 20.5 : person.id === "carimbo" ? 20.5 : 8.4,
-          y: person.id === "patriarca" ? 4.2 : person.id === "carimbo" ? 18.6 : 8 } : null;
+      const point = interactionPoint(state,destination.interaction);
       if (point) { ctx.fillStyle = "#32f0eb"; ctx.fillRect(point.x * S - 4, point.y * S - 4, 8, 8); }
     }
     ctx.fillStyle = css.getPropertyValue("--mm-player");
