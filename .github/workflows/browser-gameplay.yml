@@ -1,0 +1,28 @@
+name: Browser gameplay smoke
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Prepare Chromium test runner
+        run: npm install --no-save --package-lock=false --legacy-peer-deps --ignore-scripts @playwright/test@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: Play desktop and mobile browser smoke tests
+        run: npx playwright test --config playwright.gameplay.config.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gameplay-browser-screenshots
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
