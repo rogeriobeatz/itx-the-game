@@ -23,6 +23,15 @@ function useGame() {
   return useSyncExternalStore(game.subscribe, game.get, game.get);
 }
 
+/** Only one world scene may update input, prompts or the clock at a time. */
+function startWorldScene(instance: PhaserNS.Game, floor: string) {
+  const destination = floor === "office" ? "office" : "annex";
+  const previous = destination === "office" ? "annex" : "office";
+  if (instance.scene.isActive(previous)) instance.scene.stop(previous);
+  if (instance.scene.isActive(destination)) instance.scene.stop(destination);
+  instance.scene.start(destination);
+}
+
 function focusGameCanvas(canvas?: HTMLCanvasElement | null) {
   if (!canvas || game.get().ui.modal !== null) return;
   canvas.tabIndex = 0;
@@ -60,9 +69,10 @@ export default function GameRoot() {
       });
       phaser.current = g;
       g.events.once(Phaser.Core.Events.READY, () => {
-        const target = game.get().state.floor === "office" ? "office" : "annex";
-        if (g && !g.scene.isActive(target)) g.scene.start(target);
-        if (g) focusGameCanvas(g.canvas);
+        if (g) {
+          startWorldScene(g, game.get().state.floor);
+          focusGameCanvas(g.canvas);
+        }
       });
     })();
     return () => {
@@ -74,8 +84,7 @@ export default function GameRoot() {
   useEffect(() => {
     const instance = phaser.current;
     if (!instance) return;
-    const key = snap.state.floor === "office" ? "office" : "annex";
-    instance.scene.start(key);
+    startWorldScene(instance, snap.state.floor);
   }, [snap.state.floor]);
 
   // Closing any overlay (journal, inventory, pause, elevator, dialogue) restores
@@ -116,9 +125,8 @@ export default function GameRoot() {
   const teleport = () => {
     const instance = phaser.current;
     if (!instance) return;
-    const target = game.get().state.floor === "office" ? "office" : "annex";
-    // A new run must also recreate the selected avatar texture if this scene was already active.
-    instance.scene.start(target);
+    // A new run recreates the correct avatar and stops the other map entirely.
+    startWorldScene(instance, game.get().state.floor);
   };
 
   return (
