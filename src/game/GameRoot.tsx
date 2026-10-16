@@ -114,7 +114,7 @@ export default function GameRoot() {
         </div>
       )}
       {ui.watch && <WatchBar elapsed={ui.watch.elapsed} />}
-      {ui.stealth && state.floor === "office" && !ui.modal && <StealthMeter {...ui.stealth} />}
+      {ui.stealth && snap.state.floor === "office" && !ui.modal && <StealthMeter {...ui.stealth} />}
       <Toasts />
       {ui.modal === "title" && <Title onStart={teleport} />}
       {ui.modal === "dialogue" && <DialogueBox />}
