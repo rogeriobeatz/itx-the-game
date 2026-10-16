@@ -361,7 +361,7 @@ function Title({ onStart }: { onStart: () => void }) {
     if (load) game.load();
     else game.reset(avatar);
     game.setUI({ modal: game.get().state.pyramid.outcome ? "ending" : null });
-    if (!load) game.toast("DIA 1 · Encontre o totem de entrada e retire seu crachá!");
+    if (!load) game.toast("Procure o totem de entrada!");
     onStart();
   };
   return (
@@ -751,6 +751,7 @@ function TouchControls({ emitMove }: { emitMove: (dir: InputVector) => void }) {
 
 function ElevatorPanel() {
   const { state } = useGame();
+  const floorCode: Record<string,string> = {office:"07",refeitorio:"R",studio11:"11",terraco:"T",portaria:"0",criativo:"08",compliance:"09",diretoria:"12",tesouraria:"COB"};
   const accessible = FLOORS.filter(floor => canVisit(state, floor.id));
   const locked = FLOORS.filter(floor => !canVisit(state, floor.id));
   const target = navigationTarget(state);
@@ -765,7 +766,7 @@ function ElevatorPanel() {
     <div className="elevator-floor-list">
       {accessible.map(floor => <button key={floor.id} type="button" className={`elevator-floor ${state.floor===floor.id?"is-current":""}`} disabled={state.floor===floor.id}
         onClick={() => game.travelTo(floor.id)}>
-        <span className="elevator-floor-number">{floor.level.split(" · ")[0]}</span>
+        <span className="elevator-floor-number">{floorCode[floor.id] ?? "•"}</span>
         <span className="elevator-floor-text"><strong>{floor.name}</strong><small>{state.floor===floor.id?"Você está aqui":floorHasMission(state,floor.id)?"◆ Missão neste andar":state.visitedFloors.includes(floor.id)?"Já visitado":"Novo local"}</small></span>
         <span aria-hidden="true">›</span>
       </button>)}

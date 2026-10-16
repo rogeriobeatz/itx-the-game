@@ -394,3 +394,12 @@
  .modal-box { max-height:calc(100dvh - 10px); }
  .title-logo { width:40px; height:40px; }
 }
+
+/* QA screenshot refinements: do not wrap long floor descriptions into vertical words. */
+.elevator-floor-number { width:46px; min-width:46px; font-size:11px; white-space:nowrap; }
+@media (hover:none) and (pointer:coarse), (max-width:700px) {
+ .elevator-floor-number { width:38px; min-width:38px; font-size:10px; }
+ .elevator-floor-text strong { font-size:19px; }
+ .toasts { top:101px; }
+ .toast-item { max-width:80vw; padding:4px 8px; font-size:16px; border-radius:8px; background:rgba(27,15,46,.9); }
+}

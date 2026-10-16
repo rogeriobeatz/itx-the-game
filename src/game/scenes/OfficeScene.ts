@@ -92,7 +92,7 @@ export class OfficeScene extends Phaser.Scene {
     const p = iso(this.player.x, this.player.y);
     cam.centerOn(p.x, p.y);
     cam.startFollow(this.player.sprite, true, 0.1, 0.1, 0, 30);
-    cam.setZoom(this.scale.width < 800 ? 1 : 1.25);
+    cam.setZoom(this.scale.width < 700 ? 1.35 : this.scale.width < 900 ? 1.1 : 1.25);
 
     const kb = this.input.keyboard!;
     this.keys = kb.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as OfficeScene["keys"];

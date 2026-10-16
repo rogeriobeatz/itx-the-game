@@ -73,7 +73,7 @@ export class AnnexScene extends Phaser.Scene {
     const pt = iso(this.px, this.py);
     cam.centerOn(pt.x, pt.y);
     cam.startFollow(this.player, true, 0.12, 0.12, 0, 30);
-    cam.setZoom(this.scale.width < 800 ? 1 : 1.25);
+    cam.setZoom(this.scale.width < 700 ? 1.35 : this.scale.width < 900 ? 1.1 : 1.25);
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as Keys;
     this.input.keyboard!.disableGlobalCapture();
 
