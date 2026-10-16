@@ -8,7 +8,7 @@ async function startNew(page, avatar) {
   await page.getByRole("button", { name: avatar }).click();
   await page.getByRole("button", { name: "COMEÇAR O EXPEDIENTE" }).click();
   await expect(page.locator(".title-screen")).toHaveCount(0);
-  await expect(page.getByText("Registrar entrada no totem da portaria")).toBeVisible();
+  await expect(page.getByText("Registrar entrada no totem da portaria").first()).toBeVisible();
 }
 
 test("desktop: avatar, first objective and uncomplicated elevator", async ({page}) => {
