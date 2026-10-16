@@ -4,13 +4,13 @@
     "name": "Gerente de Metas",
     "palette": { "skin": "#c98f66", "hair": "#2a1d14", "top": "#d6402f", "bottom": "#1c1a2a", "accent": "#ffd23f" },
     "speed": 1.25,
-    "route": [[12, 4.5], [12, 15.5]]
+    "route": [[12.5, 3.5], [12.5, 15.5]]
   },
   {
     "id": "rh_ronda",
     "name": "Fiscal de Clima",
     "palette": { "skin": "#e0b08a", "hair": "#5a2d1a", "top": "#f08a24", "bottom": "#2a2438", "accent": "#ffffff" },
     "speed": 1.05,
-    "route": [[3, 12.5], [9.5, 12.5]]
+    "route": [[1.5, 14.5], [13.5, 14.5]]
   }
 ]
