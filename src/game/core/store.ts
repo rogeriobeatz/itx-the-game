@@ -1,8 +1,8 @@
 import { BALANCE } from "../config/balance";
 import { newPyramid, performPyramidAction, type PyramidAction } from "./pyramid";
-import { applyEffects, isCollapsed, newGame, tickClock } from "./logic";
+import { applyEffects, isCollapsed, newGame, startJourney, tickClock } from "./logic";
 import { canVisit, arrivalPoint, FLOORS } from "./floors";
-import type { Effects, GameState, FloorId } from "./types";
+import type { AvatarStyle, Effects, GameState, FloorId } from "./types";
 
 export type Modal = null | "title" | "dialogue" | "inventory" | "journal" | "pause" | "pitch" | "gameover" | "pyramid" | "ending" | "elevator" | "help";
 
@@ -174,7 +174,7 @@ export const game = {
       if (!saved || typeof saved !== "object" || !saved.stats || !saved.clock) return false;
       snap = {
         ...snap,
-        state: { ...base, ...saved, floor: saved.floor && FLOORS.some((f) => f.id === saved.floor) ? saved.floor : "office",
+        state: { ...base, ...saved, avatar: saved.avatar === "mulher" ? "mulher" : "homem", floor: saved.floor && FLOORS.some((f) => f.id === saved.floor) ? saved.floor : "office",
           visitedFloors: Array.isArray(saved.visitedFloors) ? [...new Set(["office" as const, ...saved.visitedFloors.filter((id) => FLOORS.some((f) => f.id === id))])] : ["office"], pyramid: { ...newPyramid(), ...saved.pyramid }, quests: { ...base.quests, ...(saved.quests ?? {}) } },
       };
       game.save(); // migrate legacy save to the new title without losing progress
@@ -184,10 +184,11 @@ export const game = {
       return false;
     }
   },
-  reset() {
+  reset(avatar: AvatarStyle = snap.state.avatar) {
     clockAcc = 0;
     saveAcc = 0;
-    snap = { ...snap, state: newGame(), ui: { ...snap.ui, prompt: null, positions: { player: { ...BALANCE.startPos }, npcs: {} } } };
+    const fresh = startJourney(avatar);
+    snap = { ...snap, state: fresh, ui: { ...snap.ui, prompt: null, dialogue: null, watch: null, positions: { player: { ...fresh.pos }, npcs: {} } } };
     game.save();
     emit();
   },

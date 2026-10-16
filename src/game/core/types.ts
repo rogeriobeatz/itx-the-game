@@ -1,5 +1,6 @@
 export type StatKey = "vida" | "fe" | "burnout" | "reputacao" | "limpo" | "sujo";
 export type QuestId = "bau" | "aquario" | "pitch" | "refeicao" | "louvor" | "respiro" | "credencial" | "campanha" | "auditoria" | "conselho" | "tesouro";
+export type AvatarStyle = "homem" | "mulher";
 export type FloorId = "office" | "refeitorio" | "studio11" | "terraco" | "portaria" | "criativo" | "compliance" | "diretoria" | "tesouraria";
 export type PyramidOutcome = "farao" | "early_exit" | "raided" | "bankrupt" | null;
 export interface PyramidProgress { rank: number; influence: number; heat: number; instability: number; btc: number; withdrawn: number; outcome: PyramidOutcome; }
@@ -41,6 +42,7 @@ export interface ItemDef {
 }
 
 export interface GameState {
+  avatar: AvatarStyle;
   stats: Record<StatKey, number>;
   pyramid: PyramidProgress;
   inventory: string[];

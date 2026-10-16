@@ -2,7 +2,7 @@ import questsData from "../data/quests.json";
 import { newPyramid, pyramidNewDay, rewardQuestInfluence } from "./pyramid";
 import itemsData from "../data/items.json";
 import { BALANCE } from "../config/balance";
-import type { Cond, Effects, GameState, ItemDef, QuestDef, QuestId, StatKey } from "./types";
+import type { Cond, Effects, AvatarStyle, GameState, ItemDef, QuestDef, QuestId, StatKey } from "./types";
 
 export const QUESTS = questsData as QuestDef[];
 export const ITEMS = itemsData as Record<string, ItemDef>;
@@ -18,8 +18,9 @@ export const STAT_LABEL: Record<StatKey, string> = {
   sujo: "R$ sujo",
 };
 
-export function newGame(): GameState {
+export function newGame(avatar: AvatarStyle = "homem"): GameState {
   return {
+    avatar,
     stats: { vida: 100, fe: 70, burnout: 10, reputacao: 20, limpo: 0, sujo: 0 },
     pyramid: newPyramid(),
     inventory: [],
@@ -30,6 +31,16 @@ export function newGame(): GameState {
     floor: "office",
     visitedFloors: ["office"],
   };
+}
+
+/** First playable moment: a character with a clear task at the reception. */
+export function startJourney(avatar: AvatarStyle = "homem"): GameState {
+  const s = newGame(avatar);
+  s.floor = "portaria";
+  s.pos = { x: 10, y: 3 };
+  s.visitedFloors = ["portaria"];
+  s.quests.credencial.status = "active";
+  return s;
 }
 
 const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v));
