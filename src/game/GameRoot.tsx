@@ -758,8 +758,8 @@ function ElevatorPanel() {
   const destination = target ? FLOORS.find(f => f.id === target.floor) : undefined;
   return <Modal title="ESCOLHA O ANDAR" hint="Viagem rápida também funciona sem procurar fisicamente o elevador." onClose={() => game.setUI({ modal: null })}>
     <p className="dlg-text">Você está em: <strong>{FLOORS.find(f => f.id === state.floor)?.name}</strong></p>
-    {destination && target?.floor !== state.floor && canVisit(state, target.floor) &&
-      <button className="pixel-btn pixel-btn-primary elevator-destination mt-3" onClick={() => game.travelTo(target.floor)}>
+    {destination && destination.id !== state.floor && canVisit(state, destination.id) &&
+      <button className="pixel-btn pixel-btn-primary elevator-destination mt-3" onClick={() => game.travelTo(destination.id)}>
         ◆ IR PARA A MISSÃO: {destination.name.toUpperCase()}
       </button>}
     <div className="section-label mt-3 mb-2">ANDARES DISPONÍVEIS</div>
